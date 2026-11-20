@@ -50,12 +50,13 @@ se adapta, sin restos de Corea.
 - `finde.js`: 🏠 Este finde (tiempo por zona de Open-Meteo, 🎲 Sorpréndeme, casa).
 - `diario.js`: 📔 diario (tus ✅ por fecha) y 🖨️ Resumen del año (hoja + Imprimir → PDF).
 - `planes.js`: 📅 planes del grupo y calendario de los próximos 10 findes.
+- `propios.js`: 👥 sitios que añade el grupo (`BASE` = catálogo; `mezclarSitios()` → `SITIOS`).
 - `eventos.js`: 🎟️ fecha de cada evento según su regla `cuando` (fija, Pascua, n-ésimo día).
 - `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
   municipio (`MUNI`: tono `h`, emoji, lema, `portada` = sitio cuya foto va en el banner).
 - `data/fotos.json`: `{ sitioId: { src, archivo } }`, foto principal del artículo de
   Wikipedia (Wikimedia Commons). Sin banderas, escudos, logos ni mapas.
-- Orden de carga (index.html): firebase-config, islas, nube, eventos, planes, finde, diario, app.
+- Orden de carga (index.html): firebase-config, islas, nube, eventos, planes, propios, finde, diario, app.
   Los archivos anteriores a app.js no usan load/save/SITIOS al cargar, solo dentro de funciones.
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
@@ -263,3 +264,13 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   nieve en el Teide, playa sin sol), sale «🌧️ El tiempo pinta mal» con el plan B (y si su zona
   acompaña) o 3 ideas: que encajen con el tiempo, cerca del plan A, primero museos y lo que el
   grupo quiere (🔖). «🅱️ Usar» las guarda como plan B.
+
+## Sitios del grupo (v16)
+- `grupos/{gid}/sitios/{id}`: { nombre, tipo, municipio, lat, lon, desc, url, autor, creado,
+  actualizado }. Los añade cualquiera del grupo (Sitios → «➕ Añadir un sitio»); solo el autor
+  los edita o borra. En la app: id `g-<id>`, `propio: true`, fuente «Añadido por …», sin foto.
+- Ubicación: «📍 Estoy aquí» (GPS), «🗺️ Tocar en el mapa» (`MP.elegir`) o pegar un enlace largo
+  de Google Maps (`@lat,lon`, `!3d…!4d…`, `?q=lat,lon`). Municipio propuesto: el del sitio del
+  catálogo más cercano (se puede cambiar).
+- Es la vía para guachinches y restaurantes mientras no haya una fuente pública fiable: no los
+  inventa la app, los aporta el grupo.

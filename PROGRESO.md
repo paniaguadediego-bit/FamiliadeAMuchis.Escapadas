@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v16 · Sitios del grupo: guachinches, restaurantes y rincones propios (2026-11-20)
+- «➕ Añadir un sitio» en Sitios: nombre, tipo, municipio, nota, enlace y ubicación (GPS, tocar en el
+  mapa o enlace de Google Maps). Lo ve todo el grupo al momento como un sitio más (ficha, mapa,
+  filtros, marcas, planes, Sorpréndeme), con «👥 Añadido por …». Su autor lo edita o lo borra.
+- Regla de Firestore nueva (`sitios`), publicada sola.
+
 ## v15 · Más museos y sitios (2026-11-20)
 - 46 sitios nuevos (206 en total, 188 con foto), todos de Wikipedia con coordenadas y descripción
   propia: museos (Arte Sacro de La Orotava, Bellas Artes y Casa del Carnaval en Santa Cruz),

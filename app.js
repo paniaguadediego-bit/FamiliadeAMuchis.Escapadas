@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v15';
+const VERSION = 'v16';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -36,8 +36,9 @@ const MUNICIPIOS = ['Adeje', 'Arafo', 'Arico', 'Arona', 'Buenavista del Norte', 
 
 let SITIOS = [];
 const sitio = id => SITIOS.find(s => s.id === id);
-fetch('data/sitios.json').then(r => r.json()).then(d => { SITIOS = Array.isArray(d) ? d : []; render(); })
-  .catch(() => { SITIOS = []; render(); });
+// SITIOS = catálogo (BASE) + los que añade el grupo (propios.js).
+fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d) ? d : []; mezclarSitios(); render(); })
+  .catch(() => { BASE = []; mezclarSitios(); render(); });
 
 // ---------- fotos (Wikimedia Commons, del artículo de Wikipedia de cada sitio) ----------
 // data/fotos.json = { sitioId: { src (960 px), archivo } }. El service worker guarda cada foto vista (sin conexión).
@@ -137,10 +138,12 @@ function fichaHTML(s) {
       <p>${esc(s.desc)}</p>
       ${datos.length ? `<div class="datos">${datos.map(d => `<span>${d}</span>`).join('')}</div>` : ''}
       ${s.verificar ? `<div class="ver">⚠️ VERIFICAR${typeof s.verificar === 'string' ? ': ' + esc(s.verificar) : ''}</div>` : ''}
-      <div class="fuente">📚 Fuente: ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.fuente || s.url)}</a>` : esc(s.fuente || '—')}</div>
+      ${s.propio ? `<div class="fuente propio-de">👥 ${esc(s.fuente)}${s.url ? ` · <a href="${esc(s.url)}" target="_blank" rel="noopener">enlace</a>` : ''}</div>`
+        : `<div class="fuente">📚 Fuente: ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.fuente || s.url)}</a>` : esc(s.fuente || '—')}</div>`}
       <div class="acciones">
         <a class="btn sec mini" href="${gmaps(s)}" target="_blank" rel="noopener">🌐 Google Maps</a>
         <button class="sec mini" data-vermapa="${esc(s.id)}">🗺️ Ver en el mapa</button>
+        ${accionesPropio(s)}
       </div>
       ${grupoEnFicha(s.id)}
       <div class="marcas">${Object.entries(ESTADOS).map(([k, [ic, n]]) => `<button class="${e === k ? 'on' : ''}" data-est="${k}" data-id="${esc(s.id)}">${ic} ${n}</button>`).join('')}</div>
@@ -250,7 +253,7 @@ function filtrosHTML(lista) {
 function viewSitios() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const lista = ordenar(filtrados()), filtro = !!(q || fTipo || fEst || fGrupo || fZona);
-  const cab = filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · guarda tu casa en ☰ Más para ordenar por distancia' : ''}</p>`;
+  const cab = propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · guarda tu casa en ☰ Más para ordenar por distancia' : ''}</p>`;
   if (!lista.length) return cab + '<div class="card muted">Nada con esos filtros.</div>';
   // Agrupado: por municipio (banners) o por zona; si no, lista seguida en el orden elegido.
   if (orden === 'zona') {
@@ -300,6 +303,10 @@ let mpTipo = '';
 function viewMapa() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
+  if (MP.elegir) return `<div class="aviso-elegir">👆 <b>Toca en el mapa dónde está el sitio.</b> Acerca con ＋ o con dos dedos para afinar.<button class="sec mini" data-propio="cancelar-mapa">Cancelar</button></div>
+    <div class="mapa elegir" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
+      <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
+      <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>`;
   return `<div class="filtros-barra"><label class="orden-sel ancho"><span class="vh">Qué se ve</span><select id="mptipo">${[['', '🗂️ Todos los sitios'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<option value="${k}" ${mpTipo === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
@@ -389,6 +396,9 @@ function mpGestos(el) {
     const dx = e.clientX - ini[0], dy = e.clientY - ini[1]; ini = null;
     if (movido) { MP.c = [mpLat(mpY(MP.c[0], MP.z) - dy, MP.z), mpLon(mpX(MP.c[1], MP.z) - dx, MP.z)]; mpDibujar(el); return; }
     const t = document.elementFromPoint(e.clientX, e.clientY), b = t && t.closest('.mp-pt');
+    // Eligiendo la ubicación de un sitio nuevo: el toque en el mapa da las coordenadas.
+    if (MP.elegir && !(t && t.closest('.mp-bot'))) { const r = el.getBoundingClientRect(), z = MP.z, ox = mpX(MP.c[1], z) - el.clientWidth / 2, oy = mpY(MP.c[0], z) - el.clientHeight / 2;
+      MP.elegir([+mpLat(oy + e.clientY - r.top, z).toFixed(5), +mpLon(ox + e.clientX - r.left, z).toFixed(5)]); return; }
     MP.sel = b ? b.dataset.mpp : null; mpDibujar(el);
   };
   v.addEventListener('pointerup', fin); v.addEventListener('pointercancel', fin);

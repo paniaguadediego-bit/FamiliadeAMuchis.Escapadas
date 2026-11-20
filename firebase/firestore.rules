@@ -7,6 +7,7 @@ rules_version = '2';
 //   Solo los miembros lo leen. Con el código, uno se puede añadir a sí mismo; cada miembro puede salirse
 //   y cambiar el nombre del grupo. Nadie puede añadir ni quitar a otros.
 // - Marcas: las leen los miembros del grupo; cada uno escribe y borra solo las suyas ({uid}_{sitioId}).
+// - Sitios del grupo: los añade cualquiera; solo su autor los cambia o borra.
 // - Planes: los ve el grupo; cada uno se apunta o se borra a sí mismo; quien propone lo edita o lo cancela;
 //   el plan B lo pone o cambia cualquiera del grupo.
 service cloud.firestore {
@@ -61,6 +62,24 @@ service cloud.firestore {
           && request.resource.data.estrellas >= 0 && request.resource.data.estrellas <= 5
           && request.resource.data.nota is string && request.resource.data.nota.size() <= 1000;
         allow delete: if esMiembro(gid) && resource.data.uid == yo();
+      }
+
+      // Sitios del grupo (guachinches, restaurantes, rincones…): los añade cualquiera del grupo; solo quien lo añadió
+      // lo edita o lo borra.
+      match /sitios/{sid} {
+        function sitioValido(d) {
+          return d.keys().hasOnly(['nombre', 'tipo', 'municipio', 'lat', 'lon', 'desc', 'url', 'autor', 'creado', 'actualizado'])
+            && d.nombre is string && d.nombre.size() > 0 && d.nombre.size() <= 80
+            && d.tipo in ['sendero', 'playa', 'mirador', 'pueblo', 'museo', 'naturaleza', 'guachinche', 'restaurante', 'evento', 'curioso']
+            && d.municipio is string && d.municipio.size() <= 40
+            && d.lat is number && d.lat > 27 && d.lat < 30 && d.lon is number && d.lon > -19 && d.lon < -13
+            && d.desc is string && d.desc.size() <= 600 && d.url is string && d.url.size() <= 300
+            && d.autor == yo();
+        }
+        allow read: if esMiembro(gid);
+        allow create: if esMiembro(gid) && sitioValido(request.resource.data);
+        allow update: if esMiembro(gid) && resource.data.autor == yo() && sitioValido(request.resource.data);
+        allow delete: if esMiembro(gid) && resource.data.autor == yo();
       }
 
       // Disponibilidad: cada uno dice qué findes no puede (lista de sábados). Lo ve el grupo; cada uno escribe el suyo.
