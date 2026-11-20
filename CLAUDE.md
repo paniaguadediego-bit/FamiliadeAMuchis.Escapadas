@@ -129,7 +129,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   - `grupos/{gid}/marcas/{uid}_{sitioId}`: uid, sitioId, estado
     (quiero|fuimos|no), estrellas, nota, fecha, actualizado
   - `grupos/{gid}/planes/{id}`: sitioId ('' si es destino libre), destino, isla,
-    fecha (AAAA-MM-DD), hasta (opcional), nota, propone, apuntados [uid], creado. Cada uno se apunta/borra a sí mismo; quien propone
+    fecha (AAAA-MM-DD), hasta (opcional), nota, propone, apuntados [uid], creado,
+    planB? { sitioId, destino } (lo pone o cambia cualquiera del grupo). Cada uno se apunta/borra a sí mismo; quien propone
     edita fecha y nota o lo cancela.
 - Reglas de seguridad en `firebase/firestore.rules`. Las publica GitHub Actions
   al cambiar en `main`, con el secreto `FIREBASE_REGLAS_KEY` (llave JSON de la cuenta
@@ -253,3 +254,10 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   (banners), nombre, más cerca de casa, mejor valorados (media de ⭐ tuyas y del grupo),
   más deseados (🔖 tuyas y del grupo).
 - Mapa: un desplegable de tipo; la isla se elige en el panel de filtros de Sitios.
+
+## Plan B (v13)
+- 🅱️ = plan B (solo ese significado). Se pone al proponer, o después en la tarjeta del plan.
+- Si hay previsión para el día del plan (10 días) y `tiempoVale` dice que no (lluvia, viento,
+  nieve en el Teide, playa sin sol), sale «🌧️ El tiempo pinta mal» con el plan B (y si su zona
+  acompaña) o 3 ideas: que encajen con el tiempo, cerca del plan A, primero museos y lo que el
+  grupo quiere (🔖). «🅱️ Usar» las guarda como plan B.

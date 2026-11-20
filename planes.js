@@ -40,12 +40,56 @@ async function proponerPlan(d) {
   if (!sitioId && !destino) destino = isla !== 'tenerife' ? `Finde en ${ISLAS[isla].nombre}` : '';
   if (!sitioId && !destino) return alert('¿A dónde? Escribe un sitio o un destino.');
   planForm = null;
+  const planB = leerB(d.planB);
   try {
     await colPlanes().add({ sitioId, destino, isla, fecha: d.fecha, hasta: d.hasta && d.hasta > d.fecha ? d.hasta : '', nota: String(d.nota || '').trim().slice(0, 300),
-      propone: NUBE.user.uid, apuntados: [NUBE.user.uid], creado: firebase.firestore.FieldValue.serverTimestamp() });
+      propone: NUBE.user.uid, apuntados: [NUBE.user.uid], creado: firebase.firestore.FieldValue.serverTimestamp(), ...(planB ? { planB } : {}) });
   } catch (e) { alert('No se pudo proponer (' + (e.code || e.message) + '). ¿Están publicadas las reglas nuevas?'); }
   refrescarVista();
 }
+// ---------- 🅱️ plan B ----------
+// planB: { sitioId, destino } — un sitio de la app o un texto libre. Cualquiera del grupo lo pone o lo cambia.
+function leerB(texto) {
+  const t = String(texto || '').trim().slice(0, 80); if (!t) return null;
+  const s = SITIOS.find(x => sinTildes(x.nombre) === sinTildes(t));
+  return s ? { sitioId: s.id, destino: '' } : { sitioId: '', destino: t };
+}
+function guardarB(id, b) {
+  colPlanes().doc(id).update({ planB: b ? b : firebase.firestore.FieldValue.delete() }).catch(e => alert('No se pudo (' + (e.code || e.message) + ').'));
+  planBForm = null; refrescarVista();
+}
+let planBForm = null; // id del plan con el formulario de plan B abierto
+// ¿Pinta mal el tiempo para ese plan? Solo con previsión (próximos días) y sitios de Tenerife con zona.
+function avisoTiempo(p) {
+  const s = p.sitioId && sitio(p.sitioId); if (!s || typeof tiempoDe !== 'function') return null;
+  const t = tiempoDe(zonaDe(s), p.fecha); if (!t) return null;
+  if (tiempoVale(s, p.fecha).ok) return null;
+  return { s, t, zona: ZONAS[zonaDe(s)] };
+}
+// Ideas de plan B para ese día: que encajen con el tiempo, cerca del plan A; primero bajo techo y lo que el grupo quiere.
+function ideasB(p, n = 3) {
+  const a = sitio(p.sitioId); if (!a) return [];
+  return SITIOS.filter(x => x.id !== a.id && x.tipo !== 'evento' && enIsla(x) && tiempoDe(zonaDe(x), p.fecha) && tiempoVale(x, p.fecha).ok)
+    .map(x => [x, kmEntre([a.lat, a.lon], [x.lat, x.lon]) - (x.tipo === 'museo' ? 8 : 0) - 4 * (typeof ganas === 'function' ? ganas(x.id) : 0)])
+    .sort((u, v) => u[1] - v[1]).slice(0, n).map(([x]) => x);
+}
+function planBHTML(p) {
+  const b = p.planB, bs = b && b.sitioId && sitio(b.sitioId), av = avisoTiempo(p);
+  const nombreB = bs ? `<button class="plan-b-s" data-irficha="${esc(bs.id)}">${tipoIc(bs.tipo)} ${esc(bs.nombre)}</button> <small class="muted">${esc(bs.municipio)}${av && tiempoDe(zonaDe(bs), p.fecha) ? ' · ' + (tiempoVale(bs, p.fecha).ok ? 'el tiempo acompaña ✓' : 'tampoco pinta bien') : ''}</small>` : b ? `<b>${esc(b.destino)}</b>` : '';
+  let h = '';
+  if (av) {
+    const [ic, txt] = cielo(av.t.c);
+    h += `<div class="aviso-tiempo">🌧️ <b>El tiempo pinta mal</b> en ${esc(av.zona.nom)}: ${ic} ${esc(txt.toLowerCase())}${av.t.p >= 20 ? `, ${av.t.p}% de probabilidad de lluvia`.replace(/ de lluvia$/, /lluv|chubas/i.test(txt) ? '' : ' de lluvia') : ''}${av.t.v >= 40 ? `, viento ${Math.round(av.t.v)} km/h` : ''}.
+      ${b ? '' : (() => { const ideas = ideasB(p); return ideas.length ? `<div class="ideas-b">Ideas de plan B para ese día:${ideas.map(x => `<div class="idea-b"><button class="plan-b-s" data-irficha="${esc(x.id)}">${tipoIc(x.tipo)} ${esc(x.nombre)}</button><small class="muted"> ${esc(x.municipio)}</small><button class="sec mini" data-plan="b-usar" data-id="${esc(p.id)}" data-sitio="${esc(x.id)}">🅱️ Usar</button></div>`).join('')}</div>` : ''; })()}</div>`;
+  }
+  if (planBForm === p.id) {
+    h += `<div class="plan-b-form"><input id="pb-${esc(p.id)}" list="pl-sitios-b" maxlength="80" placeholder="🅱️ Plan B: un sitio de la app o lo que queráis" value="${esc(bs ? bs.nombre : b ? b.destino : '')}">
+      <datalist id="pl-sitios-b">${SITIOS.map(x => `<option value="${esc(x.nombre)}">`).join('')}</datalist>
+      <div class="row"><button class="mini" data-plan="b-guardar" data-id="${esc(p.id)}">Guardar</button>${b ? `<button class="sec mini" data-plan="b-quitar" data-id="${esc(p.id)}">Quitar plan B</button>` : ''}<button class="sec mini" data-plan="b-cerrar">Cancelar</button></div></div>`;
+  } else if (b) h += `<div class="plan-b">🅱️ <span>Plan B:</span> ${nombreB} <button class="sec mini" data-plan="b-abrir" data-id="${esc(p.id)}" aria-label="Cambiar plan B">✏️</button></div>`;
+  return h;
+}
+
 function apuntarse(id, si) {
   const F = firebase.firestore.FieldValue;
   colPlanes().doc(id).update({ apuntados: si ? F.arrayUnion(NUBE.user.uid) : F.arrayRemove(NUBE.user.uid) }).catch(e => alert('No se pudo (' + (e.code || e.message) + ').'));
@@ -66,7 +110,9 @@ function planHTML(p, { conSitio = true, compacto = false } = {}) {
       <div class="muted">Propone ${esc(perfilDe(p.propone).emoji)} ${esc(perfilDe(p.propone).nombre)}${p.nota ? ` · «${esc(p.nota)}»` : ''}</div>
       <div class="gl"><span class="gl-t">🙋 Van (${(p.apuntados || []).length})</span>${caras(p.apuntados || [])}</div>
       ${s ? (fueron.length ? `<div class="gl"><span class="gl-t">✅ Ya fueron</span>${caras(fueron)}</div>` : '<div class="muted">🌱 Nadie del grupo ha ido todavía.</div>') : ''}
+      ${planBHTML(p)}
       <div class="acciones">${yoVoy ? `<button class="sec mini" data-plan="no" data-id="${esc(p.id)}">Ya no voy</button>` : `<button class="mini" data-plan="si" data-id="${esc(p.id)}">🙋 Me apunto</button>`}
+        ${!p.planB && planBForm !== p.id ? `<button class="sec mini" data-plan="b-abrir" data-id="${esc(p.id)}">🅱️ Plan B</button>` : ''}
         ${p.propone === NUBE.user.uid ? `<button class="danger mini" data-plan="cancelar" data-id="${esc(p.id)}">Cancelar plan</button>` : ''}</div>
     </div></div>`;
 }
@@ -82,6 +128,8 @@ function formPlanHTML(f) {
     <div class="row"><div style="flex:1"><label class="muted" for="pl-fecha">Día</label><input type="date" id="pl-fecha" value="${sab}" min="${hoyISO()}"></div>
       <div style="flex:1"><label class="muted" for="pl-hasta">Hasta (opcional)</label><input type="date" id="pl-hasta" min="${hoyISO()}"></div></div>
     <input id="pl-nota" maxlength="300" placeholder="Hora, punto de encuentro, barco… (opcional)">
+    <input id="pl-b" list="pl-sitios-b" maxlength="80" placeholder="🅱️ Plan B por si acaso (opcional)">
+    <datalist id="pl-sitios-b">${SITIOS.map(x => `<option value="${esc(x.nombre)}">`).join('')}</datalist>
     <div class="row"><button data-plan="crear">📅 Proponer al grupo</button><button class="sec" data-plan="cerrar">Cancelar</button></div></div>`;
 }
 // En la ficha: los planes de ese sitio y el botón para proponer.
@@ -147,7 +195,12 @@ document.addEventListener('click', e => {
   const a = b.dataset.plan, id = b.dataset.id, val = k => (document.getElementById(k) || {}).value || '';
   if (a === 'abrir') { planForm = b.dataset.sitio ? { sitioId: b.dataset.sitio } : { sabado: b.dataset.sabado }; render(); const f = document.querySelector('.plan-form'); if (f) f.scrollIntoView({ block: 'center' }); }
   else if (a === 'cerrar') { planForm = null; render(); }
-  else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), hasta: val('pl-hasta'), nota: val('pl-nota') });
+  else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), hasta: val('pl-hasta'), nota: val('pl-nota'), planB: val('pl-b') });
   else if (a === 'si' || a === 'no') apuntarse(id, a === 'si');
   else if (a === 'cancelar') cancelarPlan(id);
+  else if (a === 'b-abrir') { planBForm = id; render(); const f = document.getElementById('pb-' + id); if (f) f.focus(); }
+  else if (a === 'b-cerrar') { planBForm = null; render(); }
+  else if (a === 'b-guardar') { const b = leerB(val('pb-' + id)); if (!b) return alert('Escribe el plan B.'); guardarB(id, b); }
+  else if (a === 'b-quitar') guardarB(id, null);
+  else if (a === 'b-usar') guardarB(id, { sitioId: b.dataset.sitio, destino: '' });
 });

@@ -462,5 +462,17 @@ nav#tabs button.on span { background: var(--pri); padding: 3px 16px; border-radi
 .cuenta-lista { margin: 2px 2px 6px; font-size: .8rem; }
 .lista-plana .ficha { margin: 5px 0; }
 
+/* 🅱️ Plan B y aviso del tiempo (v13) */
+.aviso-tiempo { background: hsl(210 80% 50% / .1); border-left: 4px solid hsl(210 70% 50%); border-radius: 8px; padding: 6px 9px; margin: 6px 0; font-size: .86rem; }
+.ideas-b { margin-top: 5px; font-size: .84rem; }
+.idea-b { display: flex; align-items: center; gap: 6px; padding: 3px 0; border-top: 1px dashed var(--line); }
+.idea-b small { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+button.plan-b-s { background: none; color: var(--fg); padding: 0; margin: 0; min-height: 0; width: auto; display: inline; text-align: left; font-weight: 600; font-size: .88rem; }
+.plan-b { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; margin: 6px 0 2px; padding: 5px 8px; border-radius: 8px; background: var(--bg); border: 1px dashed var(--line); font-size: .86rem; }
+.plan-b > span { color: var(--muted); }
+.plan-b button.mini { min-height: 1.8rem; padding: 0 7px; margin-left: auto; }
+.plan-b-form { margin: 6px 0; }
+.plan-b-form .row { gap: 6px; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v12"; }
+:root { --css-ver: "v13"; }

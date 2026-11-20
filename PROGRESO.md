@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v13 · Planes alternativos: plan B y aviso del tiempo (2026-11-20)
+- Cada plan puede llevar un 🅱️ plan B (sitio de la app o texto libre): al proponer o luego en la
+  tarjeta; cualquiera del grupo lo pone, lo cambia (✏️) o lo quita.
+- Si la previsión del día pinta mal en la zona del plan, aviso 🌧️ con el plan B (dice si su zona
+  tiene buen tiempo) o 3 ideas cercanas que sí encajan, con «🅱️ Usar».
+- Regla de Firestore ampliada (`planB`), publicada sola por GitHub Actions.
+
 ## v12 · Estilo como viaje-corea y filtros desplegables (2026-11-20)
 - Estilo: papel cálido con textura, franja con los colores de Canarias bajo la cabecera, tarjetas
   blancas con sombra, pestaña activa en pastilla, buscador en píldora. Oscuro ajustado.
