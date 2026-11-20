@@ -277,7 +277,7 @@ function resumenGrupoHTML() {
     <h2>🕒 Últimas marcas</h2>${NUBE.recientes.length ? `<div class="card">${NUBE.recientes.map(m => { const s = typeof sitio === 'function' && sitio(m.sitioId); return s ? `<button class="reciente" data-irficha="${esc(s.id)}">${carita(perfilDe(m.uid))}<span><b>${esc(perfilDe(m.uid).nombre)}</b> ${m.estado ? ESTADOS[m.estado][0] : '⭐'} ${esc(s.nombre)}<small class="muted"> · ${fechaCorta(m.actualizado)}</small></span></button>` : ''; }).join('')}</div>` : '<div class="card muted">Todavía nadie ha marcado nada.</div>'}
     <h2>🌱 Nadie ha ido todavía</h2><div class="card"><p><b>${nadie}</b> de ${total} sitios sin estrenar por nadie del grupo.</p><button class="sec" data-nadie>Ver cuáles</button></div>`;
 }
-document.addEventListener('click', e => { if (e.target.closest('[data-nadie]')) { fTipo = ''; q = ''; fEst = 'nadie'; ir('sitios'); } });
+document.addEventListener('click', e => { if (e.target.closest('[data-nadie]')) { fTipo = fEst = fZona = ''; q = ''; fGrupo = 'nadie'; ir('sitios'); } });
 
 // ---------- pestaña 👥 Grupo ----------
 const carita = (p, uid) => `<span class="carita" style="--cc:${esc((p && p.color) || '#475569')}" title="${esc((p && p.nombre) || '')}">${esc((p && p.emoji) || '👤')}</span>`;

@@ -241,3 +241,15 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Icono: el archipiélago canario (icons/icon.svg; icon-maskable.svg para Android, más pequeño y
   sin esquinas). Se regenera con un script de Playwright (PNG 192, 512, maskable 512, apple 180).
   Provisional: el usuario puede entregar su propia imagen.
+
+## Estilo y filtros (v12, como viaje-corea)
+- Fondo de papel cálido (`--papel`) con textura diagonal suave; franja azul-amarillo-blanco
+  (bandera de Canarias) bajo la cabecera; tarjetas blancas con sombra (`--sombra`); pestaña
+  activa en pastilla; buscador en píldora.
+- Sitios: nada de filas que se deslizan. «⚙️ Filtros ▾» abre un panel con rejillas de botones
+  (icono arriba): Tipo, Tus marcas, El grupo (nadie ha ido / alguien quiere ir / alguien fue),
+  Zona (las 6 del tiempo) e Isla. Los activos salen como etiquetas con ✕.
+- «↕️ Orden» (desplegable, se recuerda en `esc.orden`): por municipio (banners), por zona
+  (banners), nombre, más cerca de casa, mejor valorados (media de ⭐ tuyas y del grupo),
+  más deseados (🔖 tuyas y del grupo).
+- Mapa: un desplegable de tipo; la isla se elige en el panel de filtros de Sitios.

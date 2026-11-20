@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v12 · Estilo como viaje-corea y filtros desplegables (2026-11-20)
+- Estilo: papel cálido con textura, franja con los colores de Canarias bajo la cabecera, tarjetas
+  blancas con sombra, pestaña activa en pastilla, buscador en píldora. Oscuro ajustado.
+- Sitios: «⚙️ Filtros ▾» con panel desplegable de rejillas (tipo, tus marcas, el grupo, zona, isla)
+  y etiquetas ✕ de lo activo. «↕️ Orden»: municipio, zona, nombre, cerca de casa, valorados, deseados.
+  Con casa guardada, cada ficha dice los km en la lista.
+- Mapa: desplegable de tipo en lugar de chips. Los chips de isla pasan al panel de filtros.
+
 ## v11 · Compacta, icono de Canarias y «No puedo ese finde» (2026-11-20)
 - App más compacta: letra base 14,5 px y todo en rem (alturas, botones, chips, banners, fichas,
   pestañas, mapa); los findes libres ocupan una línea. En Más, 🔠 Letra: Compacta / Normal / Grande.

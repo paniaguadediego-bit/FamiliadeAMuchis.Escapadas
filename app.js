@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v11';
+const VERSION = 'v12';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -129,7 +129,7 @@ function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
   const datos = [distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
-    <summary>${FOTOS[s.id] ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${tipoIc(s.tipo)}</span></span>` : `<span class="ic">${tipoIc(s.tipo)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}</small></span>
+    <summary>${FOTOS[s.id] ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${tipoIc(s.tipo)}</span></span>` : `<span class="ic">${tipoIc(s.tipo)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}${distCasa(s) != null ? ` · 🏠 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
       ${abiertas.has(s.id) && FOTOS[s.id] ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : FOTOS[s.id] ? '<div class="ficha-foto" data-pendiente></div>' : ''}
@@ -181,7 +181,7 @@ let irFicha = null;
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-irficha]'); if (!b) return;
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
-  abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = ''; fEst = ''; q = ''; ir('sitios');
+  abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
 
 // ---------- 🏠 Este finde ---------- (la pestaña está en finde.js)
@@ -192,37 +192,91 @@ function cuentaHTML() {
 function viewFinde() { return viewFindeS5(); }
 
 // ---------- 📍 Sitios ----------
-let q = '', fTipo = '', fEst = '';
+let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', orden = load('esc.orden', 'municipio'), filtrosAbiertos = false;
 const muniAbiertos = new Set();
+const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['fuimos', '✅', 'Fuimos'], ['no', '✖️', 'No'], ['sin', '⬜', 'Sin marcar']];
+const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien fue']];
+const ORDENES = { municipio: '🏘️ Por municipio', zona: '🧭 Por zona', nombre: '🔤 Nombre (A-Z)', cerca: '🏠 Más cerca de casa', valorados: '⭐ Mejor valorados', deseados: '🔖 Más deseados' };
+const zonaNom = s => typeof zonaDe === 'function' ? zonaDe(s) : '';
+// ⭐ media de tus estrellas y las del grupo; 🔖 cuántos quieren ir (tú incluido).
+function notaMedia(id) {
+  const v = [marca(id).estrellas || 0, ...(enGrupo() ? Object.entries(NUBE.marcasGrupo[id] || {}).filter(([u]) => u !== NUBE.user.uid).map(([, m]) => m.estrellas || 0) : [])].filter(Boolean);
+  return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0;
+}
+const ganas = id => (marca(id).estado === 'quiero' ? 1 : 0) + (enGrupo() ? otrosEn(id).quiero.length : 0);
 function filtrados() {
   const a = sinTildes(q).trim();
-  return SITIOS.filter(s => enIsla(s) && (!fTipo || s.tipo === fTipo)
-    && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : fEst === 'nadie' ? nadieFue(s.id) : marca(s.id).estado === fEst))
+  return SITIOS.filter(s => enIsla(s) && (!fTipo || s.tipo === fTipo) && (!fZona || zonaNom(s) === fZona)
+    && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
+    && (!fGrupo || !enGrupo() || (fGrupo === 'nadie' ? nadieFue(s.id) : fGrupo === 'ganas' ? otrosEn(s.id).quiero.length > 0 : otrosEn(s.id).fuimos.length > 0))
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
+}
+function ordenar(lista) {
+  const l = lista.slice(), nom = (x, y) => x.nombre.localeCompare(y.nombre, 'es');
+  if (orden === 'nombre') return l.sort(nom);
+  if (orden === 'cerca') return casa() ? l.sort((x, y) => distCasa(x) - distCasa(y)) : l.sort(nom);
+  if (orden === 'valorados') return l.sort((x, y) => notaMedia(y.id) - notaMedia(x.id) || nom(x, y));
+  if (orden === 'deseados') return l.sort((x, y) => ganas(y.id) - ganas(x.id) || nom(x, y));
+  return l;
+}
+// Panel de filtros desplegable: rejillas de botones con el icono arriba (como Planes en viaje-corea).
+function rejilla(clave, actual, ops) {
+  return `<div class="rejilla">${ops.map(([k, ic, n, off]) => `<button class="celda ${actual === k ? 'on' : ''} ${off ? 'off' : ''}" data-filtro="${clave}" data-v="${esc(k)}"><span>${ic}</span>${esc(n)}</button>`).join('')}</div>`;
+}
+function filtrosHTML(lista) {
+  const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
+  const activos = [
+    fTipo && ['fTipo', tipoIc(fTipo) + ' ' + tipoNom(fTipo)],
+    fEst && ['fEst', ESTADOS_F.find(x => x[0] === fEst).slice(1).join(' ')],
+    fGrupo && ['fGrupo', GRUPO_F.find(x => x[0] === fGrupo).slice(1).join(' ')],
+    fZona && ['fZona', ZONAS[fZona].ic + ' ' + ZONAS[fZona].nom]
+  ].filter(Boolean);
+  const isla = ISLAS[islaSel];
+  return `<div class="buscador"><input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off"></div>
+    <div class="filtros-barra">
+      <button class="sec filtros-btn ${filtrosAbiertos ? 'abierto' : ''}" data-filtros>⚙️ Filtros${activos.length ? ` <b class="cuantos">${activos.length}</b>` : ''} <span class="flecha">▾</span></button>
+      <label class="orden-sel"><span class="vh">Ordenar</span><select id="orden">${Object.entries(ORDENES).map(([k, n]) => `<option value="${k}" ${orden === k ? 'selected' : ''}>↕️ ${n.slice(n.indexOf(' ') + 1)}</option>`).join('')}</select></label>
+    </div>
+    ${filtrosAbiertos ? `<div class="filtros-panel">
+      <h3>🏷️ Tipo</h3>${rejilla('fTipo', fTipo, [['', '🗂️', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t), tipoNom(t)])])}
+      <h3>📌 Tus marcas</h3>${rejilla('fEst', fEst, ESTADOS_F)}
+      ${enGrupo() ? `<h3>👥 El grupo</h3>${rejilla('fGrupo', fGrupo, GRUPO_F)}` : ''}
+      <h3>🧭 Zona</h3>${rejilla('fZona', fZona, [['', '🗺️', 'Toda la isla'], ...Object.entries(ZONAS).map(([k, z]) => [k, z.ic, z.nom])])}
+      <h3>🏝️ Isla</h3>${rejilla('isla', islaSel, Object.entries(ISLAS).map(([k, i]) => [k, i.ic, i.nombre + (i.activa ? '' : ' · pronto'), !i.activa]))}
+      <div class="row"><button class="sec" data-filtro="limpiar">Quitar filtros</button><button data-filtros>Ver ${lista.length} sitios</button></div>
+    </div>` : ''}
+    ${activos.length ? `<div class="activos">${activos.map(([k, n]) => `<button class="chip on" data-quitar="${k}">${esc(n)} ✕</button>`).join('')}</div>` : ''}`;
 }
 function viewSitios() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
-  const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
-  const lista = filtrados(), filtro = !!(q || fTipo || fEst);
-  const grupos = MUNICIPIOS.map(m => [m, lista.filter(s => s.municipio === m)]);
-  const huerf = lista.filter(s => !MUNICIPIOS.includes(s.municipio));
-  if (huerf.length) grupos.push(['Otros', huerf]);
-  const conSitios = grupos.filter(g => g[1].length);
-  return `${islasHTML()}<input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off">
-    <div class="chips">${[['', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<button class="chip ${fTipo === k ? 'on' : ''}" data-ftipo="${k}">${n}</button>`).join('')}</div>
-    <div class="chips">${[['', 'Todas'], ['quiero', '🔖 Quiero ir'], ['fuimos', '✅ Fuimos'], ['no', '✖️ No'], ['sin', 'Sin marcar'], ...(enGrupo() ? [['nadie', '🌱 Nadie del grupo']] : [])].map(([k, n]) => `<button class="chip ${fEst === k ? 'on' : ''}" data-fest="${k}">${n}</button>`).join('')}</div>
-    <p class="muted">${lista.length} de ${SITIOS.length} sitios · ${conSitios.length} municipios</p>
-    <div id="lista">${conSitios.map(([m, ss]) => `<details class="muni" data-muni="${esc(m)}" ${filtro || muniAbiertos.has(m) ? 'open' : ''}>
+  const lista = ordenar(filtrados()), filtro = !!(q || fTipo || fEst || fGrupo || fZona);
+  const cab = filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · guarda tu casa en ☰ Más para ordenar por distancia' : ''}</p>`;
+  if (!lista.length) return cab + '<div class="card muted">Nada con esos filtros.</div>';
+  // Agrupado: por municipio (banners) o por zona; si no, lista seguida en el orden elegido.
+  if (orden === 'zona') {
+    return cab + Object.entries(ZONAS).map(([z, Z]) => { const ss = lista.filter(s => zonaNom(s) === z).sort((x, y) => x.nombre.localeCompare(y.nombre, 'es'));
+      return ss.length ? `<details class="muni zona" data-muni="z:${z}" ${filtro || muniAbiertos.has('z:' + z) ? 'open' : ''}><summary class="banner" style="--h:${{ oeste: 25, sur: 40, este: 210, laguna: 345, norte: 130, teide: 8 }[z]}">${fotoImg(({ oeste: 'los-gigantes', sur: 'el-medano', este: 'teresitas', laguna: 'catedral-laguna', norte: 'garachico-caleton', teide: 'teide' })[z], 'banner-foto')}<span class="banner-tx"><span class="banner-ic">${Z.ic}</span><span class="banner-n"><b>${esc(Z.nom)}</b><small>${ss.length} sitios</small></span></span></summary><div class="fichas">${ss.map(fichaHTML).join('')}</div></details>` : ''; }).join('');
+  }
+  if (orden !== 'municipio') return cab + `<div class="lista-plana">${lista.map(fichaHTML).join('')}</div>`;
+  const grupos = MUNICIPIOS.map(m => [m, lista.filter(s => s.municipio === m)]).filter(g => g[1].length);
+  return cab + `<div id="lista">${grupos.map(([m, ss]) => `<details class="muni" data-muni="${esc(m)}" ${filtro || muniAbiertos.has(m) ? 'open' : ''}>
       <summary class="banner" style="${varsMuni(m)}">${portadaDe(m) ? fotoImg(portadaDe(m), 'banner-foto') : ''}<span class="banner-tx"><span class="banner-ic">${muniTema(m).ic}</span>
         <span class="banner-n"><b>${esc(m)}</b><small>${esc(muniTema(m).lema)}</small></span>
         <span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length} ✅ · ${ss.length}</span></span></summary>
-      <div class="fichas">${ss.map(fichaHTML).join('')}</div></details>`).join('') || '<div class="card muted">Nada con ese filtro.</div>'}</div>
-    ${!filtro && grupos.some(g => !g[1].length) ? `<p class="muted">Municipios sin sitios todavía: ${grupos.filter(g => !g[1].length).length} de 31.</p>` : ''}`;
+      <div class="fichas">${ss.map(fichaHTML).join('')}</div></details>`).join('')}</div>`;
 }
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-ftipo]'), s = e.target.closest('[data-fest]');
-  if (t) { fTipo = t.dataset.ftipo; render(); } else if (s) { fEst = s.dataset.fest; render(); }
+  if (e.target.closest('[data-filtros]')) { filtrosAbiertos = !filtrosAbiertos; render(); return; }
+  const qq = e.target.closest('[data-quitar]'); if (qq) { if (qq.dataset.quitar === 'fTipo') fTipo = ''; else if (qq.dataset.quitar === 'fEst') fEst = ''; else if (qq.dataset.quitar === 'fGrupo') fGrupo = ''; else fZona = ''; render(); return; }
+  const b = e.target.closest('[data-filtro]'); if (!b) return;
+  const k = b.dataset.filtro, v = b.dataset.v;
+  if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = ''; }
+  else if (k === 'isla') { if (!ISLAS[v].activa) return alert(`${ISLAS[v].ic} ${ISLAS[v].nombre}: próximamente. Ya podéis proponer planes allí desde 🏠 Este finde → Próximos findes.`); islaSel = v; save('esc.isla', v); }
+  else if (k === 'fTipo') fTipo = v; else if (k === 'fEst') fEst = v; else if (k === 'fGrupo') fGrupo = v; else if (k === 'fZona') fZona = v;
+  render();
 });
+document.addEventListener('change', e => { if (e.target.id === 'mptipo') { mpTipo = e.target.value; MP.sel = null; render(); } });
+document.addEventListener('change', e => { if (e.target.id === 'orden') { orden = e.target.value; save('esc.orden', orden); render(); } });
 let qT = 0;
 document.addEventListener('input', e => {
   if (e.target.id !== 'q') return; q = e.target.value; clearTimeout(qT);
@@ -246,7 +300,7 @@ let mpTipo = '';
 function viewMapa() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
-  return `${islasHTML()}<div class="chips">${[['', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<button class="chip ${mpTipo === k ? 'on' : ''}" data-mptipo="${k}">${n}</button>`).join('')}</div>
+  return `<div class="filtros-barra"><label class="orden-sel ancho"><span class="vh">Qué se ve</span><select id="mptipo">${[['', '🗂️ Todos los sitios'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<option value="${k}" ${mpTipo === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>

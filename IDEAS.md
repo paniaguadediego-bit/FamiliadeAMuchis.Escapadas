@@ -4,7 +4,7 @@ Pedidas por el usuario (2026-11-20). Se van tachando al hacerlas; cada una se an
 
 - [x] **«No puedo ese finde»** (v11): en el calendario de Próximos findes, que cada uno pueda marcar
       que no está disponible el siguiente y los próximos fines de semana (se ve con su carita).
-- [ ] **Que se vea más bonita, como la app de Corea** (viaje-corea): seguir su estilo.
+- [x] **Que se vea más bonita, como la app de Corea** (v12; se puede seguir puliendo) (viaje-corea): seguir su estilo.
 - [x] **Compactar mucho más la app** (v11; letra Compacta/Normal/Grande en Más): tamaño de letra, iconos, márgenes, alturas de botones y
       banners; que quepa más en la pantalla.
 - [x] **Icono principal de la app: las Islas Canarias** (v11, dibujo provisional). Por ahora, una imagen del archipiélago;
