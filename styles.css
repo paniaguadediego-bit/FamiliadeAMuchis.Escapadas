@@ -33,6 +33,11 @@ header { display: flex; align-items: center; gap: 6px; padding: calc(6px + env(s
 header h1 { font-size: 1.1rem; margin: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 header button { width: 40px; height: 40px; min-height: 0; padding: 0; margin: 0; flex: none; font-size: 1.1rem; }
 #version { font-size: .75rem; }
+header #yo { width: auto; max-width: 34vw; padding: 0 10px 0 6px; gap: 4px; display: inline-flex; align-items: center; border-radius: 999px;
+  font-size: .8rem; border: 2px solid var(--cc, var(--line)); }
+header #yo[hidden] { display: none; }
+header #yo span:first-child { font-size: 1.1rem; }
+header #yo .yo-n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 h2 { font-size: .9rem; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
 .card { background: var(--card); border-radius: 12px; padding: 10px 12px; margin: 6px 0; }
@@ -173,4 +178,4 @@ ol.pasos { padding-left: 1.3em; } ol.pasos li { margin: 6px 0; }
 button[disabled] { opacity: .5; }
 
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v4"; }
+:root { --css-ver: "v5"; }

@@ -12,7 +12,16 @@ const nubeConfigurada = () => !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFI
 function cargarScript(src) {
   return new Promise((ok, ko) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
 }
-const repintarNube = () => { if (typeof tab !== 'undefined' && tab === 'grupo') render(); };
+const repintarNube = () => { pintarYo(); if (typeof tab !== 'undefined' && tab === 'grupo') render(); };
+// Arriba, junto a la versión: el emoji y el nombre de quien usa la app (toca → 👥 Grupo).
+function pintarYo() {
+  const b = document.getElementById('yo'); if (!b) return;
+  const p = NUBE.user && NUBE.perfil && !NUBE.editarPerfil ? NUBE.perfil : null;
+  b.hidden = !p; if (!p) return;
+  b.innerHTML = `<span>${esc(p.emoji || '👤')}</span><span class="yo-n">${esc(p.nombre || '')}</span>`;
+  b.title = 'Estás usando la app como ' + (p.nombre || '') + (NUBE.grupo ? ' · ' + NUBE.grupo.nombre : '');
+  b.style.setProperty('--cc', p.color || '#475569');
+}
 function avisoNube(m) { NUBE.msg = m; repintarNube(); }
 
 async function iniciarNube() {
@@ -42,6 +51,7 @@ async function entrarGoogle() {
     avisoNube(c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request' ? ''
       : c === 'auth/popup-blocked' ? 'El móvil ha bloqueado la ventana de Google. Permite ventanas emergentes y vuelve a probar.'
       : c === 'auth/unauthorized-domain' ? 'Falta añadir paniaguadediego-bit.github.io en Firebase → Authentication → Configuración → Dominios autorizados.'
+      : c === 'auth/configuration-not-found' || c === 'auth/operation-not-allowed' ? 'Falta activar la entrada con Google en Firebase → Authentication → Método de acceso.'
       : c === 'auth/network-request-failed' ? 'Sin conexión. Para entrar hace falta internet (solo la primera vez).'
       : 'No se pudo entrar: ' + (e && e.message || c));
   }
@@ -53,12 +63,17 @@ async function salirCuenta() {
 }
 
 // ---------- perfil ----------
+// Firestore puede quedarse esperando sin responder (p. ej., si la base de datos aún no existe): se corta a los X ms.
+const conLimite = (pr, ms) => Promise.race([pr, new Promise((_, ko) => setTimeout(() => ko(new Error('tiempo')), ms))]);
 async function cargarPerfil() {
   const u = NUBE.user;
   try {
-    const d = await NUBE.db.collection('perfiles').doc(u.uid).get();
+    const d = await conLimite(NUBE.db.collection('perfiles').doc(u.uid).get(), 10000);
     if (d.exists) { NUBE.perfil = d.data(); NUBE.editarPerfil = false; return; }
-  } catch {}
+  } catch (e) {
+    NUBE.msg = e && e.message === 'tiempo' && !navigator.onLine ? 'Sin conexión: tu perfil se guardará al volver.'
+      : 'No se pudo leer la base de datos (' + ((e && (e.code || e.message)) || '?') + '). ¿Está creada Firestore y publicadas las reglas?';
+  }
   NUBE.perfil = { nombre: (u.displayName || '').split(' ')[0].slice(0, 40), emoji: EMOJIS[0], color: COLORES[0] };
   NUBE.editarPerfil = true; // primera vez: que elija nombre y emoji
 }
@@ -156,7 +171,8 @@ function viewNube() {
     <p class="muted">Entra con tu cuenta de Google (una vez en cada móvil) para unirte a la Familia de A Muchis y ver lo que ha marcado cada uno.</p></div>
     ${aviso}<button data-nube="entrar">Entrar con Google</button>
     <p class="muted">Solo se guarda tu nombre y el emoji que elijas; tu correo no se enseña a nadie.</p>`;
-  const p = NUBE.perfil || {};
+  if (!NUBE.perfil) return '<div class="vacio"><div class="grande">⏳</div>Cargando tu perfil…</div>' + aviso;
+  const p = NUBE.perfil;
   if (NUBE.editarPerfil) return `<h2>🙂 Tu perfil</h2>${aviso}
     <div class="card"><label class="muted" for="pf-nombre">Nombre que verá el grupo</label>
       <input id="pf-nombre" maxlength="40" value="${esc(p.nombre || '')}" autocomplete="nickname">

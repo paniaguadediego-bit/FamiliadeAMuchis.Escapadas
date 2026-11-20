@@ -1,5 +1,5 @@
 // Sube CACHE en cada sesión (y VERSION en app.js y --css-ver en styles.css) para que el móvil coja la versión nueva.
-const CACHE = 'escapadas-v4';
+const CACHE = 'escapadas-v5';
 // Calles del mapa (OpenStreetMap): solo las zonas que se han visto; no se borra al actualizar.
 const MAPA = 'escapadas-mapa';
 const FILES = [

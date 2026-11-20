@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v5 · S3 · Ajustes tras la primera prueba real (2026-11-20)
+- Entrar con Google funciona en el móvil del usuario (Chrome).
+- Arriba, junto a la versión: emoji y nombre de quien usa la app, con su color (toca → 👥 Grupo).
+- El perfil ya no se queda esperando en silencio: a los 10 s avisa si no puede leer la base de datos.
+- Mensaje claro si falta activar la entrada con Google (`auth/configuration-not-found`).
+
 ## v4 · S3 · Configuración de Firebase (2026-11-20)
 - `firebase-config.js` con la app web del proyecto `familiadeamuchis-escapadas`.
 - Pendiente de comprobar en el móvil: entrar con Google (navegador y app instalada),
