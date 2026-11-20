@@ -496,5 +496,15 @@ button.plan-b-s { background: none; color: var(--fg); padding: 0; margin: 0; min
 .aviso-elegir button { margin-left: auto; flex: none; }
 .mapa.elegir .mp-vista { cursor: crosshair; }
 
+/* 🎭 ¿Qué hay? (v17) */
+.agenda .rejilla { grid-template-columns: repeat(4, 1fr); }
+.agenda .filtros-barra { margin-top: 8px; }
+.ag-res { margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.ag-q { font-size: .88rem; margin-bottom: 6px; }
+.ag-sub { font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 10px 0 2px; }
+.ag-sitio { display: flex; align-items: center; gap: 6px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
+.ag-sitio small { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag-nota { font-size: .76rem; margin: 6px 2px 0; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v16"; }
+:root { --css-ver: "v17"; }

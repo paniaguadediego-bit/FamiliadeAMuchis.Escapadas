@@ -50,13 +50,14 @@ se adapta, sin restos de Corea.
 - `finde.js`: 🏠 Este finde (tiempo por zona de Open-Meteo, 🎲 Sorpréndeme, casa).
 - `diario.js`: 📔 diario (tus ✅ por fecha) y 🖨️ Resumen del año (hoja + Imprimir → PDF).
 - `planes.js`: 📅 planes del grupo y calendario de los próximos 10 findes.
+- `agenda.js`: 🎭 ¿Qué hay? (buscador cultural en Este finde).
 - `propios.js`: 👥 sitios que añade el grupo (`BASE` = catálogo; `mezclarSitios()` → `SITIOS`).
 - `eventos.js`: 🎟️ fecha de cada evento según su regla `cuando` (fija, Pascua, n-ésimo día).
 - `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
   municipio (`MUNI`: tono `h`, emoji, lema, `portada` = sitio cuya foto va en el banner).
 - `data/fotos.json`: `{ sitioId: { src, archivo } }`, foto principal del artículo de
   Wikipedia (Wikimedia Commons). Sin banderas, escudos, logos ni mapas.
-- Orden de carga (index.html): firebase-config, islas, nube, eventos, planes, propios, finde, diario, app.
+- Orden de carga (index.html): firebase-config, islas, nube, eventos, planes, propios, finde, agenda, diario, app.
   Los archivos anteriores a app.js no usan load/save/SITIOS al cargar, solo dentro de funciones.
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
@@ -274,3 +275,11 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   catálogo más cercano (se puede cambiar).
 - Es la vía para guachinches y restaurantes mientras no haya una fuente pública fiable: no los
   inventa la app, los aporta el grupo.
+
+## ¿Qué hay? (v17)
+- 🎭 = buscador cultural (solo ese significado). En Este finde: qué (teatro, cine, conciertos,
+  fiestas de pueblo, con niños, exposiciones, mercadillos), dónde (isla o municipio) y qué finde.
+- No hay agenda abierta que leer y no se inventan programaciones ni direcciones de webs: se arma
+  la búsqueda con las fechas exactas (Google y Google Noticias), se listan los sitios del catálogo
+  que encajan con «🔎 Programación» y, en fiestas, los eventos con fecha de ese finde.
+- «📅 Proponer al grupo lo que encuentres» abre el formulario de plan de ese finde.

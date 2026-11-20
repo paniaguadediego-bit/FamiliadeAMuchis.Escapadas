@@ -225,6 +225,7 @@ function viewFindeS5() {
     <h2>🌤️ El tiempo</h2>${tiempoHTML()}
     ${typeof calendarioHTML === 'function' ? calendarioHTML() : ''}
     <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
+    <h2>🎭 ¿Qué hay?</h2>${typeof agendaHTML === 'function' ? agendaHTML() : ''}
     ${proximosEventosHTML(proximoSabado())}
     <h2>🔖 Tus ganas de ir</h2>
     ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}

@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v17 · 🎭 ¿Qué hay? Buscador cultural (2026-11-20)
+- En Este finde: teatro, cine, conciertos, fiestas de pueblo, con niños, exposiciones y mercadillos;
+  dónde (toda la isla o municipio) y qué finde (este, el que viene, en 2 semanas).
+- Abre la búsqueda en Google y Google Noticias con las fechas exactas; lista los sitios de la app
+  que encajan (Teatro Guimerá, Leal, Auditorio, TEA, museos…) con «🔎 Programación»; en fiestas,
+  los eventos con fecha de ese finde. «📅 Proponer al grupo lo que encuentres».
+- Sin programación propia: no hay agenda pública abierta que la app pueda leer, y no se inventa.
+
 ## v16 · Sitios del grupo: guachinches, restaurantes y rincones propios (2026-11-20)
 - «➕ Añadir un sitio» en Sitios: nombre, tipo, municipio, nota, enlace y ubicación (GPS, tocar en el
   mapa o enlace de Google Maps). Lo ve todo el grupo al momento como un sitio más (ficha, mapa,

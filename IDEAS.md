@@ -12,6 +12,6 @@ Pedidas por el usuario (2026-11-20). Se van tachando al hacerlas; cada una se an
 - [x] **Seguir añadiendo al catálogo**: museos y sitios (v15, 206 sitios); restaurantes y guachinches
       los añade el grupo desde la app (v16). Pendiente: una fuente pública fiable de guachinches.
 - [x] **Planes alternativos** (v13: plan B y aviso del tiempo): un plan B para cada plan (por si llueve o cambia algo).
-- [ ] **Buscador de planes culturales**: obras de teatro, cine, fiestas de pueblo… (agenda con
+- [x] **Buscador de planes culturales** (v17: 🎭 ¿Qué hay?, búsquedas con fechas; sin agenda propia): obras de teatro, cine, fiestas de pueblo… (agenda con
       fuente: ayuntamientos, Cabildo, teatros; sin inventar fechas).
 - [ ] Otras islas: activar su catálogo (el esqueleto ya está en islas.js).
