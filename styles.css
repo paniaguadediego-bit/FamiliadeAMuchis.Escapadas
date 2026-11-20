@@ -21,7 +21,7 @@
 html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
 body {
   margin: 0; background: var(--bg); color: var(--fg); overflow-x: hidden;
-  font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 1rem/1.35 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   padding-bottom: calc(62px + env(safe-area-inset-bottom));
 }
 @supports (overflow: clip) { body { overflow-x: clip; } }
@@ -323,5 +323,88 @@ body.con-resumen { overflow: hidden; }
 .ev-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 6px; }
 .chip.ev { background: hsl(330 70% 50% / .12); border-color: hsl(330 65% 50% / .5); font-size: .85rem; }
 
+/* ===== v11: app compacta. El tamaño de letra (Más → Letra) escala todo: alturas en rem ===== */
+html { font-size: 14.5px; }                 /* Compacta (por defecto) */
+html[data-letra="normal"] { font-size: 16px; }
+html[data-letra="grande"] { font-size: 18px; }
+body { padding-bottom: calc(3.3rem + env(safe-area-inset-bottom)); }
+main { padding: 0 10px 12px; }
+header { padding: calc(4px + env(safe-area-inset-top)) 10px 2px; gap: 4px; }
+header h1 { font-size: 1.05rem; }
+header button { width: 2.3rem; height: 2.3rem; font-size: 1rem; border-radius: 10px; }
+header #yo { height: 2.3rem; }
+h2 { font-size: .78rem; margin: 10px 0 4px; }
+.card { padding: 7px 10px; margin: 4px 0; border-radius: 10px; }
+button, .btn { min-height: 2.6rem; padding: 6px 10px; margin: 4px 0; border-radius: 10px; font-size: .95rem; }
+button.mini, .btn.mini { min-height: 2.15rem; padding: 4px 10px; font-size: .85rem; }
+input, select, textarea { min-height: 2.5rem; padding: 6px 9px; }
+input[type="search"] { padding: 8px 10px; margin: 4px 0; }
+textarea { min-height: 3.2rem; }
+.chips { gap: 5px; padding: 1px 0 4px; }
+.chip { min-height: 2rem; padding: 3px 10px; font-size: .82rem; }
+.acciones { gap: 5px; margin-top: 6px; }
+/* Pestañas */
+nav#tabs button { min-height: 3.2rem; padding: 4px 0; font-size: .64rem; }
+nav#tabs button span { font-size: 1.15rem; }
+/* Banners y fichas */
+.muni > summary.banner, .muni > summary.banner .banner-tx { min-height: 4.4rem; }
+.muni > summary.banner { margin: 5px 0; border-radius: 12px; }
+.banner-tx { padding: 8px 12px; gap: 8px; }
+.banner-ic { font-size: 1.5rem; }
+.banner-n b { font-size: 1rem; }
+.banner-n small { font-size: .74rem; }
+.muni > summary.banner .n { font-size: .72rem; padding: 2px 7px; }
+.muni > .fichas { margin-left: 4px; padding-left: 5px; }
+.ficha { margin: 4px 0; border-radius: 10px; }
+.ficha > summary { min-height: 3.4rem; padding: 6px 10px; gap: 8px; }
+.ficha > summary .nom small { font-size: .76em; }
+.mini-foto { width: 2.9rem; height: 2.9rem; border-radius: 8px; }
+.ficha .cuerpo { padding: 0 10px 10px; }
+.ficha-foto { margin: 0 -10px 6px; aspect-ratio: 2 / 1; }
+.datos { font-size: .82em; }
+.marcas { gap: 5px; margin-top: 8px; }
+.marcas button { min-height: 2.5rem; font-size: .85rem; padding: 4px 2px; border-width: 1.5px; }
+.estrellas button { width: 2.2rem; min-height: 2.2rem; font-size: 1.35rem; }
+.grupo-ficha { padding: 6px 8px; margin-top: 8px; }
+.gm .carita, .carita { width: 2rem; height: 2rem; font-size: 1.05rem; }
+.gm .carita { width: 1.6rem; height: 1.6rem; font-size: .9rem; }
+/* Este finde */
+.portada { min-height: 6.8rem; margin: 2px 0 4px; }
+.portada .banner-tx { padding: 10px 12px; }
+.portada .banner-n b { font-size: 1.15rem; }
+.sorp-ban { min-height: 5.6rem; }
+.tiempo th, .tiempo td { padding: 4px 2px; }
+.tiempo table { font-size: .84rem; }
+.t-ic { font-size: 1.05rem; }
+.cuenta div { padding: 6px 4px; font-size: .85rem; }
+.cuenta b { font-size: 1.25rem; }
+/* Planes y calendario: un finde libre ocupa una sola línea */
+.plan { margin: 4px 0; }
+.plan.con-foto .plan-cab { min-height: 5.6rem; }
+.plan.compacto.con-foto .plan-cab { min-height: 4.4rem; }
+.plan-cab-tx { padding: 6px 10px; }
+.plan-cuerpo { padding: 6px 10px 8px; font-size: .92rem; }
+.finde { margin: 2px 0 6px; }
+.finde-cab { min-height: 2.2rem; gap: 6px; }
+.finde-f { font-size: .92rem; }
+.finde-cab button { width: 2rem; min-height: 1.9rem; font-size: 1rem; }
+.finde.libre .finde-libre { display: none; }
+.finde.libre .finde-c::after { content: " · libre"; }
+.finde::before { top: 7px; }
+.ev-chips { margin: 0 0 4px; }
+/* Mapa */
+.mapa { height: 58vh; min-height: 280px; }
+.mp-bot button { width: 2.4rem; height: 2.4rem; }
+.leyenda { font-size: .74rem; }
+
+/* 🙅 No puedo ese finde */
+.nopueden { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: .8rem; color: var(--muted); margin: 0 0 4px; }
+.nopueden .carita { width: 1.45rem; height: 1.45rem; font-size: .8rem; opacity: .75; }
+.finde-cab button.nopuedo { width: auto; min-width: 2rem; padding: 2px 6px; font-size: .78rem; }
+.finde-cab button.nopuedo:not(.on) { opacity: .7; }
+.finde-f { white-space: nowrap; }
+.finde-cab button.nopuedo.on { background: hsl(0 70% 50% / .14); border-color: hsl(0 60% 50% / .55); color: var(--red); }
+.finde.yo-no .finde-f b { text-decoration: line-through; text-decoration-color: hsl(0 60% 50% / .6); }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v10"; }
+:root { --css-ver: "v11"; }

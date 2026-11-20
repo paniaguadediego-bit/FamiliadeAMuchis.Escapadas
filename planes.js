@@ -102,10 +102,13 @@ function calendarioHTML() {
     // Planes que tocan esa semana (lunes a domingo), también los de varios días.
     const deEsa = ps.filter(p => p.fecha <= dom && finPlan(p) >= lun);
     const cuando = i === 0 ? 'Este finde' : i === 1 ? 'El que viene' : `En ${i} semanas`;
-    filas.push(`<div class="finde ${deEsa.length ? 'con-planes' : 'libre'}">
+    const noPueden = quienNoPuede(sab), yoNo = noPueden.includes(NUBE.user.uid);
+    filas.push(`<div class="finde ${deEsa.length ? 'con-planes' : 'libre'} ${yoNo ? 'yo-no' : ''}">
       <div class="finde-cab"><span class="finde-f"><b>${esc(diaCorto(sab))} – ${esc(diaCorto(dom))}</b> <small>${esc(new Date(sab + 'T12:00').toLocaleDateString('es-ES', { month: 'short' }))}</small></span>
         <span class="finde-c">${cuando}</span>
+        <button class="sec mini nopuedo ${yoNo ? 'on' : ''}" data-nopuedo="${sab}" title="${yoNo ? 'Toca si al final sí puedes' : 'Marca que ese finde no puedes'}" aria-label="${yoNo ? 'No puedo ese finde (toca si al final sí puedes)' : 'Marcar que no puedo ese finde'}">${yoNo ? '🙅 No puedo' : '🙅'}</button>
         ${planForm && planForm.sabado === sab ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${sab}" aria-label="Proponer plan este finde">＋</button>`}</div>
+      ${noPueden.length ? `<div class="nopueden">🙅 No ${noPueden.length > 1 ? 'pueden' : 'puede'}: ${noPueden.map(u => `<span class="gm">${carita(perfilDe(u))}<span>${esc(u === NUBE.user.uid ? 'tú' : perfilDe(u).nombre)}</span></span>`).join('')}</div>` : ''}
       ${eventosSemanaHTML(lun, dom)}
       ${deEsa.map(p => planHTML(p, { compacto: true })).join('')}
       ${!deEsa.length && !(planForm && planForm.sabado === sab) ? '<div class="muted finde-libre">Libre</div>' : ''}
@@ -115,6 +118,27 @@ function calendarioHTML() {
   return `<h2>📅 Próximos findes</h2><div class="calendario">${filas.join('')}</div>
     ${luego.length ? `<h2>🔭 Más adelante</h2>${luego.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;
 }
+// ---------- 🙅 «No puedo ese finde» ----------
+// grupos/{gid}/disponibilidad/{uid}: { uid, nopuedo: ['AAAA-MM-DD' (sábados)], actualizado }. Cada uno solo el suyo.
+function seguirDisponibilidad(gid) {
+  if (NUBE.offDispo) NUBE.offDispo();
+  NUBE.offDispo = NUBE.db.collection('grupos').doc(gid).collection('disponibilidad').onSnapshot(q => {
+    const d = {}; q.forEach(x => { const v = x.data(); if (v && v.uid) d[v.uid] = Array.isArray(v.nopuedo) ? v.nopuedo : []; });
+    NUBE.nopuedo = d; refrescarVista();
+  }, () => {});
+}
+const quienNoPuede = sab => (NUBE.grupo && NUBE.grupo.miembros || []).filter(u => ((NUBE.nopuedo || {})[u] || []).includes(sab));
+function toggleNoPuedo(sab) {
+  const uid = NUBE.user.uid, hoySab = proximoSabado();
+  const mia = new Set(((NUBE.nopuedo || {})[uid] || []).filter(f => f >= hoySab)); // las pasadas se van solas
+  if (mia.has(sab)) mia.delete(sab); else mia.add(sab);
+  const lista = [...mia].sort().slice(0, 60);
+  NUBE.nopuedo = { ...(NUBE.nopuedo || {}), [uid]: lista }; refrescarVista(); // se ve al momento, también sin red
+  NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('disponibilidad').doc(uid)
+    .set({ uid, nopuedo: lista, actualizado: Date.now() }).catch(e => alert('No se pudo guardar (' + (e.code || e.message) + ').'));
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-nopuedo]'); if (b && enGrupo()) toggleNoPuedo(b.dataset.nopuedo); });
+
 // Grupo: aviso de planes a la vista.
 const avisoPlanesHTML = () => { const n = proximosPlanes().length; return n ? `<div class="card row"><span style="flex:1">📅 ${n} plan${n > 1 ? 'es' : ''} a la vista</span><button class="sec mini" data-tab="finde">Ver</button></div>` : ''; };
 

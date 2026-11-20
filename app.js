@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v10';
+const VERSION = 'v11';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -95,6 +95,11 @@ $('#tema').addEventListener('click', () => {
   save(K_THEME, orden[(orden.indexOf(t) + 1) % 3]); applyTheme(); if (tab === 'mas') render();
 });
 applyTheme();
+
+// ---------- tamaño de letra (Más) ----------
+const LETRAS = { compacta: 'Compacta', normal: 'Normal', grande: 'Grande' };
+function applyLetra() { const l = load('esc.letra', 'compacta'); if (l === 'compacta') delete document.documentElement.dataset.letra; else document.documentElement.dataset.letra = l; }
+applyLetra();
 
 // ---------- pestañas ----------
 const TABS = [['finde', 'Este finde', '🏠'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
@@ -362,6 +367,8 @@ function viewMas() {
   const t = load(K_THEME, 'auto');
   return `<h2>🎨 Tema</h2>
     <div class="chips">${Object.entries(TEMAS).map(([k, [ic, n]]) => `<button class="chip ${t === k ? 'on' : ''}" data-settema="${k}">${ic} ${n}</button>`).join('')}</div>
+    <h2>🔠 Letra</h2>
+    <div class="chips">${Object.entries(LETRAS).map(([k, n]) => `<button class="chip ${load('esc.letra', 'compacta') === k ? 'on' : ''}" data-setletra="${k}" style="font-size:${k === 'compacta' ? '.78rem' : k === 'normal' ? '.88rem' : '1rem'}">Aa ${n}</button>`).join('')}</div>
     <h2>🏠 Mi casa</h2>
     ${casaHTML()}
     <h2>📷 Fotos sin conexión</h2>
@@ -387,6 +394,7 @@ function viewMas() {
 }
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-settema]'); if (t) { save(K_THEME, t.dataset.settema); applyTheme(); render(); return; }
+  const lt = e.target.closest('[data-setletra]'); if (lt) { save('esc.letra', lt.dataset.setletra); applyLetra(); render(); if (tab === 'mapa') pintarMapa(); return; }
   if (e.target.closest('[data-exportar]')) {
     const txt = JSON.stringify({ app: 'escapadas', version: VERSION, exportado: new Date().toISOString(), marcas }, null, 1);
     const nombre = `escapadas-marcas-${hoyISO()}.json`, f = new File([txt], nombre, { type: 'application/json' });

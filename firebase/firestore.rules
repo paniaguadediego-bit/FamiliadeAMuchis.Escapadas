@@ -62,6 +62,15 @@ service cloud.firestore {
         allow delete: if esMiembro(gid) && resource.data.uid == yo();
       }
 
+      // Disponibilidad: cada uno dice qué findes no puede (lista de sábados). Lo ve el grupo; cada uno escribe el suyo.
+      match /disponibilidad/{uid} {
+        allow read: if esMiembro(gid);
+        allow write: if esMiembro(gid) && uid == yo()
+          && request.resource.data.keys().hasOnly(['uid', 'nopuedo', 'actualizado'])
+          && request.resource.data.uid == yo()
+          && request.resource.data.nopuedo is list && request.resource.data.nopuedo.size() <= 60;
+      }
+
       // Planes: cualquiera del grupo propone (y queda apuntado); cada uno se apunta o se borra a sí mismo;
       // quien propone puede cambiar fecha y nota, o cancelarlo.
       match /planes/{planId} {

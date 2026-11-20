@@ -231,3 +231,13 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   exacto (programas que cambian), VERIFICAR.
 - Se ven en la ficha («📅 Próxima»), en Este finde («🎟️ Este finde hay…» y «Lo próximo», 120 días)
   y como chips en el calendario de findes. Sorpréndeme no propone eventos.
+
+## Compacto, letra e icono (v11)
+- Todo se mide en `rem`: el tamaño de letra de ☰ Más (`esc.letra`: compacta 14,5 px por
+  defecto, normal 16, grande 18; `data-letra` en <html>, puesto ya en index.html) escala la app.
+- Un finde libre del calendario ocupa una línea. 🙅 = «no puedo ese finde» (solo ese significado).
+- `grupos/{gid}/disponibilidad/{uid}`: { uid, nopuedo: [sábados AAAA-MM-DD], actualizado }; cada
+  uno escribe el suyo, lo ve el grupo; las fechas pasadas se limpian al cambiar.
+- Icono: el archipiélago canario (icons/icon.svg; icon-maskable.svg para Android, más pequeño y
+  sin esquinas). Se regenera con un script de Playwright (PNG 192, 512, maskable 512, apple 180).
+  Provisional: el usuario puede entregar su propia imagen.

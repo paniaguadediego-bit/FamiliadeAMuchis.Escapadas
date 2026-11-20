@@ -1,5 +1,14 @@
 # PROGRESO
 
+## v11 · Compacta, icono de Canarias y «No puedo ese finde» (2026-11-20)
+- App más compacta: letra base 14,5 px y todo en rem (alturas, botones, chips, banners, fichas,
+  pestañas, mapa); los findes libres ocupan una línea. En Más, 🔠 Letra: Compacta / Normal / Grande.
+- Icono nuevo: el archipiélago canario sobre el mar, con el sol y el Teide (versión normal y
+  «maskable» para Android). Provisional hasta que el usuario entregue su imagen.
+- 🙅 No puedo ese finde: botón en cada finde del calendario; se ve quién no puede; sin red se
+  ve al momento y se envía al volver. Regla nueva de Firestore (`disponibilidad`), publicada sola.
+- IDEAS.md: añadido buscador de teatro, cine y fiestas de pueblo.
+
 ## v10 · Eventos con fecha (2026-11-20)
 - 14 eventos (12 nuevos + Carnaval y Romería del Socorro con fecha), todos con su regla tomada
   de Wikipedia: San Andrés (29 nov), Gran Poder y Carmen (13-15 jul), Peregrinación a Candelaria
