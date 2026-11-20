@@ -48,6 +48,7 @@ se adapta, sin restos de Corea.
 - `index.html` · `styles.css` · `app.js` (la app) · `sw.js` (caché).
 - `nube.js`: Firebase (entrada con Google, perfil, grupo; desde S4, marcas).
 - `finde.js`: 🏠 Este finde (tiempo por zona de Open-Meteo, 🎲 Sorpréndeme, casa).
+- `diario.js`: 📔 diario (tus ✅ por fecha) y 🖨️ Resumen del año (hoja + Imprimir → PDF).
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
 - `vendor/firebase-10.14.1/`: SDK compat (app, auth, firestore), precacheado.
@@ -117,8 +118,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
     listar ni adivinar; con él uno se añade a sí mismo (arrayUnion).
   - `grupos/{gid}/marcas/{uid}_{sitioId}`: uid, sitioId, estado
     (quiero|fuimos|no), estrellas, nota, fecha, actualizado
-  - Más adelante `grupos/{gid}/planes/{id}`: sitioId, fecha, propone,
-    apuntados [uid]
+  - `grupos/{gid}/planes/{id}`: sitioId, fecha (AAAA-MM-DD), nota, propone,
+    apuntados [uid], creado. Cada uno se apunta/borra a sí mismo; quien propone
+    edita fecha y nota o lo cancela.
 - Reglas de seguridad en `firebase/firestore.rules` (en el repo; el usuario
   las pega en la consola): cada uno escribe solo sus marcas y su perfil;
   lee las marcas de los grupos en los que está; se entra a un grupo con
@@ -145,8 +147,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - **S5** Este finde: tiempo por zona (norte/sur/cumbre), «🎲 Sorpréndeme»
   (algo que nadie del grupo o tú no hayáis hecho, según tiempo y tiempo
   disponible), distancia desde casa (la ubicación de casa solo en el móvil).
-- **S6** Planes propuestos al grupo (proponer fecha, apuntarse), diario,
-  Resumen anual en PDF y Trivial canario.
+- **S6** Planes propuestos al grupo (proponer fecha, apuntarse), diario y
+  Resumen anual en PDF. (El Trivial canario se descartó por decisión del usuario.)
 
 ## Decisiones ya tomadas por el usuario
 - Nombre: FamiliadeAMuchis.Escapadas.
@@ -170,9 +172,12 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Guachinches y restaurantes: sin fuente fiable todavía; no se añaden hasta tenerla.
 
 ## Este finde (S5)
-- Zonas: 🌿 Norte (municipios del norte y la costa norte de Anaga), 🏝️ Sur y este
-  (el resto, Santa Cruz incluida), 🌋 Cumbre (a menos de 11 km del pico del Teide).
-- Tiempo: Open-Meteo, una petición para las 3 zonas, guardada en `esc.tiempo`
+- Zonas (elegidas por el usuario, 6): 🌅 Oeste (Santiago del Teide, Guía de Isora),
+  🏝️ Sur (Adeje… Fasnia, Vilaflor), ⚓ Este (Santa Cruz, El Rosario costa, Candelaria,
+  Güímar, Arafo), 🏛️ La Laguna (+ Tegueste, La Esperanza), 🌿 Norte (resto + costa
+  norte y cumbres de Anaga, lat > 28.53), 🌋 Teide y alrededores (< 11 km del pico al
+  sur de lat 28.33, y La Orotava por encima de lat 28.35).
+- Tiempo: Open-Meteo, una petición para las 3 zonas, guardada en `esc.tiempo6`
   (como mucho cada 3 h; sin red se ve la última).
 - Casa: `esc.casa` = [lat, lon], SOLO en el móvil (nunca a Firestore ni al repo).
   Tiempo en coche aproximado: km en línea recta × 1,4 a 55 km/h.
@@ -180,3 +185,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   tiempo (playa: sol y ≥ 21°; cumbre: nieve o viento ≥ 60; lluvia: solo museos) y por
   rato (☕ ≤ 25 min sin senderos, 🌤️ ≤ 50 min, 🎒 todo). Más papeletas a lo que
   tú o el grupo tenéis en 🔖.
+
+## Diario y resumen (S6)
+- La fecha de una visita es `fecha` de la marca: se pone sola al marcar ✅ y se puede
+  cambiar en la ficha («📅 Fuimos el») o dejar vacía (no sale en el resumen).
+- Resumen del año: `#resumen` encima de la app; `@media print` oculta todo lo demás.
+  El móvil lo guarda en PDF con Imprimir → Guardar como PDF (sin librerías).

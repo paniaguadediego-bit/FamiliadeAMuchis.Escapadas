@@ -1,30 +1,38 @@
 'use strict';
-// 🏠 Este finde (S5): tiempo por zona (Open-Meteo), 🎲 Sorpréndeme y distancia desde casa.
+// 🏠 Este finde (S5): tiempo en 6 zonas (Open-Meteo), 🎲 Sorpréndeme y distancia desde casa.
 // La ubicación de casa se guarda SOLO en este móvil (localStorage), nunca en la nube ni en el repo.
 
-const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo', K_SORP = 'esc.sorp';
+const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo6', K_SORP = 'esc.sorp'; // tiempo6: 6 zonas
 
 // ---------- zonas ----------
-// Tres zonas con tiempo muy distinto. Cumbre: lo que está a menos de 11 km del pico del Teide.
+// Seis zonas con tiempo muy distinto (elegidas por el usuario). El orden es el de la tabla.
 const ZONAS = {
-  norte: { ic: '🌿', nom: 'Norte', punto: [28.39, -16.52] },   // valle de La Orotava
-  sur: { ic: '🏝️', nom: 'Sur y este', punto: [28.07, -16.72] }, // Los Cristianos / Adeje
-  cumbre: { ic: '🌋', nom: 'Cumbre', punto: [28.22, -16.63] }   // Las Cañadas
+  oeste: { ic: '🌅', nom: 'Oeste', punto: [28.19, -16.80] },          // Guía de Isora / Playa San Juan
+  sur: { ic: '🏝️', nom: 'Sur', punto: [28.08, -16.68] },              // Adeje / Arona
+  este: { ic: '⚓', nom: 'Este', punto: [28.44, -16.29] },             // Santa Cruz / Radazul
+  laguna: { ic: '🏛️', nom: 'La Laguna', punto: [28.487, -16.316] },
+  norte: { ic: '🌿', nom: 'Norte', punto: [28.39, -16.52] },          // valle de La Orotava
+  teide: { ic: '🌋', nom: 'Teide y alrededores', punto: [28.22, -16.63] } // Las Cañadas
 };
 const TEIDE = [28.2724, -16.6425];
-const NORTE = new Set(['Buenavista del Norte', 'Los Silos', 'El Tanque', 'Garachico', 'Icod de los Vinos', 'La Guancha',
-  'San Juan de la Rambla', 'Los Realejos', 'Puerto de la Cruz', 'La Orotava', 'Santa Úrsula', 'La Victoria de Acentejo',
-  'La Matanza de Acentejo', 'El Sauzal', 'Tacoronte', 'Tegueste', 'San Cristóbal de La Laguna']);
+const ZONA_MUNI = {
+  oeste: ['Santiago del Teide', 'Guía de Isora'],
+  sur: ['Adeje', 'Arona', 'San Miguel de Abona', 'Granadilla de Abona', 'Vilaflor de Chasna', 'Arico', 'Fasnia'],
+  este: ['Güímar', 'Arafo', 'Candelaria', 'Santa Cruz de Tenerife', 'El Rosario'],
+  laguna: ['San Cristóbal de La Laguna', 'Tegueste']
+};
 function kmEntre([a, b], [c, d]) {
   const R = 6371, r = x => x * Math.PI / 180, dl = r(c - a), dg = r(d - b);
   const h = Math.sin(dl / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(dg / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 function zonaDe(s) {
-  if (kmEntre([s.lat, s.lon], TEIDE) < 11) return 'cumbre';
-  if (NORTE.has(s.municipio)) return 'norte';
-  if (s.municipio === 'Santa Cruz de Tenerife' && s.lat > 28.52) return 'norte'; // costa norte de Anaga
-  return 'sur';
+  // Teide y alrededores: Las Cañadas (cerca del pico, sin la ladera norte) y la parte alta de La Orotava (Cumbre Dorsal).
+  if ((kmEntre([s.lat, s.lon], TEIDE) < 11 && s.lat < 28.33) || (s.municipio === 'La Orotava' && s.lat < 28.35)) return 'teide';
+  if (s.municipio === 'Santa Cruz de Tenerife' && s.lat > 28.53) return 'norte'; // costa norte y cumbres de Anaga
+  if (s.municipio === 'El Rosario' && s.lat > 28.43) return 'laguna';           // La Esperanza
+  for (const [z, ms] of Object.entries(ZONA_MUNI)) if (ms.includes(s.municipio)) return z;
+  return 'norte';
 }
 
 // ---------- casa (solo en el móvil) ----------
@@ -76,7 +84,7 @@ function tiempoVale(s, f) {
   const t = tiempoDe(zonaDe(s), f); if (!t) return { ok: true, nota: '' };
   const lluvia = t.p >= 50 || (t.c >= 51 && t.c !== 3), nieve = (t.c >= 71 && t.c <= 77) || t.c === 85 || t.c === 86;
   if (s.tipo === 'museo') return { ok: true, nota: lluvia ? 'bajo techo ☂️' : '' };
-  if (zonaDe(s) === 'cumbre' && (nieve || t.v >= 60)) return { ok: false };
+  if (zonaDe(s) === 'teide' && (nieve || t.v >= 60)) return { ok: false };
   if (s.tipo === 'playa') return { ok: t.c <= 2 && t.p < 30 && t.max >= 21, nota: `${cielo(t.c)[0]} ${Math.round(t.max)}°` };
   if (lluvia) return { ok: false };
   if (s.tipo === 'sendero' && t.v >= 50) return { ok: false };
@@ -143,7 +151,7 @@ function sorpresaHTML() {
     const s = sitio(sorpId);
     if (s) {
       const f = (dias[sorp.dia] || dias[0] || [hoyISO()])[0], tv = tiempoVale(s, f), por = [];
-      if (tv.nota) por.push(tv.nota + ' en ' + ZONAS[zonaDe(s)].nom.toLowerCase());
+      if (tv.nota) por.push(`${tv.nota} (${ZONAS[zonaDe(s)].nom})`);
       if (distCasa(s) != null) por.push('≈ ' + fmtMin(minCoche(distCasa(s))) + ' en coche');
       if (typeof enGrupo === 'function' && enGrupo()) { const qq = otrosEn(s.id).quiero.length; por.push(nadieFue(s.id) ? 'nadie del grupo ha ido' : 'tú no has ido'); if (qq) por.push(`${qq} del grupo quiere${qq > 1 ? 'n' : ''} ir`); }
       if (marca(s.id).estado === 'quiero') por.push('lo tenías en 🔖');
@@ -183,6 +191,7 @@ function viewFindeS5() {
   const txtDias = dias.map(([f, n]) => `${n} ${new Date(f + 'T12:00').getDate()}`).join(' y ');
   return `<p class="muted">${esc(txtDias || 'Fin de semana')} · ${esc(new Date().toLocaleDateString('es-ES', { month: 'long' }))}</p>
     <h2>🌤️ El tiempo</h2>${tiempoHTML()}
+    ${typeof planesHTML === 'function' ? planesHTML() : ''}
     <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
     <h2>🔖 Tus ganas de ir</h2>
     ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}

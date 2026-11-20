@@ -7,6 +7,7 @@ rules_version = '2';
 //   Solo los miembros lo leen. Con el código, uno se puede añadir a sí mismo; cada miembro puede salirse
 //   y cambiar el nombre del grupo. Nadie puede añadir ni quitar a otros.
 // - Marcas: las leen los miembros del grupo; cada uno escribe y borra solo las suyas ({uid}_{sitioId}).
+// - Planes: los ve el grupo; cada uno se apunta o se borra a sí mismo; quien propone lo edita o lo cancela.
 service cloud.firestore {
   match /databases/{database}/documents {
     function dentro() { return request.auth != null; }
@@ -59,6 +60,28 @@ service cloud.firestore {
           && request.resource.data.estrellas >= 0 && request.resource.data.estrellas <= 5
           && request.resource.data.nota is string && request.resource.data.nota.size() <= 1000;
         allow delete: if esMiembro(gid) && resource.data.uid == yo();
+      }
+
+      // Planes: cualquiera del grupo propone (y queda apuntado); cada uno se apunta o se borra a sí mismo;
+      // quien propone puede cambiar fecha y nota, o cancelarlo.
+      match /planes/{planId} {
+        function planValido(d) {
+          return d.sitioId is string && d.sitioId.size() <= 60
+            && d.fecha is string && d.fecha.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && d.nota is string && d.nota.size() <= 300;
+        }
+        allow read: if esMiembro(gid);
+        allow create: if esMiembro(gid)
+          && request.resource.data.keys().hasOnly(['sitioId', 'fecha', 'nota', 'propone', 'apuntados', 'creado'])
+          && request.resource.data.propone == yo() && request.resource.data.apuntados == [yo()]
+          && planValido(request.resource.data);
+        allow update: if esMiembro(gid) && (
+          (soloCambia(['apuntados']) && (
+            request.resource.data.apuntados.toSet() == resource.data.apuntados.toSet().union([yo()].toSet())
+            || request.resource.data.apuntados.toSet() == resource.data.apuntados.toSet().difference([yo()].toSet())))
+          || (resource.data.propone == yo() && soloCambia(['fecha', 'nota']) && planValido(request.resource.data))
+        );
+        allow delete: if esMiembro(gid) && resource.data.propone == yo();
       }
     }
   }

@@ -205,5 +205,51 @@ button.reciente .carita { width: 32px; height: 32px; font-size: 17px; }
 .sorp .chips { margin-bottom: 2px; }
 .sorp-por { font-size: .88rem; color: var(--pri); font-weight: 600; margin: 8px 2px 0; }
 
+/* 📅 Planes */
+.plan { border-left: 4px solid var(--quiero); }
+.plan-f { font-weight: 700; color: var(--quiero); }
+button.plan-s { background: none; color: var(--fg); padding: 2px 0; margin: 2px 0; min-height: 0; text-align: left; font-weight: 600; font-size: 1.02rem; }
+.plan-form { width: 100%; background: var(--bg); border: 1px solid var(--line); }
+.plan-form input { margin: 4px 0 8px; }
+.ficha .plan { background: var(--bg); border: 1px solid var(--line); border-left: 4px solid var(--quiero); margin-top: 10px; }
+
+/* 📔 Diario */
+.fecha-fuimos { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: .92em; }
+.fecha-fuimos input { width: auto; min-height: 38px; padding: 4px 8px; }
+.diario-mes > summary { padding: 10px 2px; font-weight: 700; }
+.diario-mes > summary::after { content: " ▸"; color: var(--muted); }
+.diario-mes[open] > summary::after { content: " ▾"; }
+.d-dia { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--card); display: inline-flex; align-items: center;
+  justify-content: center; font-weight: 700; color: var(--fuimos); }
+
+/* 🖨️ Resumen del año: hoja encima de la app; al imprimir, solo la hoja */
+#resumen { position: fixed; inset: 0; z-index: 60; overflow: auto; background: #fff; color: #1a1a1a; padding: 0 12px 30px; }
+body.con-resumen { overflow: hidden; }
+.r-barra { position: sticky; top: 0; display: flex; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 0 8px; background: #fff; z-index: 2; }
+.r-barra button { margin: 0; }
+.r-barra button.sec { background: #f2f4f3; color: #1a1a1a; border-color: #dcdfdd; }
+.r-hoja { max-width: 680px; margin: 0 auto; font-size: 14px; }
+.r-hoja .muted { color: #666; }
+.r-cab { display: flex; align-items: center; gap: 12px; margin: 8px 0 12px; }
+.r-cab img { width: 56px; height: 56px; border-radius: 12px; }
+.r-cab h1 { margin: 0; font-size: 1.6rem; color: #0b6e4f; }
+.r-cifras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.r-cifras div { border: 1px solid #dcdfdd; border-radius: 10px; padding: 8px; text-align: center; font-size: .85rem; }
+.r-cifras b { display: block; font-size: 1.6rem; color: #0b6e4f; }
+.r-mejor { margin: 8px 0; }
+.r-mapa { display: block; width: 100%; max-width: 440px; height: auto; margin-left: auto !important; margin-right: auto !important; background: #d9eef5; border-radius: 10px; margin: 6px 0; }
+.r-hoja h3 { color: #0b6e4f; margin: 14px 0 6px; font-size: 1.05rem; border-bottom: 2px solid #0b6e4f; padding-bottom: 2px; }
+.r-tabla td { padding: 3px 8px 3px 0; }
+.r-mes { break-inside: avoid; margin: 6px 0; }
+.r-mes ul { margin: 2px 0 6px; }
+.r-pie { text-align: center; color: #888; font-size: .8rem; margin-top: 18px; }
+@media print {
+  body.con-resumen > *:not(#resumen) { display: none !important; }
+  body.con-resumen { padding: 0; overflow: visible; background: #fff; }
+  #resumen { position: static; overflow: visible; padding: 0; }
+  .r-barra { display: none; }
+  @page { margin: 14mm; }
+}
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v7"; }
+:root { --css-ver: "v8"; }

@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v7';
+const VERSION = 'v8';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -111,7 +111,8 @@ function fichaHTML(s) {
       <div class="marcas">${Object.entries(ESTADOS).map(([k, [ic, n]]) => `<button class="${e === k ? 'on' : ''}" data-est="${k}" data-id="${esc(s.id)}">${ic} ${n}</button>`).join('')}</div>
       <div class="estrellas" aria-label="Valoración">${[1, 2, 3, 4, 5].map(n => `<button class="${(m.estrellas || 0) >= n ? 'on' : ''}" data-estr="${n}" data-id="${esc(s.id)}" aria-label="${n} estrellas">★</button>`).join('')}</div>
       <textarea class="nota" maxlength="1000" data-nota="${esc(s.id)}" placeholder="📝 Nota (${enGrupo() ? 'la verá el grupo' : 'solo en este móvil'})">${esc(m.nota || '')}</textarea>
-      ${m.fecha ? `<div class="muted">Marcado el ${esc(new Date(m.fecha + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }))}</div>` : ''}
+      ${e === 'fuimos' ? fechaFuimosHTML(s) : m.fecha ? `<div class="muted">Marcado el ${esc(new Date(m.fecha + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }))}</div>` : ''}
+      ${planesEnFicha(s.id)}
     </div></details>`;
 }
 const repintarFicha = id => {
@@ -338,6 +339,10 @@ function viewMas() {
     <h2>📚 Sobre los datos</h2>
     <div class="card"><p>Cada sitio lleva su fuente. Lo marcado con <span class="ver">⚠️ VERIFICAR</span> está pendiente de comprobar (coordenadas, horarios, precios o accesos): confírmalo antes de ir.</p>
       <p class="muted">Mapa © colaboradores de OpenStreetMap.</p></div>
+    <h2>📔 Mi diario</h2>
+    ${diarioHTML()}
+    <h2>🖨️ Resumen del año</h2>
+    ${resumenBotonesHTML()}
     <h2>🧹 Borrar</h2>
     <button class="danger" data-borrar>Borrar todas mis marcas de este móvil</button>
     <p class="muted" style="text-align:center">Escapadas · Familia de A Muchis · ${VERSION}</p>`;

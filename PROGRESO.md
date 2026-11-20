@@ -1,5 +1,25 @@
 # PROGRESO
 
+## v8 · S6 · Planes, diario y resumen del año (2026-11-20)
+Hecho:
+- Tiempo en 6 zonas (pedido del usuario): Oeste, Sur, Este, La Laguna, Norte y
+  Teide y alrededores. Sorpréndeme usa la zona de cada sitio.
+- 📅 Planes del grupo: en la ficha, «Proponer plan» (día y nota); en Este finde,
+  los próximos planes con quién va, quién ya fue (para saber si les apetece repetir),
+  «Me apunto / Ya no voy» y «Cancelar plan» para quien propone. En Grupo, aviso de
+  planes a la vista. Reglas de Firestore ampliadas (hay que volver a publicarlas).
+- 📔 Diario (☰ Más): tus ✅ por mes con ⭐ y notas; en la ficha, «📅 Fuimos el» para
+  poner el día real (o dejarlo sin fecha).
+- 🖨️ Resumen del año (☰ Más): hoja con cifras, lo mejor del año, mapa con los sitios,
+  ranking del grupo y mes a mes; «Guardar PDF» abre Imprimir del móvil.
+- Trivial canario: descartado por el usuario.
+
+Probado con nube simulada: zonas, apuntarse, proponer desde la ficha, fecha de
+visita subida al grupo, diario y PDF generado (2 páginas A4).
+Pendiente: publicar las reglas nuevas; probar planes con otra persona del grupo.
+
+Hoja de ruta S1-S6 terminada.
+
 ## v7 · S5 · Este finde (2026-11-20)
 Hecho:
 - 🌤️ Tiempo del sábado y domingo en 3 zonas (Norte, Sur y este, Cumbre) con Open-Meteo:

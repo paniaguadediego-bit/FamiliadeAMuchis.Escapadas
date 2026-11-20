@@ -7,7 +7,7 @@ const K_GRUPO = 'esc.grupo';
 const EMOJIS = ['😀', '😎', '🤠', '🥳', '🤓', '😺', '🐶', '🦊', '🐼', '🐢', '🦜', '🐬', '🌋', '🌴', '🌻', '⛰️'];
 const COLORES = ['#0b6e4f', '#1f5fbf', '#c0392b', '#d97706', '#7c3aed', '#db2777', '#0f766e', '#475569'];
 const NUBE = { estado: 'apagada', user: null, perfil: null, editarPerfil: false, grupo: null, miembros: {}, msg: '', ocupado: false,
-  marcasGrupo: {}, recientes: [], sincronizado: false };
+  marcasGrupo: {}, recientes: [], sincronizado: false, planes: [] };
 const nubeConfigurada = () => !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey);
 
 function cargarScript(src) {
@@ -117,7 +117,7 @@ function seguirGrupo(gid) {
     if (!d.exists || !(d.data().miembros || []).includes(NUBE.user.uid)) { NUBE.grupo = null; return repintarNube(); }
     const nuevo = !NUBE.grupo || NUBE.grupo.id !== d.id;
     NUBE.grupo = { id: d.id, ...d.data() };
-    if (nuevo) seguirMarcas(d.id);
+    if (nuevo) { seguirMarcas(d.id); seguirPlanes(d.id); }
     await cargarMiembros(); repintarNube(); refrescarVista();
   }, () => { NUBE.grupo = null; dejarMarcas(); repintarNube(); });
 }
@@ -201,6 +201,8 @@ function seguirMarcas(gid) {
 }
 function dejarMarcas() {
   if (NUBE.offMarcas) { NUBE.offMarcas(); NUBE.offMarcas = null; }
+  if (NUBE.offPlanes) { NUBE.offPlanes(); NUBE.offPlanes = null; }
+  NUBE.planes = [];
   NUBE.marcasGrupo = {}; NUBE.recientes = []; NUBE.sincronizado = false;
 }
 // Junta lo del móvil con lo de la nube: gana lo más reciente de cada sitio.
@@ -268,11 +270,83 @@ function resumenGrupoHTML() {
   const rank = Object.entries(cuenta).sort((a, b) => b[1].fuimos - a[1].fuimos || b[1].quiero - a[1].quiero);
   const total = typeof SITIOS !== 'undefined' ? SITIOS.length : 0, nadie = total ? SITIOS.filter(x => nadieFue(x.id)).length : 0;
   const fechaCorta = t => t ? new Date(t).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
-  return `<h2>🏆 Quién lleva más</h2><div class="card">${rank.map(([u, c], i) => `<div class="row miembro">${carita(perfilDe(u))}<span style="flex:1">${esc(perfilDe(u).nombre)}${u === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span><span class="cifra">✅ ${c.fuimos}</span><span class="cifra muted">🔖 ${c.quiero}</span>${i === 0 && c.fuimos ? '<span>🥇</span>' : ''}</div>`).join('')}</div>
+  const np = proximosPlanes().length;
+  return `${np ? `<div class="card row"><span style="flex:1">📅 ${np} plan${np > 1 ? 'es' : ''} a la vista</span><button class="sec mini" data-tab="finde">Ver</button></div>` : ''}
+    <h2>🏆 Quién lleva más</h2><div class="card">${rank.map(([u, c], i) => `<div class="row miembro">${carita(perfilDe(u))}<span style="flex:1">${esc(perfilDe(u).nombre)}${u === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span><span class="cifra">✅ ${c.fuimos}</span><span class="cifra muted">🔖 ${c.quiero}</span>${i === 0 && c.fuimos ? '<span>🥇</span>' : ''}</div>`).join('')}</div>
     <h2>🕒 Últimas marcas</h2>${NUBE.recientes.length ? `<div class="card">${NUBE.recientes.map(m => { const s = typeof sitio === 'function' && sitio(m.sitioId); return s ? `<button class="reciente" data-irficha="${esc(s.id)}">${carita(perfilDe(m.uid))}<span><b>${esc(perfilDe(m.uid).nombre)}</b> ${m.estado ? ESTADOS[m.estado][0] : '⭐'} ${esc(s.nombre)}<small class="muted"> · ${fechaCorta(m.actualizado)}</small></span></button>` : ''; }).join('')}</div>` : '<div class="card muted">Todavía nadie ha marcado nada.</div>'}
     <h2>🌱 Nadie ha ido todavía</h2><div class="card"><p><b>${nadie}</b> de ${total} sitios sin estrenar por nadie del grupo.</p><button class="sec" data-nadie>Ver cuáles</button></div>`;
 }
 document.addEventListener('click', e => { if (e.target.closest('[data-nadie]')) { fTipo = ''; q = ''; fEst = 'nadie'; ir('sitios'); } });
+
+// ---------- 📅 planes del grupo (S6) ----------
+// grupos/{gid}/planes/{id}: sitioId, fecha (AAAA-MM-DD), nota, propone (uid), apuntados [uid], creado.
+const colPlanes = () => NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('planes');
+function seguirPlanes(gid) {
+  if (NUBE.offPlanes) NUBE.offPlanes();
+  NUBE.offPlanes = NUBE.db.collection('grupos').doc(gid).collection('planes').onSnapshot(q => {
+    NUBE.planes = q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => a.fecha.localeCompare(b.fecha));
+    refrescarVista();
+  }, () => {});
+}
+const proximosPlanes = () => NUBE.planes.filter(p => p.fecha >= hoyISO());
+let planForm = null; // sitioId con el formulario de proponer abierto
+function proximoSabado() {
+  const d = new Date(); d.setDate(d.getDate() + (6 - d.getDay() + 7) % 7); // hoy si es sábado
+  return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+}
+const fechaPlan = f => { const t = new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }); return t[0].toUpperCase() + t.slice(1); };
+async function proponerPlan(sitioId, fecha, nota) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha || '')) return alert('Elige un día.');
+  if (fecha < hoyISO()) return alert('Ese día ya ha pasado.');
+  planForm = null;
+  try { await colPlanes().add({ sitioId, fecha, nota: String(nota || '').trim().slice(0, 300), propone: NUBE.user.uid, apuntados: [NUBE.user.uid], creado: firebase.firestore.FieldValue.serverTimestamp() }); }
+  catch (e) { alert('No se pudo proponer (' + (e.code || e.message) + '). ¿Están publicadas las reglas nuevas?'); }
+  refrescarVista();
+}
+function apuntarse(id, si) {
+  const F = firebase.firestore.FieldValue;
+  colPlanes().doc(id).update({ apuntados: si ? F.arrayUnion(NUBE.user.uid) : F.arrayRemove(NUBE.user.uid) }).catch(e => alert('No se pudo (' + (e.code || e.message) + ').'));
+}
+function cancelarPlan(id) { if (confirm('¿Cancelar este plan para todo el grupo?')) colPlanes().doc(id).delete().catch(() => {}); }
+// Tarjeta de un plan: qué, cuándo, quién propone, quién va y quién ya ha ido.
+function planHTML(p, conSitio = true) {
+  const s = sitio(p.sitioId), yoVoy = (p.apuntados || []).includes(NUBE.user.uid);
+  const fueron = Object.entries(NUBE.marcasGrupo[p.sitioId] || {}).filter(([, m]) => m.estado === 'fuimos').map(([u]) => u);
+  return `<div class="card plan">
+    <div class="plan-f">📅 ${esc(fechaPlan(p.fecha))}</div>
+    ${conSitio && s ? `<button class="plan-s" data-irficha="${esc(s.id)}">${tipoIc(s.tipo)} ${esc(s.nombre)} <small class="muted">· ${esc(s.municipio)}</small></button>` : ''}
+    <div class="muted">Propone ${esc(perfilDe(p.propone).emoji)} ${esc(perfilDe(p.propone).nombre)}${p.nota ? ` · «${esc(p.nota)}»` : ''}</div>
+    <div class="gl"><span class="gl-t">🙋 Van (${(p.apuntados || []).length})</span>${(p.apuntados || []).map(u => `<span class="gm">${carita(perfilDe(u))}<span>${esc(perfilDe(u).nombre)}</span></span>`).join('')}</div>
+    ${fueron.length ? `<div class="gl"><span class="gl-t">✅ Ya fueron</span>${fueron.map(u => `<span class="gm">${carita(perfilDe(u))}<span>${esc(perfilDe(u).nombre)}</span></span>`).join('')}</div>` : '<div class="muted">🌱 Nadie del grupo ha ido todavía.</div>'}
+    <div class="acciones">${yoVoy ? `<button class="sec mini" data-plan="no" data-id="${esc(p.id)}">Ya no voy</button>` : `<button class="mini" data-plan="si" data-id="${esc(p.id)}">🙋 Me apunto</button>`}
+      ${p.propone === NUBE.user.uid ? `<button class="danger mini" data-plan="cancelar" data-id="${esc(p.id)}">Cancelar plan</button>` : ''}</div></div>`;
+}
+// En la ficha: los planes de ese sitio y el botón para proponer.
+function planesEnFicha(id) {
+  if (!enGrupo()) return '';
+  const ps = proximosPlanes().filter(p => p.sitioId === id);
+  const form = planForm === id ? `<div class="card plan-form"><label class="muted" for="pl-fecha">¿Qué día?</label>
+      <input type="date" id="pl-fecha" value="${proximoSabado()}" min="${hoyISO()}">
+      <input id="pl-nota" maxlength="300" placeholder="Hora, punto de encuentro… (opcional)">
+      <div class="row"><button data-plan="crear" data-id="${esc(id)}">📅 Proponer al grupo</button><button class="sec" data-plan="cerrar">Cancelar</button></div></div>`
+    : `<button class="sec mini" data-plan="abrir" data-id="${esc(id)}">📅 Proponer plan</button>`;
+  return ps.map(p => planHTML(p, false)).join('') + `<div class="acciones">${form}</div>`;
+}
+// En Este finde: los próximos planes.
+function planesHTML() {
+  if (!enGrupo()) return '';
+  const ps = proximosPlanes();
+  return `<h2>📅 Planes del grupo</h2>${ps.length ? ps.map(p => planHTML(p)).join('') : '<div class="card muted">Ningún plan a la vista. Abre la ficha de un sitio y toca «📅 Proponer plan».</div>'}`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-plan]'); if (!b) return;
+  const a = b.dataset.plan, id = b.dataset.id;
+  if (a === 'abrir') { planForm = id; render(); const f = document.getElementById('pl-fecha'); if (f) f.scrollIntoView({ block: 'center' }); }
+  else if (a === 'cerrar') { planForm = null; render(); }
+  else if (a === 'crear') proponerPlan(id, (document.getElementById('pl-fecha') || {}).value, (document.getElementById('pl-nota') || {}).value);
+  else if (a === 'si' || a === 'no') apuntarse(id, a === 'si');
+  else if (a === 'cancelar') cancelarPlan(id);
+});
 
 // ---------- pestaña 👥 Grupo ----------
 const carita = (p, uid) => `<span class="carita" style="--cc:${esc((p && p.color) || '#475569')}" title="${esc((p && p.nombre) || '')}">${esc((p && p.emoji) || '👤')}</span>`;
