@@ -1,5 +1,10 @@
 # PROGRESO
 
+## Reglas de Firestore automáticas (2026-11-20)
+- GitHub Actions publica `firebase/firestore.rules` al cambiar en `main` (o a mano desde Actions).
+- Cuenta de servicio `reglas-github` solo con permisos de reglas; llave en el secreto
+  `FIREBASE_REGLAS_KEY`. Primera ejecución: «Deploy complete!» (reglas de v9 publicadas).
+
 ## v9 · Aspecto, fotos, calendario de findes y esqueleto de islas (2026-11-20)
 Hecho (a petición del usuario, con el estilo de viaje-corea):
 - Banners por municipio (31): color propio, emoji, lema (sacado del catálogo) y foto de portada.

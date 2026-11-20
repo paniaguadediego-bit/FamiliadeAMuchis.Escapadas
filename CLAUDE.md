@@ -59,7 +59,8 @@ se adapta, sin restos de Corea.
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
 - `vendor/firebase-10.14.1/`: SDK compat (app, auth, firestore), precacheado.
-- `firebase/firestore.rules`: reglas; el usuario las pega en la consola.
+- `firebase/firestore.rules`: reglas. Se publican SOLAS al subirlas a `main`
+  (`.github/workflows/reglas-firestore.yml` + `firebase.json`). El usuario no toca la consola.
 - `GUIA-FIREBASE.md`: pasos para crear el proyecto desde el móvil.
 - `manifest.json` · `icons/` (icon.svg, 192, 512, apple-touch-icon).
 - `data/sitios.json`: catálogo público de sitios.
@@ -128,8 +129,12 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   - `grupos/{gid}/planes/{id}`: sitioId ('' si es destino libre), destino, isla,
     fecha (AAAA-MM-DD), hasta (opcional), nota, propone, apuntados [uid], creado. Cada uno se apunta/borra a sí mismo; quien propone
     edita fecha y nota o lo cancela.
-- Reglas de seguridad en `firebase/firestore.rules` (en el repo; el usuario
-  las pega en la consola): cada uno escribe solo sus marcas y su perfil;
+- Reglas de seguridad en `firebase/firestore.rules`. Las publica GitHub Actions
+  al cambiar en `main`, con el secreto `FIREBASE_REGLAS_KEY` (llave JSON de la cuenta
+  de servicio `reglas-github`, roles «Administrador de reglas de Firebase» y
+  «Consumidor de Service Usage»: no puede leer ni tocar datos). La llave NUNCA va al
+  repo ni al chat. Tras cambiar reglas: comprobar que la ejecución termina en verde.
+  Lo que permiten: cada uno escribe solo sus marcas y su perfil;
   lee las marcas de los grupos en los que está; se entra a un grupo con
   su código de invitación.
 - Al día y sin conexión: `onSnapshot` (las marcas de los demás aparecen al

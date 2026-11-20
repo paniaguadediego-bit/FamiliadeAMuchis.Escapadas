@@ -19,8 +19,8 @@ activa ⋮ → «Versión para ordenador».
 1. Menú ☰ → **Compilación → Firestore Database** → «Crear base de datos».
 2. Ubicación: **eur3 (Europe)** o `europe-southwest1 (Madrid)` (no se puede cambiar luego).
 3. Modo: **producción** → «Crear».
-4. Pestaña **Reglas**: borra todo, pega el contenido de
-   [firebase/firestore.rules](firebase/firestore.rules) → «Publicar».
+4. Reglas: ya no hace falta pegarlas. Se publican solas desde GitHub (ver
+   «Publicación automática de las reglas» al final).
 
 ## 4. Registrar la app web y pasar la configuración
 1. ⚙️ (junto a «Descripción general») → **Configuración del proyecto**.
@@ -38,3 +38,13 @@ activa ⋮ → «Versión para ordenador».
 
 Si al entrar sale «Falta añadir … dominios autorizados», repite el paso 2.3.
 Si «Crear grupo» falla, revisa que las reglas del paso 3.4 estén publicadas.
+
+## Publicación automática de las reglas (hecho una vez)
+1. Google Cloud → IAM → Cuentas de servicio → crear `reglas-github` con los roles
+   «Administrador de reglas de Firebase» y «Consumidor de Service Usage».
+2. Esa cuenta → Claves → Agregar clave → JSON (se descarga).
+3. GitHub → Settings → Secrets and variables → Actions → secreto `FIREBASE_REGLAS_KEY`
+   con el contenido del JSON. Borrar el archivo del móvil.
+Desde entonces, cada cambio de `firebase/firestore.rules` en `main` se publica solo
+(GitHub → Actions → «Publicar reglas de Firestore»). Si un día hay que cambiar la
+llave: crear una nueva, actualizar el secreto y borrar la vieja en Google Cloud.
