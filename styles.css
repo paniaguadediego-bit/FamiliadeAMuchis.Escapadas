@@ -530,5 +530,19 @@ button.ev-ban:first-child { min-height: 9.5rem; }
 .tiempo.semana th:first-child { width: 2rem; }
 .tiempo.semana .finde-dia { color: var(--pri); }
 
+/* v19: eventos automáticos, pestaña Eventos, lluvia en el calendario */
+nav#tabs button { font-size: .56rem; letter-spacing: -.02em; }
+nav#tabs button span { font-size: 1.05rem; }
+nav#tabs button.on span { padding: 3px 11px; }
+button.t-lluvia { display: block; width: 100%; text-align: left; background: hsl(210 80% 50% / .1); color: var(--fg); border: 0; border-left: 3px solid hsl(210 70% 50%);
+  border-radius: 6px; min-height: 0; padding: 3px 8px; margin: 0 0 4px; font-size: .76rem; }
+button.t-lluvia small { color: var(--muted); }
+.ev-resto { padding: 4px 10px; }
+.ev-resto-t { font-size: .78rem; color: var(--muted); margin: 4px 0 2px; }
+.ev-resto .d-dia { background: none; font-size: 1.1rem; }
+button.ver-eventos { margin: 4px 0 6px; }
+button.ev-enlace { display: block; width: 100%; text-align: left; color: var(--fg); background: var(--card); font-size: .9rem; margin: 4px 0 8px; }
+.agenda-de { font-size: .8rem; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v18"; }
+:root { --css-ver: "v19"; }

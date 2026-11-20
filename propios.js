@@ -10,9 +10,10 @@ let propioForm = null; // formulario abierto: { _id?, nombre, tipo, municipio, l
 function mezclarSitios() {
   const propios = (NUBE.propios || []).map(d => ({
     id: 'g-' + d._id, _id: d._id, propio: true, autor: d.autor, nombre: d.nombre, tipo: d.tipo, municipio: d.municipio,
-    lat: d.lat, lon: d.lon, desc: d.desc || '', url: d.url || '', fuente: 'Añadido por ' + perfilDe(d.autor).nombre
+    lat: d.lat, lon: d.lon, desc: d.desc || '', url: d.url || '', fuente: 'Añadido por ' + perfilDe(d.autor).nombre,
+    ...(d.tipo === 'evento' && d.desde ? { desde: d.desde, hasta: d.hasta || d.desde, cuando: { tipo: 'fechas', lista: [[d.desde, d.hasta || d.desde]] } } : {})
   }));
-  SITIOS = [...BASE, ...propios];
+  SITIOS = [...BASE, ...(typeof AGENDA_SITIOS !== 'undefined' ? AGENDA_SITIOS : []), ...propios];
 }
 const colPropios = () => NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('sitios');
 function seguirPropios(gid) {
@@ -56,27 +57,33 @@ function propioFormHTML() {
     <div class="pf-ubi ${hay ? 'ok' : ''}">${hay ? `📍 ${f.lat.toFixed(4)}, ${f.lon.toFixed(4)} · <a href="https://www.google.com/maps/search/?api=1&query=${f.lat},${f.lon}" target="_blank" rel="noopener">comprobar</a>` : '📍 Falta la ubicación'}</div>
     <div class="acciones"><button class="sec mini" data-propio="gps">📍 Estoy aquí</button><button class="sec mini" data-propio="mapa">🗺️ Tocar en el mapa</button></div>
     <input id="pf-l" placeholder="…o pega un enlace de Google Maps" autocomplete="off">
+    ${f.tipo === 'evento' ? `<div class="row"><div style="flex:1"><label class="muted" for="pf-desde">Desde</label><input type="date" id="pf-desde" value="${esc(f.desde || '')}"></div><div style="flex:1"><label class="muted" for="pf-hasta">Hasta</label><input type="date" id="pf-hasta" value="${esc(f.hasta || '')}"></div></div>` : ''}
     <textarea id="pf-d" maxlength="600" placeholder="¿Qué tiene de bueno? (lo que pedir, cuándo abre…)">${esc(f.desc || '')}</textarea>
     <input id="pf-u" maxlength="300" placeholder="Web o enlace (opcional)" value="${esc(f.url || '')}">
     <div class="row"><button data-propio="guardar">💾 Guardar</button><button class="sec" data-propio="cerrar">Cancelar</button></div>
   </div>`;
 }
 // En Sitios, arriba: el botón o el formulario.
-function propioBotonHTML() {
+function propioBotonHTML(tipo) {
   if (!enGrupo()) return '';
-  return propioForm ? propioFormHTML() : `<button class="sec anadir-propio" data-propio="nuevo">➕ Añadir un sitio (guachinche, restaurante, rincón…)</button>`;
+  if (propioForm) return (propioForm.tipo === 'evento') === (tipo === 'evento') ? propioFormHTML() : '';
+  return tipo === 'evento' ? `<button class="sec anadir-propio" data-propio="nuevo" data-tipo="evento">➕ Añadir un evento que conozcáis</button>`
+    : `<button class="sec anadir-propio" data-propio="nuevo">➕ Añadir un sitio (guachinche, restaurante, rincón…)</button>`;
 }
 // Lo escrito en el formulario se guarda en propioForm para no perderlo al repintar.
 function leerForm() {
   if (!propioForm) return; const v = id => (document.getElementById(id) || {}).value;
   if (v('pf-n') !== undefined) { propioForm.nombre = v('pf-n'); propioForm.tipo = v('pf-t'); propioForm.municipio = v('pf-m'); propioForm.desc = v('pf-d'); propioForm.url = v('pf-u'); }
+  if (v('pf-desde') !== undefined) { propioForm.desde = v('pf-desde'); propioForm.hasta = v('pf-hasta'); }
 }
 async function guardarPropio() {
   leerForm(); const f = propioForm, nombre = String(f.nombre || '').trim();
   if (!nombre) return alert('Ponle un nombre.');
   if (!isFinite(f.lat) || f.lat === null) return alert('Falta la ubicación: «Estoy aquí», tocar en el mapa o pegar un enlace de Google Maps.');
+  if (f.tipo === 'evento' && !/^\d{4}-\d\d-\d\d$/.test(f.desde || '')) return alert('¿Cuándo es? Pon la fecha del evento.');
   const d = { nombre: nombre.slice(0, 80), tipo: TIPOS[f.tipo] ? f.tipo : 'curioso', municipio: MUNICIPIOS.includes(f.municipio) ? f.municipio : muniCercano(f.lat, f.lon),
     lat: f.lat, lon: f.lon, desc: String(f.desc || '').trim().slice(0, 600), url: String(f.url || '').trim().slice(0, 300), autor: NUBE.user.uid,
+    ...(f.tipo === 'evento' ? { desde: f.desde, hasta: f.hasta && f.hasta >= f.desde ? f.hasta : f.desde } : {}),
     actualizado: firebase.firestore.FieldValue.serverTimestamp() };
   const id = f._id; propioForm = null;
   try {
@@ -95,6 +102,7 @@ function accionesPropio(s) {
   return `<button class="sec mini" data-propio="editar" data-id="${esc(s.id)}">✏️ Editar</button><button class="danger mini" data-propio="borrar" data-id="${esc(s.id)}">🗑️ Borrar</button>`;
 }
 
+document.addEventListener('change', e => { if (e.target.id === 'pf-t' && propioForm) { leerForm(); render(); } });
 document.addEventListener('input', e => {
   if (e.target.id === 'pf-l' && propioForm) {
     const c = coordsDeTexto(e.target.value);
@@ -105,7 +113,7 @@ document.addEventListener('input', e => {
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-propio]'); if (!b) return;
   const a = b.dataset.propio;
-  if (a === 'nuevo') { propioForm = { tipo: 'guachinche', municipio: '', lat: null, lon: null }; render(); const n = document.getElementById('pf-n'); if (n) n.focus(); }
+  if (a === 'nuevo') { propioForm = { tipo: b.dataset.tipo || 'guachinche', municipio: '', lat: null, lon: null }; render(); const n = document.getElementById('pf-n'); if (n) n.focus(); }
   else if (a === 'cerrar') { propioForm = null; render(); }
   else if (a === 'guardar') guardarPropio();
   else if (a === 'gps') {
@@ -115,11 +123,11 @@ document.addEventListener('click', e => {
   }
   else if (a === 'mapa') {
     leerForm();
-    MP.elegir = c => { MP.elegir = null; ponerUbicacion(c); ir('sitios'); setTimeout(() => { const f = document.getElementById('propio-form'); if (f) f.scrollIntoView({ block: 'center' }); }, 50); };
+    const volver = tab; MP.elegir = c => { MP.elegir = null; ponerUbicacion(c); ir(volver); setTimeout(() => { const f = document.getElementById('propio-form'); if (f) f.scrollIntoView({ block: 'center' }); }, 50); };
     if (isFinite(propioForm.lat) && propioForm.lat !== null) { MP.c = [propioForm.lat, propioForm.lon]; MP.z = 16; }
     MP.sel = null; ir('mapa');
   }
-  else if (a === 'cancelar-mapa') { MP.elegir = null; ir('sitios'); }
-  else if (a === 'editar') { const s = sitio(b.dataset.id); if (s) { propioForm = { _id: s._id, nombre: s.nombre, tipo: s.tipo, municipio: s.municipio, lat: s.lat, lon: s.lon, desc: s.desc, url: s.url }; render(); window.scrollTo(0, 0); } }
+  else if (a === 'cancelar-mapa') { MP.elegir = null; ir(propioForm && propioForm.tipo === 'evento' ? 'eventos' : 'sitios'); }
+  else if (a === 'editar') { const s = sitio(b.dataset.id); if (s) { propioForm = { _id: s._id, nombre: s.nombre, tipo: s.tipo, municipio: s.municipio, lat: s.lat, lon: s.lon, desc: s.desc, url: s.url, desde: s.desde, hasta: s.hasta }; render(); window.scrollTo(0, 0); } }
   else if (a === 'borrar') { const s = sitio(b.dataset.id); if (s) borrarPropio(s); }
 });

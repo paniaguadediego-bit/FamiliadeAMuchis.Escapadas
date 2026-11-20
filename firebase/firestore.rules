@@ -68,7 +68,9 @@ service cloud.firestore {
       // lo edita o lo borra.
       match /sitios/{sid} {
         function sitioValido(d) {
-          return d.keys().hasOnly(['nombre', 'tipo', 'municipio', 'lat', 'lon', 'desc', 'url', 'autor', 'creado', 'actualizado'])
+          return d.keys().hasOnly(['nombre', 'tipo', 'municipio', 'lat', 'lon', 'desc', 'url', 'autor', 'creado', 'actualizado', 'desde', 'hasta'])
+            && (!('desde' in d) || (d.desde is string && d.desde.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+            && (!('hasta' in d) || (d.hasta is string && d.hasta.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
             && d.nombre is string && d.nombre.size() > 0 && d.nombre.size() <= 80
             && d.tipo in ['sendero', 'playa', 'mirador', 'pueblo', 'museo', 'naturaleza', 'guachinche', 'restaurante', 'evento', 'curioso']
             && d.municipio is string && d.municipio.size() <= 40

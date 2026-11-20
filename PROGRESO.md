@@ -1,5 +1,17 @@
 # PROGRESO
 
+## v19 · Eventos automáticos, pestaña Eventos y lluvia en el calendario (2026-11-20)
+- Agenda automática: GitHub Actions lee la agenda de Turismo de Tenerife (lunes y jueves) y actualiza
+  `data/agenda.json` (41 eventos ahora). Salen en Este finde (en grande lo que empieza este finde, el
+  resto en lista), en la pestaña Eventos, en el calendario (3 por semana + «más») y se pueden marcar
+  y proponer como plan.
+- Pestaña 🎟️ Eventos con categorías, fechas, zonas, descripción (extracto de la fuente), foto y enlaces
+  a Este finde; el grupo puede añadir sus propios eventos con fecha.
+- Próximos findes: el tiempo solo aparece si se prevé lluvia.
+- Descartada la extracción automática de fiestas de Wikipedia (poco fiable).
+- Red de la sesión: se añadieron datos.tenerife.es, datos.canarias.es, www.santacruzdetenerife.es y
+  www.webtenerife.com (solo se usa la agenda de webtenerife.com).
+
 ## v18 · Este finde con eventos arriba, pestaña Tiempo, viernes tarde y mapa por niveles (2026-11-20)
 - Este finde empieza por los eventos en grande (este finde, las 2 semanas siguientes y los destacados
   de la isla, con cuenta atrás), y siguen los planes. El tiempo, resumido por zonas y enlazado.

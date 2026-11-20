@@ -27,6 +27,7 @@ function kmEntre([a, b], [c, d]) {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 function zonaDe(s) {
+  if (!s.municipio && (!isFinite(s.lat) || s.lat === null)) return '';
   // Teide y alrededores: Las Cañadas (cerca del pico, sin la ladera norte) y la parte alta de La Orotava (Cumbre Dorsal).
   if ((kmEntre([s.lat, s.lon], TEIDE) < 11 && s.lat < 28.33) || (s.municipio === 'La Orotava' && s.lat < 28.35)) return 'teide';
   if (s.municipio === 'Santa Cruz de Tenerife' && s.lat > 28.53) return 'norte'; // costa norte y cumbres de Anaga
@@ -39,7 +40,7 @@ function zonaDe(s) {
 const casa = () => { const c = load(K_CASA, null); return Array.isArray(c) && c.length === 2 ? c : null; };
 // En coche, aproximado: la carretera da un 40 % de vuelta y ~55 km/h de media.
 const minCoche = km => Math.round(km * 1.4 / 55 * 60);
-function distCasa(s) { const c = casa(); return c ? kmEntre(c, [s.lat, s.lon]) : null; }
+function distCasa(s) { const c = casa(); return c && isFinite(s.lat) && s.lat !== null ? kmEntre(c, [s.lat, s.lon]) : null; }
 const fmtKm = km => km < 1 ? 'menos de 1 km' : Math.round(km) + ' km';
 const fmtMin = m => m < 60 ? `${Math.max(5, Math.round(m / 5) * 5)} min` : `${Math.floor(m / 60)} h ${String(Math.round(m % 60 / 5) * 5).padStart(2, '0')}`;
 const distTxt = s => { const k = distCasa(s); return k == null ? '' : `🏠 a ${fmtKm(k)} de casa · ≈ ${fmtMin(minCoche(k))} en coche`; };
@@ -137,11 +138,15 @@ function tiempoHTML() {
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-findetiempo]'); if (b) { findeTiempo = +b.dataset.findetiempo; render(); } });
 // Una línea con el tiempo del sábado (y domingo) en cada zona, para el calendario de findes.
+// En el calendario de findes: solo si se prevé lluvia (da igual la temperatura). Viernes tarde, sábado y domingo.
 function tiempoFindeMini(sab) {
   if (!leerTiempo()) return '';
-  const dom = (() => { const d = new Date(sab + 'T12:00'); d.setDate(d.getDate() + 1); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); })();
-  const dias = [sab, dom].filter(f => f >= hoyISO() && tiempoDe('norte', f)); if (!dias.length) return '';
-  return `<div class="t-mini" title="Tiempo por zonas (${dias.length > 1 ? 'sábado / domingo' : dias[0] === sab ? 'sábado' : 'domingo'})">${Object.entries(ZONAS).map(([z, Z]) => `<span class="t-z"><small>${Z.ic}</small>${dias.map(f => { const t = tiempoDe(z, f); return t ? `${cielo(t.c)[0]}<b>${Math.round(t.max)}°</b>` : ''; }).join('<i>/</i>')}</span>`).join('')}</div>`;
+  const iso = (n) => { const d = new Date(sab + 'T12:00'); d.setDate(d.getDate() + n); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+  const dias = [[iso(-1) + 'T', 'vie tarde'], [sab, 'sáb'], [iso(1), 'dom']].filter(([f]) => (f.endsWith('T') ? f.slice(0, 10) >= hoyISO() : f >= hoyISO()) && tiempoDe('norte', f));
+  const llueve = x => x && (x.p >= 50 || (x.c >= 51 && x.c <= 99 && x.c !== 45 && x.c !== 48));
+  const zonas = Object.entries(ZONAS).map(([z, Z]) => [Z, dias.filter(([f]) => llueve(tiempoDe(z, f))).map(([, n]) => n)]).filter(([, ds]) => ds.length);
+  if (!zonas.length) return '';
+  return `<button class="t-lluvia" data-tab="tiempo">🌧️ Lluvia: ${zonas.map(([Z, ds]) => `${esc(Z.nom)} <small>(${ds.join(', ')})</small>`).join(' · ')}</button>`;
 }
 
 // ---------- 🌤️ pestaña Tiempo ----------

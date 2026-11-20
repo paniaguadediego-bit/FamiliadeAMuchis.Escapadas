@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v18';
+const VERSION = 'v19';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -44,8 +44,10 @@ fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d
 // data/fotos.json = { sitioId: { src (960 px), archivo } }. El service worker guarda cada foto vista (sin conexión).
 let FOTOS = {};
 fetch('data/fotos.json').then(r => r.json()).then(d => { FOTOS = d || {}; render(); }).catch(() => {});
-const fotoSrc = (id, mini) => { const f = FOTOS[id]; if (!f) return ''; return mini ? f.src.replace('/960px-', '/330px-') : f.src; };
-const fotoCredito = id => FOTOS[id] && FOTOS[id].archivo ? `<a class="credito" href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(FOTOS[id].archivo)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a>` : '';
+// Agenda de Turismo de Tenerife (eventos.js): eventos con fecha y su foto.
+fetch('data/agenda.json').then(r => r.json()).then(d => { cargarAgenda(d); mezclarSitios(); render(); }).catch(() => {});
+const fotoSrc = (id, mini) => { const f = FOTOS[id] || FOTOS_AG[id]; if (!f) return ''; return mini ? f.src.replace('/960px-', '/330px-') : f.src; };
+const fotoCredito = id => !FOTOS[id] && FOTOS_AG[id] ? `<a class="credito" href="${esc(FOTOS_AG[id].enlace)}" target="_blank" rel="noopener">📷 Turismo de Tenerife</a>` : FOTOS[id] && FOTOS[id].archivo ? `<a class="credito" href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(FOTOS[id].archivo)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a>` : '';
 // <img> perezosa; la miniatura, si no existe en ese tamaño, prueba la grande; si tampoco, desaparece.
 function fotoImg(id, cls = '', mini = false) {
   const src = fotoSrc(id, mini); if (!src) return '';
@@ -103,7 +105,7 @@ function applyLetra() { const l = load('esc.letra', 'compacta'); if (l === 'comp
 applyLetra();
 
 // ---------- pestañas ----------
-const TABS = [['finde', 'Este finde', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const TABS = [['finde', 'Este finde', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['eventos', 'Eventos', '🎟️'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
 let tab = load('esc.tab', 'finde');
 if (!TABS.some(t => t[0] === tab)) tab = 'finde';
 function ir(t) { tab = t; save('esc.tab', t); render(); window.scrollTo(0, 0); }
@@ -117,23 +119,33 @@ function render() {
   pintarTabs();
   $('#title').textContent = tab === 'finde' ? 'Escapadas' : (TABS.find(t => t[0] === tab) || [])[1] || 'Escapadas';
   const v = $('#view');
-  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
+  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
-  if (tab === 'sitios' && irFicha) { const el = document.getElementById('f-' + irFicha); irFicha = null; if (el) el.scrollIntoView({ block: 'center' }); }
+  if ((tab === 'sitios' || tab === 'eventos') && irFicha) { const el = document.getElementById('f-' + irFicha); irFicha = null; if (el) el.scrollIntoView({ block: 'center' }); }
 }
 
 // ---------- fichas ----------
 const abiertas = new Set();
-const gmaps = s => `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}`;
+// Sin coordenadas exactas (agenda: solo el municipio), se busca por el nombre y el lugar.
+const gmaps = s => `https://www.google.com/maps/search/?api=1&query=${!isFinite(s.lat) || s.lat === null || s.aprox ? encodeURIComponent([s.lugar || s.nombre, s.municipio, 'Tenerife'].filter(Boolean).join(', ')) : s.lat + ',' + s.lon}`;
+// Icono y subtítulo de la ficha: los eventos llevan el de su categoría y su próxima fecha.
+const icFicha = s => s.tipo === 'evento' && typeof catIc === 'function' ? catIc(s) : tipoIc(s.tipo);
+function subFicha(s) {
+  if (s.tipo === 'evento' && typeof proximaVez === 'function') {
+    const f = proximaVez(s), d = x => new Date(x + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+    if (f) return [f[1] > f[0] ? `${d(f[0])} → ${d(f[1])}` : d(f[0]), s.municipio].filter(Boolean).join(' · ');
+  }
+  return `${tipoNom(s.tipo)} · ${s.municipio}`;
+}
 function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
-  const datos = [distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
+  const datos = [s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
-    <summary>${FOTOS[s.id] ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${tipoIc(s.tipo)}</span></span>` : `<span class="ic">${tipoIc(s.tipo)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}${distCasa(s) != null ? ` · 🏠 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
+    <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 🏠 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
-      ${abiertas.has(s.id) && FOTOS[s.id] ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : FOTOS[s.id] ? '<div class="ficha-foto" data-pendiente></div>' : ''}
+      ${abiertas.has(s.id) && fotoSrc(s.id) ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : fotoSrc(s.id) ? '<div class="ficha-foto" data-pendiente></div>' : ''}
       ${cuandoHTML(s)}
       <p>${esc(s.desc)}</p>
       ${datos.length ? `<div class="datos">${datos.map(d => `<span>${d}</span>`).join('')}</div>` : ''}
@@ -142,7 +154,7 @@ function fichaHTML(s) {
         : `<div class="fuente">📚 Fuente: ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.fuente || s.url)}</a>` : esc(s.fuente || '—')}</div>`}
       <div class="acciones">
         <a class="btn sec mini" href="${gmaps(s)}" target="_blank" rel="noopener">🌐 Google Maps</a>
-        <button class="sec mini" data-vermapa="${esc(s.id)}">🗺️ Ver en el mapa</button>
+        ${isFinite(s.lat) && s.lat !== null && !s.aprox ? `<button class="sec mini" data-vermapa="${esc(s.id)}">🗺️ Ver en el mapa</button>` : ''}
         ${accionesPropio(s)}
       </div>
       ${grupoEnFicha(s.id)}
@@ -184,6 +196,8 @@ let irFicha = null;
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-irficha]'); if (!b) return;
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
+  // Los eventos tienen su pestaña.
+  if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; evCat = ''; evZona = ''; evRango = 'todo'; ir('eventos'); return; }
   abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
 
@@ -209,7 +223,7 @@ function notaMedia(id) {
 const ganas = id => (marca(id).estado === 'quiero' ? 1 : 0) + (enGrupo() ? otrosEn(id).quiero.length : 0);
 function filtrados() {
   const a = sinTildes(q).trim();
-  return SITIOS.filter(s => enIsla(s) && (!fTipo || s.tipo === fTipo) && (!fZona || zonaNom(s) === fZona)
+  return SITIOS.filter(s => enIsla(s) && !s.agenda && (!fTipo || s.tipo === fTipo) && (!fZona || zonaNom(s) === fZona)
     && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
     && (!fGrupo || !enGrupo() || (fGrupo === 'nadie' ? nadieFue(s.id) : fGrupo === 'ganas' ? otrosEn(s.id).quiero.length > 0 : otrosEn(s.id).fuimos.length > 0))
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
@@ -313,7 +327,8 @@ function viewMapa() {
       <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
     <p class="leyenda">Acerca el mapa (＋ o con dos dedos) para ver los iconos. Azul 🔖 quiero ir · verde ✅ fuimos · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
-const puntos = () => SITIOS.filter(s => enIsla(s) && (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && isFinite(s.lon));
+// Los de la agenda solo salen si se elige «Evento» (van al centro de su municipio, aproximados).
+const puntos = () => SITIOS.filter(s => enIsla(s) && (!s.agenda || mpTipo === 'evento') && (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
 // Zoom con la isla entera a la vista (con él se decide cuándo los puntitos pasan a iconos).
 function zEncaje(W, H) {
   const la = ISLA.map(c => c[1]), lo = ISLA.map(c => c[0]);

@@ -52,7 +52,8 @@ se adapta, sin restos de Corea.
 - `planes.js`: 📅 planes del grupo y calendario de los próximos 10 findes.
 - `agenda.js`: 🎭 ¿Qué hay? (buscador cultural en Este finde).
 - `propios.js`: 👥 sitios que añade el grupo (`BASE` = catálogo; `mezclarSitios()` → `SITIOS`).
-- `eventos.js`: 🎟️ fecha de cada evento según su regla `cuando` (fija, Pascua, n-ésimo día).
+- `eventos.js`: 🎟️ fechas de eventos (regla `cuando`), portada de Este finde, pestaña Eventos y agenda automática.
+- `herramientas/agenda_webtenerife.py` → `data/agenda.json` (lo ejecuta `.github/workflows/eventos.yml`).
 - `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
   municipio (`MUNI`: tono `h`, emoji, lema, `portada` = sitio cuya foto va en el banner).
 - `data/fotos.json`: `{ sitioId: { src, archivo } }`, foto principal del artículo de
@@ -93,7 +94,7 @@ Rambla, San Miguel de Abona, Santa Cruz de Tenerife, Santa Úrsula,
 Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 
 ## Iconos (uno por significado)
-- Pestañas: 🏠 Este finde · 🌤️ Tiempo · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
+- Pestañas: 🏠 Este finde · 🌤️ Tiempo · 🎟️ Eventos · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
 - Marcas: 🔖 Quiero ir · ✅ Fuimos · ✖️ No · ⭐ valoración · 📝 nota.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
@@ -299,3 +300,20 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   «AAAA-MM-DDT» (lo peor de esas horas). Caché `esc.tiempo16h`.
 - Mapa: puntitos de 7 px hasta 1 nivel de zoom por encima del de la isla entera (`MP.zFit`); desde
   2 niveles, el icono de cada tipo (separados si se pisan).
+
+## Eventos automáticos y pestaña Eventos (v19)
+- Fuente automática: la agenda pública de Turismo de Tenerife (webtenerife.com/agenda; su robots.txt
+  la permite). `herramientas/agenda_webtenerife.py` lee de cada página el bloque schema.org «Event»
+  (nombre, fechas, descripción, foto, dirección), deduce municipio y categoría del texto y guarda
+  `data/agenda.json` (próximos 4 meses; sin exposiciones de más de 120 días). Lo ejecuta GitHub Actions
+  lunes y jueves y al cambiar el lector; solo sube a `main` si cambian los eventos.
+- En la app: sitios `agenda: true`, id `ag-<slug>`, `cuando` de tipo fechas, foto en `FOTOS_AG` (crédito
+  «📷 Turismo de Tenerife»), fuente = su página. Sin coordenadas: centro del municipio (`aprox`), no
+  salen en Sitios ni en el mapa salvo con el tipo «Evento»; Google Maps busca por el lugar.
+- Descartado: sacar fiestas de los artículos de municipios de Wikipedia de forma automática (casi todas
+  las fechas del texto eran de otras cosas: plenos, himnos…). Las fiestas siguen siendo las 14 revisadas.
+- Pestaña 🎟️ Eventos: categorías (🎉 fiestas, 🎵 música, 🎭 teatro, 🏃 deporte, 🖼️ expos, 🛍️ ferias,
+  🧸 niños), cuándo (este finde, el que viene, próximo mes, 4 meses) y zona; agrupados por semana; enlace
+  a Este finde. «➕ Añadir un evento» del grupo (sitios del grupo con `desde`/`hasta`).
+- Orden de importancia (portada y listas): lo que empieza en esas fechas, lo corto, destacados, con foto.
+- Calendario de findes: el tiempo solo si se prevé lluvia (zonas y días, incluido el viernes tarde).

@@ -59,25 +59,32 @@ function proximosEventosHTML(sab, n = 4) {
   return ev.length ? `<h2>🎟️ Lo próximo</h2><div class="card">${ev.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${+f[0].slice(8)}</span>
     <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></button>`).join('')}</div>` : '';
 }
-// Arriba de Este finde: lo que pasa este finde (todo) y lo grande que viene (destacados, 120 días), en grande.
+// Orden de importancia: destacados de la isla, luego los de la agenda con foto, luego el resto; y por fecha.
+// Primero lo que empieza en el rango que se mira (no lo que ya lleva semanas), lo corto antes que lo largo
+// (una exposición de tres meses no es «el plan del finde»), los destacados de la isla y lo que tiene foto.
+const durDias = f => Math.round((new Date(f[1] + 'T12:00') - new Date(f[0] + 'T12:00')) / 864e5);
+const pesoEvento = (s, f, desde) => (s.destacado ? 0 : 2) + (FOTOS[s.id] || (typeof FOTOS_AG !== 'undefined' && FOTOS_AG[s.id]) ? 0 : 1)
+  + (durDias(f) > 14 ? 4 : durDias(f) > 4 ? 1 : 0) + (desde && f[0] < desde ? 2 : 0);
+const ordenarEventos = (l, desde) => l.slice().sort((a, b) => pesoEvento(a[0], a[1], desde) - pesoEvento(b[0], b[1], desde) || a[1][0].localeCompare(b[1][0]));
+// Arriba de Este finde: los eventos de este finde (en grande los más importantes, el resto en lista) y, si hay
+// pocos, lo grande que viene. Enlaza con la pestaña Eventos.
 function eventosDestacadosHTML(sab) {
   const v = isoMas(sab, -1), dom = isoMas(sab, 1), hoy = hoyISO();
-  const esteFinde = eventosEntre(v, dom), ids = new Set(esteFinde.map(([s]) => s.id));
-  // Además de este finde: lo de las 2 semanas siguientes (sea lo que sea) y lo grande de los próximos 4 meses.
-  const pronto = eventosEntre(isoMas(dom, 1), isoMas(dom, 14)).filter(([s]) => !ids.has(s.id));
-  const grandes = eventosEntre(isoMas(dom, 15), isoMas(hoy, 120)).filter(([s]) => s.destacado);
-  const lista = [...esteFinde, ...pronto, ...grandes].slice(0, 4);
-  const resto = eventosEntre(isoMas(dom, 1), isoMas(hoy, 120)).filter(([s]) => !lista.some(([x]) => x.id === s.id));
-  if (!lista.length && !resto.length) return '';
+  const esteFinde = ordenarEventos(eventosEntre(v, dom), v), ids = new Set(esteFinde.map(([s]) => s.id));
+  const pronto = esteFinde.length >= 3 ? [] : ordenarEventos(eventosEntre(isoMas(dom, 1), isoMas(dom, 14))).filter(([s]) => s.destacado || !s.agenda).slice(0, 2);
+  const grandes = esteFinde.length + pronto.length >= 3 ? [] : eventosEntre(isoMas(dom, 15), isoMas(hoy, 120)).filter(([s]) => s.destacado).slice(0, 1);
+  const banners = [...esteFinde.slice(0, 3), ...pronto, ...grandes].slice(0, 4), resto = esteFinde.slice(3);
+  if (!banners.length) return `<div class="card muted">🎟️ No hay eventos a la vista este finde. <button class="sec mini" data-tab="eventos">Ver todos los eventos ›</button></div>`;
   const banner = ([s, f]) => {
     const dias = Math.round((new Date(f[0] + 'T12:00') - new Date(hoy + 'T12:00')) / 864e5), ya = f[0] <= hoy && f[1] >= hoy;
-    const cuenta = ya ? '¡Ahora!' : ids.has(s.id) ? '¡Este finde!' : dias === 1 ? 'Mañana' : dias <= 9 ? `En ${dias} días · el finde que viene`.replace(/ · el finde que viene$/, f[0] <= isoMas(dom, 7) ? ' · el finde que viene' : '') : `En ${dias} días`;
-    return `<button class="ev-ban banner-plano ${ids.has(s.id) ? 'ya' : ''}" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
-      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">🎟️ ${esc(cuenta)}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></span></button>`;
+    const cuenta = ya ? '¡Ahora!' : ids.has(s.id) ? '¡Este finde!' : dias === 1 ? 'Mañana' : f[0] <= isoMas(dom, 7) ? `En ${dias} días · el finde que viene` : `En ${dias} días`;
+    return `<button class="ev-ban banner-plano ${ids.has(s.id) ? 'ya' : ''}" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${esc(cuenta)}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>`;
   };
-  return `<div class="eventos-top">${lista.map(banner).join('')}</div>
-    ${resto.length ? `<details class="ev-mas"><summary>🎟️ Más eventos en los próximos meses (${resto.length})</summary><div class="card">${resto.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${+f[0].slice(8)}</span>
-      <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></button>`).join('')}</div></details>` : ''}`;
+  return `<div class="eventos-top">${banners.map(banner).join('')}</div>
+    ${resto.length ? `<div class="card ev-resto"><div class="ev-resto-t">Y además este finde:</div>${resto.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${catIc(s)}</span>
+      <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></button>`).join('')}</div>` : ''}
+    <button class="sec ver-eventos" data-tab="eventos">🎟️ Ver todos los eventos ›</button>`;
 }
 // Este finde: lo que hay (viernes a domingo).
 function eventosFindeHTML(sab) {
@@ -86,6 +93,54 @@ function eventosFindeHTML(sab) {
 }
 // En el calendario: chips de los eventos de esa semana.
 function eventosSemanaHTML(lun, dom) {
-  const ev = eventosEntre(lun, dom);
-  return ev.length ? `<div class="ev-chips">${ev.map(([s, f]) => `<button class="chip ev" data-irficha="${esc(s.id)}">🎟️ ${esc(s.nombre)} <small>${esc(new Date(f[0] + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' }))}</small></button>`).join('')}</div>` : '';
+  const todos = ordenarEventos(eventosEntre(lun, dom), lun), ev = todos.slice(0, 3);
+  return ev.length ? `<div class="ev-chips">${ev.map(([s, f]) => `<button class="chip ev" data-irficha="${esc(s.id)}">🎟️ ${esc(s.nombre)} <small>${esc(new Date(f[0] + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' }))}</small></button>`).join('')}${todos.length > 3 ? `<button class="chip" data-tab="eventos">+${todos.length - 3} más</button>` : ''}</div>` : '';
 }
+
+// ---------- 📰 agenda automática (data/agenda.json, la actualiza GitHub Actions dos veces por semana) ----------
+let AGENDA_SITIOS = [], FOTOS_AG = {}, AGENDA_INFO = null;
+const CAT_EV = { fiestas: ['🎉', 'Fiestas'], musica: ['🎵', 'Música'], teatro: ['🎭', 'Teatro y espectáculos'], deporte: ['🏃', 'Deporte'],
+  expo: ['🖼️', 'Exposiciones'], feria: ['🛍️', 'Ferias y mercados'], ninos: ['🧸', 'Con niños'], otros: ['🎟️', 'Otros'] };
+const catDe = s => s.categoria || (s.tipo === 'evento' ? 'fiestas' : 'otros');
+const catIc = s => (CAT_EV[catDe(s)] || CAT_EV.otros)[0];
+function cargarAgenda(d) {
+  AGENDA_INFO = d && { fuente: d.fuente, actualizado: d.actualizado };
+  FOTOS_AG = {};
+  AGENDA_SITIOS = ((d && d.eventos) || []).filter(e => e.hasta >= hoyISO()).map(e => {
+    if (e.foto) FOTOS_AG[e.id] = { src: e.foto, credito: 'Turismo de Tenerife', enlace: e.url };
+    return { id: e.id, nombre: e.nombre, tipo: 'evento', municipio: e.municipio || '', lat: e.lat, lon: e.lon, aprox: !!e.aprox, agenda: true,
+      categoria: e.categoria, lugar: e.lugar, desc: e.extracto || '', fuente: 'Agenda de Turismo de Tenerife', url: e.url,
+      cuando: { tipo: 'fechas', lista: [[e.desde, e.hasta]] } };
+  });
+}
+
+// ---------- 🎟️ pestaña Eventos ----------
+let evCat = '', evZona = '', evRango = 'mes';
+const RANGOS = { finde: 'Este finde', siguiente: 'El finde que viene', mes: 'Próximo mes', todo: 'Próximos 4 meses' };
+function viewEventos() {
+  if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando eventos…</div>';
+  const sab = proximoSabado(), hoy = hoyISO();
+  const [a, b] = evRango === 'finde' ? [isoMas(sab, -1), isoMas(sab, 1)] : evRango === 'siguiente' ? [isoMas(sab, 6), isoMas(sab, 8)] : [hoy, isoMas(hoy, evRango === 'mes' ? 31 : 124)];
+  const lista = eventosEntre(a, b).filter(([s]) => (!evCat || catDe(s) === evCat) && (!evZona || (typeof zonaDe === 'function' && zonaDe(s) === evZona)));
+  const nFinde = eventosEntre(isoMas(sab, -1), isoMas(sab, 1)).length;
+  // Agrupados por semana (lunes a domingo), con el finde de cada una como título.
+  const semanas = {};
+  lista.forEach(([s, f]) => { const ini = f[0] < a ? a : f[0], sb = typeof sabadoDe === 'function' ? sabadoDe(ini) : ini; (semanas[sb] = semanas[sb] || []).push([s, f]); });
+  const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
+  const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
+  return `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Este finde ›</span></button>
+    ${rejilla('evcat', evCat, [['', '🗂️', 'Todos'], ...Object.entries(CAT_EV).map(([k, [ic, n]]) => [k, ic, n])])}
+    <div class="filtros-barra">
+      <label class="orden-sel"><span class="vh">Cuándo</span><select id="ev-rango">${Object.entries(RANGOS).map(([k, n]) => `<option value="${k}" ${evRango === k ? 'selected' : ''}>📅 ${n}</option>`).join('')}</select></label>
+      <label class="orden-sel"><span class="vh">Zona</span><select id="ev-zona"><option value="">🗺️ Toda la isla</option>${Object.entries(ZONAS).map(([k, z]) => `<option value="${k}" ${evZona === k ? 'selected' : ''}>${z.ic} ${esc(z.nom)}</option>`).join('')}</select></label>
+    </div>
+    ${typeof propioBotonHTML === 'function' && enGrupo() ? propioBotonHTML('evento') : ''}
+    <p class="muted cuenta-lista">${lista.length} evento${lista.length === 1 ? '' : 's'}${act ? ` · agenda de Turismo de Tenerife del ${esc(act)}` : ''}</p>
+    ${lista.length ? Object.keys(semanas).sort().map(sb => `<h2>📅 ${esc(titulo(sb))}</h2>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}`).join('')
+      : '<div class="card muted">Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.</div>'}
+    <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
+}
+document.addEventListener('click', e => { const c = e.target.closest('[data-filtro="evcat"]'); if (c) { e.stopImmediatePropagation(); evCat = c.dataset.v; render(); } }, true);
+document.addEventListener('change', e => {
+  if (e.target.id === 'ev-rango') { evRango = e.target.value; render(); } else if (e.target.id === 'ev-zona') { evZona = e.target.value; render(); }
+});

@@ -1,11 +1,11 @@
 // Sube CACHE en cada sesión (y VERSION en app.js y --css-ver en styles.css) para que el móvil coja la versión nueva.
-const CACHE = 'escapadas-v18';
+const CACHE = 'escapadas-v19';
 // Calles del mapa (OpenStreetMap): solo las zonas que se han visto; no se borra al actualizar.
 const MAPA = 'escapadas-mapa';
 // Fotos de Wikimedia Commons: las que se han visto (o descargado en Más); tampoco se borra al actualizar.
 const FOTOS = 'escapadas-fotos';
 const FILES = [
-  './', './index.html', './styles.css', './app.js', './nube.js', './finde.js', './diario.js', './islas.js', './eventos.js', './planes.js', './propios.js', './agenda.js', './data/fotos.json', './firebase-config.js', './manifest.json', './data/sitios.json',
+  './', './index.html', './styles.css', './app.js', './nube.js', './finde.js', './diario.js', './islas.js', './eventos.js', './planes.js', './propios.js', './agenda.js', './data/fotos.json', './data/agenda.json', './firebase-config.js', './manifest.json', './data/sitios.json',
   './vendor/firebase-10.14.1/firebase-app-compat.js', './vendor/firebase-10.14.1/firebase-auth-compat.js', './vendor/firebase-10.14.1/firebase-firestore-compat.js',
   './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'
 ];
@@ -35,7 +35,8 @@ self.addEventListener('fetch', e => {
     }));
     return;
   }
-  if (url.hostname === 'thumb.wikimedia.org' || url.hostname === 'upload.wikimedia.org') {
+  // Fotos de Wikimedia y de la agenda de Turismo de Tenerife: caché aparte.
+  if (url.hostname === 'thumb.wikimedia.org' || url.hostname === 'upload.wikimedia.org' || (url.hostname === 'www.webtenerife.com' && url.pathname.startsWith('/-/media/'))) {
     e.respondWith(caches.open(FOTOS).then(async c => {
       const g = await c.match(req.url); if (g) return g;
       const r = await fetch(req); if (r.ok || r.type === 'opaque') c.put(req.url, r.clone()); return r;

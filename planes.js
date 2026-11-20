@@ -37,6 +37,7 @@ async function proponerPlan(d) {
   const isla = ISLAS[d.isla] ? d.isla : 'tenerife';
   let sitioId = d.sitioId || '', destino = String(d.destino || '').trim().slice(0, 80);
   if (!sitioId && destino && isla === 'tenerife') { const s = SITIOS.find(x => sinTildes(x.nombre) === sinTildes(destino)); if (s) { sitioId = s.id; destino = ''; } }
+  if (sitioId && sitioId.startsWith('ag-')) destino = ((sitio(sitioId) || {}).nombre || destino).slice(0, 80);
   if (!sitioId && !destino) destino = isla !== 'tenerife' ? `Finde en ${ISLAS[isla].nombre}` : '';
   if (!sitioId && !destino) return alert('¿A dónde? Escribe un sitio o un destino.');
   planForm = null;
