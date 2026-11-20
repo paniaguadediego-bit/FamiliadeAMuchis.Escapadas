@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v1';
+const VERSION = 'v2';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -198,7 +198,7 @@ function viewSitios() {
     <div id="lista">${conSitios.map(([m, ss]) => `<details class="muni" data-muni="${esc(m)}" ${filtro || muniAbiertos.has(m) ? 'open' : ''}>
       <summary>🏘️ ${esc(m)}<span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length}✅ · ${ss.length}</span></summary>
       <div class="fichas">${ss.map(fichaHTML).join('')}</div></details>`).join('') || '<div class="card muted">Nada con ese filtro.</div>'}</div>
-    ${!filtro ? `<p class="muted">Municipios sin sitios todavía: ${grupos.filter(g => !g[1].length).length} de 31 (llegan en la próxima versión del catálogo).</p>` : ''}`;
+    ${!filtro && grupos.some(g => !g[1].length) ? `<p class="muted">Municipios sin sitios todavía: ${grupos.filter(g => !g[1].length).length} de 31.</p>` : ''}`;
 }
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-ftipo]'), s = e.target.closest('[data-fest]');
@@ -231,7 +231,7 @@ function viewMapa() {
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
-    <p class="leyenda">Borde azul 🔖 quiero ir · fondo verde ✅ fuimos · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
+    <p class="leyenda">Acerca el mapa (＋ o con dos dedos) para ver los iconos. Azul 🔖 quiero ir · verde ✅ fuimos · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
 const puntos = () => SITIOS.filter(s => (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && isFinite(s.lon));
 function mpEncajar(W, H) {
@@ -256,11 +256,27 @@ function mpDibujar(el) {
         if (ty < 0 || ty >= n) continue;
         h += `<img class="mp-t" alt="" draggable="false" src="https://tile.openstreetmap.org/${z}/${((tx % n) + n) % n}/${ty}.png" style="left:${tx * MPT - ox}px;top:${ty * MPT - oy}px" onerror="this.remove()">`;
       }
-  const S = z >= 14 ? 1 : z >= 12 ? .85 : .72;
-  puntos().forEach(s => {
-    const [x, y] = P(s.lat, s.lon); if (x < -30 || y < -30 || x > W + 30 || y > H + 30) return;
+  const S = z >= 14 ? 1 : z >= 12 ? .85 : .7, peq = z <= 10; // con la isla entera: puntitos; al acercar, iconos
+  // Puntos que se pisan: se separan empujando cada pareja que choca, con un muelle suave hacia su sitio real
+  // (como en viaje-corea). Un hilo marca dónde está de verdad el que se ha movido.
+  const vis = puntos().map(s => { const [x, y] = P(s.lat, s.lon); return { s, x, y, x0: x, y0: y }; })
+    .filter(o => o.x > -40 && o.y > -40 && o.x < W + 40 && o.y < H + 40), D = peq ? 11 : 30 * S;
+  for (let it = 0; it < 60; it++) {
+    let mov = false;
+    for (let a = 0; a < vis.length; a++) for (let c = a + 1; c < vis.length; c++) {
+      const A = vis[a], B = vis[c]; let dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy);
+      if (d >= D) continue; mov = true;
+      if (d < 0.01) { const ang = (c * 2.39996) % (2 * Math.PI); dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
+      const f = (D - d) / d / 2; A.x -= dx * f; A.y -= dy * f; B.x += dx * f; B.y += dy * f;
+    }
+    vis.forEach(o => { o.x += (o.x0 - o.x) * 0.02; o.y += (o.y0 - o.y) * 0.02; });
+    if (!mov) break;
+  }
+  const hilos = vis.filter(o => Math.hypot(o.x - o.x0, o.y - o.y0) > 6);
+  if (hilos.length) h += `<svg class="mp-hilo" width="${W}" height="${H}">${hilos.map(o => `<line x1="${o.x0.toFixed(1)}" y1="${o.y0.toFixed(1)}" x2="${o.x.toFixed(1)}" y2="${o.y.toFixed(1)}"/>`).join('')}</svg>`;
+  vis.forEach(({ s, x, y }) => {
     const e = marca(s.id).estado;
-    h += `<button class="mp-pt ${e ? 'e-' + e : ''} ${MP.sel === s.id ? 'sel' : ''}" data-mpp="${esc(s.id)}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px" aria-label="${esc(s.nombre)}">${tipoIc(s.tipo)}</button>`;
+    h += `<button class="mp-pt ${peq ? 'peq' : ''} ${e ? 'e-' + e : ''} ${MP.sel === s.id ? 'sel' : ''}" data-mpp="${esc(s.id)}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px" aria-label="${esc(s.nombre)}">${tipoIc(s.tipo)}</button>`;
   });
   if (MP.yo) { const [x, y] = P(MP.yo[0], MP.yo[1]); h += `<span class="mp-yo" style="left:${x}px;top:${y}px"></span>`; }
   const capa = el.querySelector('.mp-capa'); capa.style.transform = ''; capa.style.setProperty('--mps', S); capa.innerHTML = h;

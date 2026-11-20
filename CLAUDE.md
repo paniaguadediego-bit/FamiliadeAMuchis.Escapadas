@@ -142,3 +142,14 @@ Copia de seguridad: Más → Exportar / Importar marcas (archivo JSON).
   poco a poco (grupos con código de invitación).
 - Nube: Firebase con cuenta de Google (no Supabase: ya tiene 2 proyectos).
 - Todo se hace desde el móvil.
+
+## Cómo se hace el catálogo (S2)
+- Fuente principal: Wikipedia en español. `list=geosearch` por una cuadrícula
+  de la isla da los artículos con coordenadas; `prop=extracts` (intro) da el
+  texto para comprobar el municipio y redactar la descripción propia.
+- La API de Wikipedia exige un User-Agent identificable (sin datos personales),
+  p. ej. `EscapadasCatalogo/1.0 (https://github.com/paniaguadediego-bit/FamiliadeAMuchis.Escapadas)`,
+  y pausas entre peticiones (si no, 429).
+- Coordenadas = las del artículo. Municipio = el que dice el artículo; si no
+  lo dice, VERIFICAR. Horarios, precios, reservas: nunca de memoria → VERIFICAR.
+- Guachinches y restaurantes: sin fuente fiable todavía; no se añaden hasta tenerla.

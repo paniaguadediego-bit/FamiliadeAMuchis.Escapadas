@@ -131,7 +131,13 @@ nav#tabs button.on { color: var(--pri); font-weight: 700; box-shadow: inset 0 3p
 .mp-pt.e-quiero { border-color: var(--quiero); }
 .mp-pt.e-fuimos { border-color: #1d7a3a; background: #d9f2df; }
 .mp-pt.e-no { opacity: .45; }
+.mp-pt.peq { width: 14px; height: 14px; font-size: 0; border: 3px solid #0b6e4f; background: #fff; transform: translate(-50%, -50%); }
+.mp-pt.peq.e-quiero { background: #1f5fbf; border-color: #fff; }
+.mp-pt.peq.e-fuimos { background: #1d7a3a; border-color: #fff; }
+.mp-pt.peq.sel { width: 20px; height: 20px; }
 .mp-pt.sel { outline: 3px solid #ffd400; z-index: 5; }
+.mp-hilo { position: absolute; left: 0; top: 0; pointer-events: none; }
+.mp-hilo line { stroke: #333; stroke-width: 1; opacity: .5; }
 .mp-yo { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #1a73e8;
   border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(26,115,232,.25); z-index: 6; }
 .mp-bot { position: absolute; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; z-index: 8; }
@@ -154,4 +160,4 @@ ol.pasos { padding-left: 1.3em; } ol.pasos li { margin: 6px 0; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aviso { background: #3b2f10; color: #ffe39a; } }
 
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v1"; }
+:root { --css-ver: "v2"; }

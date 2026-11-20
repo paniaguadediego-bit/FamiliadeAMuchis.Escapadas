@@ -1,5 +1,26 @@
 # PROGRESO
 
+## v2 · S2 · Catálogo (2026-11-20)
+Hecho:
+- `data/sitios.json`: 148 sitios en los 31 municipios (mín. 1 por municipio;
+  Santa Cruz 26, La Laguna 11, La Orotava 11…). Tipos: 48 pueblos, 28 curiosos,
+  19 playas/charcos, 17 senderos, 12 museos, 11 miradores, 11 naturaleza, 2 eventos.
+- Coordenadas sacadas de Wikipedia (geosearch); las de la S1 que eran de memoria
+  quedan sustituidas. Descripción propia a partir del resumen de cada artículo;
+  fuente y enlace en cada ficha.
+- Municipios comprobados con el texto del artículo; corregidos: Roque del Conde y
+  Tijoco (Adeje), Molino de Llano del Moro y Pico del Inglés (Santa Cruz),
+  Montaña de Tejina (Guía de Isora).
+- 57 sitios con VERIFICAR (horarios, precios, reservas, accesos o municipio).
+  Charco de la Laja y Mirador de Humboldt siguen con coordenadas aproximadas
+  (su artículo no tiene coordenadas).
+- Mapa: con la isla entera, puntitos (blancos sin marcar, azul 🔖, verde ✅);
+  al acercar, iconos por tipo, separados si se pisan.
+- Ids de la S1 conservados (las marcas guardadas siguen valiendo).
+
+Pendiente: guachinches y restaurantes (sin fuente fiable aún); más eventos con fecha.
+Siguiente: **S3** Firebase.
+
 ## v1 · S1 · Esqueleto (2026-11-20)
 Hecho:
 - `CLAUDE.md` a partir de `ARRANQUE-TENERIFE.md` (viaje-corea), con las reglas,
