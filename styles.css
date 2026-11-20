@@ -194,5 +194,16 @@ button.reciente .carita { width: 32px; height: 32px; font-size: 17px; }
 .mp-pt.g-fue::after { content: ""; position: absolute; right: -4px; top: -4px; width: 11px; height: 11px; border-radius: 50%;
   background: #f59e0b; border: 2px solid #fff; }
 
+/* 🏠 Este finde */
+.tiempo table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.tiempo th, .tiempo td { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tiempo tbody th { text-align: left; font-weight: 600; white-space: nowrap; }
+.tiempo tr:last-child th, .tiempo tr:last-child td { border-bottom: 0; }
+.t-ic { font-size: 1.3rem; }
+.t-p { font-size: .8rem; color: var(--muted); }
+.t-pie { font-size: .75rem; text-align: right; margin-top: 4px; }
+.sorp .chips { margin-bottom: 2px; }
+.sorp-por { font-size: .88rem; color: var(--pri); font-weight: 600; margin: 8px 2px 0; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v6"; }
+:root { --css-ver: "v7"; }

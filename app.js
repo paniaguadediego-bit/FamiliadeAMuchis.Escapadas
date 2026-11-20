@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v6';
+const VERSION = 'v7';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -94,7 +94,7 @@ const abiertas = new Set();
 const gmaps = s => `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}`;
 function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
-  const datos = [s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
+  const datos = [distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
     <summary><span class="ic">${tipoIc(s.tipo)}</span><span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
@@ -145,36 +145,12 @@ document.addEventListener('click', e => {
   abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = ''; fEst = ''; q = ''; ir('sitios');
 });
 
-// ---------- 🏠 Este finde ----------
-function finde() {
-  const d = new Date(), dia = d.getDay(); // 0 domingo, 6 sábado
-  const sab = new Date(d); sab.setDate(d.getDate() + (dia === 0 ? -1 : 6 - dia));
-  const dom = new Date(sab); dom.setDate(sab.getDate() + 1);
-  const f = x => x.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-  const t = `${f(sab)} y ${f(dom)}`; return t[0].toUpperCase() + t.slice(1);
-}
+// ---------- 🏠 Este finde ---------- (la pestaña está en finde.js)
 function cuentaHTML() {
   const vals = Object.values(marcas), n = k => vals.filter(m => m.estado === k).length;
   return `<div class="cuenta" data-cuenta><div><b>${n('fuimos')}</b>✅ Fuimos</div><div><b>${n('quiero')}</b>🔖 Quiero ir</div><div><b>${SITIOS.length - Object.keys(marcas).filter(k => marcas[k].estado).length}</b>Sin marcar</div></div>`;
 }
-// Ideas del día: sitios sin marcar, en un orden que cambia cada día (no a cada toque).
-function ideas(n) {
-  const sem = hoyISO().split('-').join('') | 0;
-  const rnd = s => { let h = sem; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return h; };
-  return SITIOS.filter(s => !marca(s.id).estado).sort((a, b) => rnd(a.id) - rnd(b.id)).slice(0, n);
-}
-function viewFinde() {
-  if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
-  const quiero = SITIOS.filter(s => marca(s.id).estado === 'quiero');
-  const ids = ideas(3);
-  return `<p class="muted">${esc(finde())}</p>
-    ${cuentaHTML()}
-    <h2>🔖 Tenéis ganas de ir</h2>
-    ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}
-    <h2>💡 Ideas: aún sin marcar</h2>
-    ${ids.length ? ids.map(fichaHTML).join('') : '<div class="card muted">¡Lo habéis marcado todo! 🎉</div>'}
-    <button class="sec" data-tab="sitios">📍 Ver todos los sitios</button>`;
-}
+function viewFinde() { return viewFindeS5(); }
 
 // ---------- 📍 Sitios ----------
 let q = '', fTipo = '', fEst = '';
@@ -350,6 +326,8 @@ function viewMas() {
   const t = load(K_THEME, 'auto');
   return `<h2>🎨 Tema</h2>
     <div class="chips">${Object.entries(TEMAS).map(([k, [ic, n]]) => `<button class="chip ${t === k ? 'on' : ''}" data-settema="${k}">${ic} ${n}</button>`).join('')}</div>
+    <h2>🏠 Mi casa</h2>
+    ${casaHTML()}
     <h2>💾 Copia de mis marcas</h2>
     <div class="card"><p class="muted">Tus marcas viven en este móvil. Guarda una copia por si cambias de móvil o borras datos del navegador.</p>
       <div class="row"><button class="sec" data-exportar>⬇️ Exportar</button><button class="sec" data-importar>⬆️ Importar</button></div></div>

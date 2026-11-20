@@ -1,5 +1,22 @@
 # PROGRESO
 
+## v7 · S5 · Este finde (2026-11-20)
+Hecho:
+- 🌤️ Tiempo del sábado y domingo en 3 zonas (Norte, Sur y este, Cumbre) con Open-Meteo:
+  cielo, máx/mín, lluvia si ≥ 20 %, viento si ≥ 40 km/h. Se guarda para verlo sin red.
+- 🎲 Sorpréndeme: elige día, rato (☕ / 🌤️ / 🎒) y «que nadie haya ido» o «que yo no
+  haya ido»; tiene en cuenta el tiempo de cada zona y la distancia a casa. Dice por qué
+  lo propone. «Otra idea» no repite hasta agotar.
+- 🏠 Casa (☰ Más): con el GPS, solo en el móvil. Cada ficha dice km y ≈ min en coche.
+- Este finde: tus 🔖, «👥 Al grupo le apetece» y el recuento. Las «ideas» fijas se van:
+  las sustituye Sorpréndeme.
+
+Probado con tiempo simulado (lluvia norte, sol sur, viento cumbre) y casa en La Laguna:
+75 sorteos, todos cumplen tiempo, rato y distancia. Sin probar contra Open-Meteo real
+(la red de la sesión no llega); en el móvil sí debería.
+
+Siguiente: **S6** planes al grupo, diario, Resumen anual en PDF y Trivial canario.
+
 ## v6 · S4 · Marcas compartidas al momento (2026-11-20)
 Hecho:
 - Cada marca (🔖 ✅ ✖️, ⭐, nota) se guarda en el móvil y se sube al grupo; sin red,

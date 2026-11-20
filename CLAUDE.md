@@ -47,6 +47,8 @@ se adapta, sin restos de Corea.
 ## Archivos
 - `index.html` · `styles.css` · `app.js` (la app) · `sw.js` (caché).
 - `nube.js`: Firebase (entrada con Google, perfil, grupo; desde S4, marcas).
+- `finde.js`: 🏠 Este finde (tiempo por zona de Open-Meteo, 🎲 Sorpréndeme, casa).
+  Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
 - `vendor/firebase-10.14.1/`: SDK compat (app, auth, firestore), precacheado.
 - `firebase/firestore.rules`: reglas; el usuario las pega en la consola.
@@ -166,3 +168,15 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Coordenadas = las del artículo. Municipio = el que dice el artículo; si no
   lo dice, VERIFICAR. Horarios, precios, reservas: nunca de memoria → VERIFICAR.
 - Guachinches y restaurantes: sin fuente fiable todavía; no se añaden hasta tenerla.
+
+## Este finde (S5)
+- Zonas: 🌿 Norte (municipios del norte y la costa norte de Anaga), 🏝️ Sur y este
+  (el resto, Santa Cruz incluida), 🌋 Cumbre (a menos de 11 km del pico del Teide).
+- Tiempo: Open-Meteo, una petición para las 3 zonas, guardada en `esc.tiempo`
+  (como mucho cada 3 h; sin red se ve la última).
+- Casa: `esc.casa` = [lat, lon], SOLO en el móvil (nunca a Firestore ni al repo).
+  Tiempo en coche aproximado: km en línea recta × 1,4 a 55 km/h.
+- Sorpréndeme: sin ✅ ni ✖️ tuyos; «que nadie haya ido» mira al grupo; descarta por
+  tiempo (playa: sol y ≥ 21°; cumbre: nieve o viento ≥ 60; lluvia: solo museos) y por
+  rato (☕ ≤ 25 min sin senderos, 🌤️ ≤ 50 min, 🎒 todo). Más papeletas a lo que
+  tú o el grupo tenéis en 🔖.
