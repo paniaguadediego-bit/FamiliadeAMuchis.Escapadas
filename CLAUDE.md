@@ -65,6 +65,7 @@ se adapta, sin restos de Corea.
 - `manifest.json` · `icons/` (icon.svg, 192, 512, apple-touch-icon).
 - `data/sitios.json`: catálogo público de sitios.
 - `PROGRESO.md`: qué se hizo en cada versión y qué falta.
+- `IDEAS.md`: ideas del usuario para más adelante (mirar al empezar cada sesión).
 
 ## Datos
 `data/sitios.json` (público): `[{id, municipio, nombre, tipo, lat, lon,
