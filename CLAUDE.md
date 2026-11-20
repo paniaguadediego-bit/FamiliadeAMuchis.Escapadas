@@ -334,7 +334,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Sorpréndeme: días = viernes tarde, sábado, domingo y festivos de las próximas 4 semanas.
 - Saltar a una ficha (`data-irficha`) va directo a ella: los eventos en la pestaña Eventos, el resto en Sitios.
 - Sitios: filtros siempre a la vista en botoncitos (tocar otra vez quita). Mapa: tipos como botones (ninguno =
-  todos, uno o varios); iconos solo en el zoom máximo y los 4 anteriores (z ≥ 14), puntitos antes; al tocar un punto
+  todos, uno o varios); iconos desde el zoom 12 y zoom máximo 16 (v23, pedido del usuario: `MPZ`, `MPZ_ICONOS`), puntitos antes; al tocar un punto
   se marca 🔖/✅/✖️ desde ahí. Menús centrados. Franja de Canarias blanco-azul-amarillo, 8 px.
 
 ## Calendario y carruseles (v22, pedido del usuario)
@@ -347,4 +347,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Vísperas: la tarde (clave 'AAAA-MM-DDT', tiempo de 14 a 20 h de cualquier día) antes de un festivo de lunes a jueves
   cuenta como el viernes tarde: se marca 👍/🙅, se propone plan y Sorpréndeme la ofrece (🌆). Jueves/viernes festivos
   forman puente con el finde (y la tarde de su víspera).
-- Mapa: etiqueta «🔎 Zoom N de 18 · iconos desde 14» arriba a la izquierda, para hablar de zoom con números.
+- Mapa: etiqueta «🔎 Zoom N de 16 · iconos desde 12» arriba a la izquierda, para hablar de zoom con números.

@@ -1,5 +1,8 @@
 # PROGRESO
 
+## v23 · Zoom del mapa a medida (2026-11-20)
+- Iconos de cada tipo desde el zoom 12 (antes 14) y zoom máximo 16 (antes 18), como pidió el usuario.
+
 ## v22 · Calendario mensual, vísperas y carruseles de planes (2026-11-20)
 - Planes: dos carruseles, «Este finde» y «El que viene», con los planes del grupo (quién va y apuntarse), los eventos
   (proponer) y 3 ideas que encajan con el tiempo.

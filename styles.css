@@ -650,4 +650,4 @@ i.cal-p { display: inline-block; min-width: .55rem; height: .55rem; border-radiu
 .cal-ley .l-visp { border-bottom: 2px dashed var(--amarillo-ic); }
 .dia-sel { border-top: 4px solid var(--pri); }
 .dia-sel .finde-cab button { background: var(--pri); color: var(--pri-fg); }
-:root { --css-ver: "v22"; }
+:root { --css-ver: "v23"; }

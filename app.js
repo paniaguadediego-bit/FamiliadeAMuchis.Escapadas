@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v22';
+const VERSION = 'v23';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -309,7 +309,7 @@ document.addEventListener('input', e => {
 
 // ---------- 🗺️ Mapa propio (sin librerías) ----------
 // Teselas de OpenStreetMap con conexión (se guardan las vistas); sin conexión, la silueta de la isla y los puntos.
-const MPT = 256, MPZ = [9, 18];
+const MPT = 256, MPZ = [9, 16], MPZ_ICONOS = 12; // zoom mínimo y máximo; desde MPZ_ICONOS se ve el icono de cada tipo
 const mpX = (lon, z) => (lon + 180) / 360 * MPT * 2 ** z;
 const mpY = (lat, z) => { const s = Math.sin(lat * Math.PI / 180); return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * MPT * 2 ** z; };
 const mpLon = (x, z) => x / (MPT * 2 ** z) * 360 - 180;
@@ -363,9 +363,8 @@ function mpDibujar(el) {
         if (ty < 0 || ty >= n) continue;
         h += `<img class="mp-t" alt="" draggable="false" src="https://tile.openstreetmap.org/${z}/${((tx % n) + n) % n}/${ty}.png" style="left:${tx * MPT - ox}px;top:${ty * MPT - oy}px" onerror="this.remove()">`;
       }
-  // Puntitos minúsculos hasta acercarse mucho; el icono de cada tipo solo en el zoom máximo y los 4 anteriores
-  // (así no se amontonan en Santa Cruz o La Laguna).
-  const peq = z < MPZ[1] - 4, S = z >= 16 ? 1 : .85;
+  // Puntitos minúsculos hasta el zoom 12; desde ahí, el icono de cada tipo (más grande al acercarse).
+  const peq = z < MPZ_ICONOS, S = z >= 15 ? 1 : z >= 14 ? .9 : .8;
   // Puntos que se pisan: se separan empujando cada pareja que choca, con un muelle suave hacia su sitio real
   // (como en viaje-corea). Un hilo marca dónde está de verdad el que se ha movido.
   const vis = puntos().map(s => { const [x, y] = P(s.lat, s.lon); return { s, x, y, x0: x, y0: y }; })
@@ -388,7 +387,7 @@ function mpDibujar(el) {
     h += `<button class="mp-pt ${peq ? 'peq' : ''} ${e ? 'e-' + e : ''} ${MP.sel === s.id ? 'sel' : ''} ${enGrupo() && otrosEn(s.id).fuimos.length ? 'g-fue' : ''}" data-mpp="${esc(s.id)}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px" aria-label="${esc(s.nombre)}">${tipoIc(s.tipo)}</button>`;
   });
   if (MP.yo) { const [x, y] = P(MP.yo[0], MP.yo[1]); h += `<span class="mp-yo" style="left:${x}px;top:${y}px"></span>`; }
-  const zb = el.querySelector('.mp-zoom'); if (zb) zb.innerHTML = `🔎 Zoom <b>${z}</b> de ${MPZ[1]}${peq ? ` · iconos desde ${MPZ[1] - 4}` : ''}`;
+  const zb = el.querySelector('.mp-zoom'); if (zb) zb.innerHTML = `🔎 Zoom <b>${z}</b> de ${MPZ[1]}${peq ? ` · iconos desde ${MPZ_ICONOS}` : ''}`;
   const capa = el.querySelector('.mp-capa'); capa.style.transform = ''; capa.style.setProperty('--mps', S); capa.innerHTML = h;
   const inf = el.querySelector('.mp-info'), s = MP.sel && sitio(MP.sel);
   inf.innerHTML = s ? mpFicha(s) : ''; inf.classList.toggle('on', !!s);
