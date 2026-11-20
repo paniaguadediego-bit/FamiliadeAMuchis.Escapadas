@@ -484,4 +484,4 @@ button.plan-b-s { background: none; color: var(--fg); padding: 0; margin: 0; min
 .t-z i { font-style: normal; opacity: .5; margin: 0 1px; }
 
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v14"; }
+:root { --css-ver: "v15"; }

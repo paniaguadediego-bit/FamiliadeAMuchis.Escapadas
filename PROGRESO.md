@@ -1,5 +1,15 @@
 # PROGRESO
 
+## v15 · Más museos y sitios (2026-11-20)
+- 46 sitios nuevos (206 en total, 188 con foto), todos de Wikipedia con coordenadas y descripción
+  propia: museos (Arte Sacro de La Orotava, Bellas Artes y Casa del Carnaval en Santa Cruz),
+  castillos (Paso Alto, Castillo Negro), teatros (Guimerá, Leal), faros (Rasca, Punta del Hidalgo,
+  Buenavista), caseríos de Anaga (El Draguillo, Las Carboneras, Roque Negro), playas (Antequera,
+  Las Gaviotas), charcos (Charco del Viento), cumbre (Observatorio, Pozos de Nieve, Guajara,
+  Ermita de las Nieves) y más pueblos.
+- VERIFICAR en los de municipio dudoso (zonas entre municipios) y en horarios, visitas y accesos.
+- Pendiente: Fasnia, La Guancha, La Matanza, La Victoria y San Miguel siguen con 2 sitios.
+
 ## v14 · Tiempo de los próximos findes (2026-11-20)
 - Previsión de 16 días (antes 10). En Este finde, la tabla del tiempo se cambia entre «Este finde»,
   «El que viene» y «En 2 semanas» (con aviso: a más de una semana puede cambiar).
