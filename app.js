@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v2';
+const VERSION = 'v3';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -339,11 +339,8 @@ document.addEventListener('click', e => {
 addEventListener('resize', () => { if (tab === 'mapa') pintarMapa(); });
 
 // ---------- 👥 Grupo ----------
-function viewGrupo() {
-  return `<div class="vacio"><div class="grande">👥</div><p class="big">El grupo llega pronto</p>
-    <p class="muted">Aquí veréis lo que ha marcado cada uno de la Familia de A Muchis, al momento y sin pasaros archivos: quién lleva más sitios, las últimas marcas y lo que nadie ha hecho todavía.</p></div>
-    <div class="card">Por ahora tus marcas se guardan <b>solo en este móvil</b>. Cuando esté el grupo, se subirán solas. Mientras tanto puedes hacer una copia en ☰ Más.</div>`;
-}
+// La pestaña la pinta nube.js (Firebase: entrada, perfil y grupo).
+function viewGrupo() { return viewNube(); }
 
 // ---------- ☰ Más ----------
 function viewMas() {
@@ -390,6 +387,7 @@ $('#file').addEventListener('change', async e => {
 // ---------- arranque ----------
 $('#version').textContent = VERSION;
 render();
+iniciarNube();
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if ('serviceWorker' in navigator) {
   // Si llega una versión nueva, recarga una vez para usarla (sin perder datos).

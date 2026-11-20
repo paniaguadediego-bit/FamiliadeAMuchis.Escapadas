@@ -1,0 +1,65 @@
+rules_version = '2';
+// Reglas de Firestore de Escapadas. Se copian enteras en la consola de Firebase:
+// Firestore Database → Reglas → pegar → Publicar.
+//
+// - Perfiles: cualquiera con sesión los lee (para ver nombres y caritas); cada uno escribe solo el suyo.
+// - Grupos: el id del grupo ES su código de invitación (8 letras/números al azar, no se puede listar ni adivinar).
+//   Solo los miembros lo leen. Con el código, uno se puede añadir a sí mismo; cada miembro puede salirse
+//   y cambiar el nombre del grupo. Nadie puede añadir ni quitar a otros.
+// - Marcas: las leen los miembros del grupo; cada uno escribe y borra solo las suyas ({uid}_{sitioId}).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function dentro() { return request.auth != null; }
+    function yo() { return request.auth.uid; }
+    function esMiembro(gid) {
+      return dentro() && yo() in get(/databases/$(database)/documents/grupos/$(gid)).data.miembros;
+    }
+    function soloCambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+    function nombreValido(n, max) { return n is string && n.size() > 0 && n.size() <= max; }
+
+    match /perfiles/{uid} {
+      allow read: if dentro();
+      allow create, update: if dentro() && yo() == uid
+        && request.resource.data.keys().hasOnly(['nombre', 'emoji', 'color', 'actualizado'])
+        && nombreValido(request.resource.data.nombre, 40)
+        && request.resource.data.emoji is string && request.resource.data.emoji.size() <= 16
+        && request.resource.data.color is string && request.resource.data.color.size() <= 16;
+      allow delete: if dentro() && yo() == uid;
+    }
+
+    match /grupos/{gid} {
+      allow read: if dentro() && yo() in resource.data.miembros;
+      allow create: if dentro() && gid.size() >= 8
+        && request.resource.data.keys().hasOnly(['nombre', 'codigoInvitacion', 'miembros', 'creadoPor', 'creado'])
+        && request.resource.data.codigoInvitacion == gid
+        && request.resource.data.miembros == [yo()]
+        && request.resource.data.creadoPor == yo()
+        && nombreValido(request.resource.data.nombre, 60);
+      allow update: if dentro() && (
+        // Entrar con el código: añadirse uno mismo y nada más.
+        (soloCambia(['miembros']) && !(yo() in resource.data.miembros)
+          && request.resource.data.miembros.toSet() == resource.data.miembros.toSet().union([yo()].toSet()))
+        // Salir: quitarse uno mismo y nada más.
+        || (soloCambia(['miembros']) && yo() in resource.data.miembros
+          && request.resource.data.miembros.toSet() == resource.data.miembros.toSet().difference([yo()].toSet()))
+        // Cambiar el nombre del grupo: cualquier miembro.
+        || (soloCambia(['nombre']) && yo() in resource.data.miembros
+          && nombreValido(request.resource.data.nombre, 60))
+      );
+
+      match /marcas/{marcaId} {
+        allow read: if esMiembro(gid);
+        allow create, update: if esMiembro(gid)
+          && request.resource.data.uid == yo()
+          && marcaId == yo() + '_' + request.resource.data.sitioId
+          && request.resource.data.estado in ['quiero', 'fuimos', 'no', '']
+          && request.resource.data.estrellas is int
+          && request.resource.data.estrellas >= 0 && request.resource.data.estrellas <= 5
+          && request.resource.data.nota is string && request.resource.data.nota.size() <= 1000;
+        allow delete: if esMiembro(gid) && resource.data.uid == yo();
+      }
+    }
+  }
+}

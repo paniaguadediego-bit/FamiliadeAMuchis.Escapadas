@@ -1,5 +1,24 @@
 # PROGRESO
 
+## v3 · S3 · Firebase: entrada, perfil y grupo (2026-11-20)
+Hecho:
+- SDK de Firebase 10.14.1 (compat: app, auth, firestore) copiado en `vendor/` y precacheado.
+- `nube.js`: entrada con Google (`signInWithPopup`), perfil (nombre, emoji, color),
+  crear grupo «Familia de A Muchis» con código de invitación, unirse con código,
+  pasar el código (compartir/copiar), lista de miembros al momento (onSnapshot),
+  salir del grupo y cerrar sesión. Persistencia offline de Firestore activada.
+- `firebase/firestore.rules`: perfiles (cada uno el suyo), grupos (solo miembros;
+  con el código, uno se añade a sí mismo), marcas preparadas para S4.
+- `GUIA-FIREBASE.md`: pasos desde el móvil.
+- Sin `firebase-config.js` relleno la app sigue igual (Grupo dice «aún no conectado»).
+
+Probado: sin configuración; con configuración falsa (el SDK carga, sale «Entrar
+con Google»); pantallas de perfil y grupo simuladas. **Sin probar contra Firebase
+real**: falta que el usuario cree el proyecto y pegue `firebaseConfig`.
+Pendiente de probar en el móvil: el popup de Google con la app instalada.
+
+Siguiente: pegar la configuración → probar entrada y grupo → **S4** marcas compartidas.
+
 ## v2 · S2 · Catálogo (2026-11-20)
 Hecho:
 - `data/sitios.json`: 148 sitios en los 31 municipios (mín. 1 por municipio;

@@ -45,12 +45,15 @@ se adapta, sin restos de Corea.
    "Para continuar escribe: Sigue".
 
 ## Archivos
-- `index.html` · `styles.css` · `app.js` (toda la app) · `sw.js` (caché).
+- `index.html` · `styles.css` · `app.js` (la app) · `sw.js` (caché).
+- `nube.js`: Firebase (entrada con Google, perfil, grupo; desde S4, marcas).
+- `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
+- `vendor/firebase-10.14.1/`: SDK compat (app, auth, firestore), precacheado.
+- `firebase/firestore.rules`: reglas; el usuario las pega en la consola.
+- `GUIA-FIREBASE.md`: pasos para crear el proyecto desde el móvil.
 - `manifest.json` · `icons/` (icon.svg, 192, 512, apple-touch-icon).
 - `data/sitios.json`: catálogo público de sitios.
 - `PROGRESO.md`: qué se hizo en cada versión y qué falta.
-- Más adelante: `vendor/` (SDK de Firebase, versión fija y precacheada) y
-  `firebase/firestore.rules`.
 
 ## Datos
 `data/sitios.json` (público): `[{id, municipio, nombre, tipo, lat, lon,
@@ -99,7 +102,10 @@ Copia de seguridad: Más → Exportar / Importar marcas (archivo JSON).
   `vendor/`, versión fija y precacheada), sin CDN.
 - Datos en Firestore:
   - `perfiles/{uid}`: nombre, emoji, color
-  - `grupos/{gid}`: nombre, codigoInvitacion, miembros [uid]
+  - `grupos/{gid}`: nombre, codigoInvitacion, miembros [uid], creadoPor, creado.
+    El id del grupo ES el código de invitación (8 caracteres al azar de
+    `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, se muestra ABCD-2345): no se puede
+    listar ni adivinar; con él uno se añade a sí mismo (arrayUnion).
   - `grupos/{gid}/marcas/{uid}_{sitioId}`: uid, sitioId, estado
     (quiero|fuimos|no), estrellas, nota, fecha, actualizado
   - Más adelante `grupos/{gid}/planes/{id}`: sitioId, fecha, propone,

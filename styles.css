@@ -159,5 +159,18 @@ ol.pasos { padding-left: 1.3em; } ol.pasos li { margin: 6px 0; }
 :root[data-theme="dark"] .aviso { background: #3b2f10; color: #ffe39a; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aviso { background: #3b2f10; color: #ffe39a; } }
 
+/* 👥 Grupo */
+.carita { flex: none; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px; background: color-mix(in srgb, var(--cc, #475569) 22%, var(--bg)); border: 2px solid var(--cc, #475569); }
+.miembro { padding: 4px 0; }
+.yo b { font-size: 1.05rem; }
+.codigo { font-size: 1.8rem; font-weight: 800; letter-spacing: .12em; text-align: center; margin: 6px 0; font-family: ui-monospace, monospace; }
+.elige { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.elige button { width: 44px; min-height: 44px; padding: 0; margin: 0; font-size: 1.4rem; background: var(--bg); border: 2px solid var(--line); }
+.elige button.on { border-color: var(--pri); box-shadow: 0 0 0 2px var(--pri); }
+.elige button.color { border-color: transparent; }
+.elige button.color.on { border-color: var(--bg); }
+button[disabled] { opacity: .5; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v2"; }
+:root { --css-ver: "v3"; }
