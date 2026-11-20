@@ -197,9 +197,11 @@ function viewFindeS5() {
     <div class="banner-tx"><span class="banner-n"><small>${typeof NUBE !== 'undefined' && NUBE.grupo ? esc(NUBE.grupo.nombre) : 'Escapadas por Tenerife'}</small>
       <b>${esc(txtDias || 'Fin de semana')} de ${esc(new Date().toLocaleDateString('es-ES', { month: 'long' }))}</b>
       ${prox ? `<small>📅 Próximo plan: ${esc(sitio(prox.sitioId).nombre)}</small>` : ''}</span></div></div>
+    ${eventosFindeHTML(proximoSabado())}
     <h2>🌤️ El tiempo</h2>${tiempoHTML()}
     ${typeof calendarioHTML === 'function' ? calendarioHTML() : ''}
     <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
+    ${proximosEventosHTML(proximoSabado())}
     <h2>🔖 Tus ganas de ir</h2>
     ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}
     ${grupoQuiere.length ? `<h2>👥 Al grupo le apetece</h2>${grupoQuiere.map(fichaHTML).join('')}` : ''}

@@ -53,6 +53,12 @@ function cuandoHTML(s) {
   return `<div class="cuando">📅 <b>${ya ? '¡Ahora mismo!' : 'Próxima:'}</b> ${esc(fechaEventoTxt(f))}${!ya ? ` <span class="muted">(${dias === 1 ? 'mañana' : `en ${dias} días`})</span>` : ''}
     ${s.cuandoTxt ? `<div class="muted">${esc(s.cuandoTxt)}</div>` : ''}</div>`;
 }
+// Lo próximo: los siguientes eventos (sin los de este finde), hasta n.
+function proximosEventosHTML(sab, n = 4) {
+  const ev = eventosEntre(isoMas(sab, 2), isoMas(hoyISO(), 120)).slice(0, n);
+  return ev.length ? `<h2>🎟️ Lo próximo</h2><div class="card">${ev.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${+f[0].slice(8)}</span>
+    <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></button>`).join('')}</div>` : '';
+}
 // Este finde: lo que hay (viernes a domingo).
 function eventosFindeHTML(sab) {
   const ev = eventosEntre(isoMas(sab, -1), isoMas(sab, 1));

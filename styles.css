@@ -318,5 +318,10 @@ body.con-resumen { overflow: hidden; }
 .plan-form select { margin: 4px 0 8px; }
 .plan-form label { display: block; margin-top: 4px; }
 
+/* 🎟️ Eventos */
+.cuando { background: hsl(330 70% 50% / .1); border-left: 4px solid hsl(330 65% 50%); border-radius: 8px; padding: 6px 10px; margin: 2px 0 8px; font-size: .92em; }
+.ev-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 6px; }
+.chip.ev { background: hsl(330 70% 50% / .12); border-color: hsl(330 65% 50% / .5); font-size: .85rem; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v9"; }
+:root { --css-ver: "v10"; }

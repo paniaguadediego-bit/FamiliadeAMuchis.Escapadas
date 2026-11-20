@@ -106,6 +106,7 @@ function calendarioHTML() {
       <div class="finde-cab"><span class="finde-f"><b>${esc(diaCorto(sab))} – ${esc(diaCorto(dom))}</b> <small>${esc(new Date(sab + 'T12:00').toLocaleDateString('es-ES', { month: 'short' }))}</small></span>
         <span class="finde-c">${cuando}</span>
         ${planForm && planForm.sabado === sab ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${sab}" aria-label="Proponer plan este finde">＋</button>`}</div>
+      ${eventosSemanaHTML(lun, dom)}
       ${deEsa.map(p => planHTML(p, { compacto: true })).join('')}
       ${!deEsa.length && !(planForm && planForm.sabado === sab) ? '<div class="muted finde-libre">Libre</div>' : ''}
       ${planForm && planForm.sabado === sab ? formPlanHTML(planForm) : ''}</div>`);

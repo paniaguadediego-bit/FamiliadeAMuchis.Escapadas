@@ -1,5 +1,17 @@
 # PROGRESO
 
+## v10 · Eventos con fecha (2026-11-20)
+- 14 eventos (12 nuevos + Carnaval y Romería del Socorro con fecha), todos con su regla tomada
+  de Wikipedia: San Andrés (29 nov), Gran Poder y Carmen (13-15 jul), Peregrinación a Candelaria
+  (14-15 ago) y Candelaria (2 feb), San Benito (2.º domingo de julio), Fiestas de la Cruz de Los
+  Realejos (2-3 may), San Isidro Los Realejos (último domingo de mayo), Romería de Tegueste
+  (último domingo de abril), San Roque Garachico (16 ago), Semana Santa de La Laguna,
+  Corpus/alfombras y San Isidro de La Orotava (según Pascua), Carnaval (según Pascua, VERIFICAR).
+- Fechas calculadas cada año (Pascua por algoritmo). En ficha, Este finde, «Lo próximo» y
+  calendario de findes.
+- IDEAS.md con las ideas del usuario para más adelante.
+Pendiente: más fiestas (patronales de cada municipio, Navidad, Día de Canarias…) con fuente.
+
 ## Reglas de Firestore automáticas (2026-11-20)
 - GitHub Actions publica `firebase/firestore.rules` al cambiar en `main` (o a mano desde Actions).
 - Cuenta de servicio `reglas-github` solo con permisos de reglas; llave en el secreto

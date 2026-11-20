@@ -50,11 +50,12 @@ se adapta, sin restos de Corea.
 - `finde.js`: 🏠 Este finde (tiempo por zona de Open-Meteo, 🎲 Sorpréndeme, casa).
 - `diario.js`: 📔 diario (tus ✅ por fecha) y 🖨️ Resumen del año (hoja + Imprimir → PDF).
 - `planes.js`: 📅 planes del grupo y calendario de los próximos 10 findes.
+- `eventos.js`: 🎟️ fecha de cada evento según su regla `cuando` (fija, Pascua, n-ésimo día).
 - `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
   municipio (`MUNI`: tono `h`, emoji, lema, `portada` = sitio cuya foto va en el banner).
 - `data/fotos.json`: `{ sitioId: { src, archivo } }`, foto principal del artículo de
   Wikipedia (Wikimedia Commons). Sin banderas, escudos, logos ni mapas.
-- Orden de carga (index.html): firebase-config, islas, nube, planes, finde, diario, app.
+- Orden de carga (index.html): firebase-config, islas, nube, eventos, planes, finde, diario, app.
   Los archivos anteriores a app.js no usan load/save/SITIOS al cargar, solo dentro de funciones.
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
@@ -69,7 +70,7 @@ se adapta, sin restos de Corea.
 
 ## Datos
 `data/sitios.json` (público): `[{id, municipio, nombre, tipo, lat, lon,
-desc, fuente, url, verificar?, duracion?, dificultad?, acceso?}]`.
+desc, fuente, url, verificar?, duracion?, dificultad?, acceso?, isla?, cuando?, cuandoTxt?}]`.
 - `id`: corto, sin tildes ni espacios, estable (las marcas van por id: no
   cambiarlo nunca una vez publicado).
 - `municipio`: exactamente uno de los 31 de abajo.
@@ -220,3 +221,13 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   (Sitios y Mapa). Los planes ya pueden ser en cualquier isla (destino libre).
 - Para activar una isla: sitios con `"isla": "<id>"`, `activa: true` y datos en
   islas.js, municipios y portadas, zonas del tiempo en finde.js y silueta del mapa.
+
+## Eventos con fecha (v10)
+- Son sitios de tipo `evento` con `cuando` (regla de fecha) y `cuandoTxt` (cómo lo dice la fuente):
+  `{"tipo":"fija","mes":9,"dia":7,"dias":2}` · `{"tipo":"pascua","desde":-51,"hasta":-42}` (días
+  respecto al Domingo de Pascua, calculado) · `{"tipo":"semana","mes":7,"dow":0,"n":2}` (n-ésimo
+  día de la semana; n = -1 el último) · `{"tipo":"fechas","lista":[["AAAA-MM-DD","AAAA-MM-DD"]]}`.
+- La regla sale SIEMPRE de la fuente (frase literal del artículo). Si la fuente no da el día
+  exacto (programas que cambian), VERIFICAR.
+- Se ven en la ficha («📅 Próxima»), en Este finde («🎟️ Este finde hay…» y «Lo próximo», 120 días)
+  y como chips en el calendario de findes. Sorpréndeme no propone eventos.

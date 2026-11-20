@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v9';
+const VERSION = 'v10';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -128,6 +128,7 @@ function fichaHTML(s) {
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
       ${abiertas.has(s.id) && FOTOS[s.id] ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : FOTOS[s.id] ? '<div class="ficha-foto" data-pendiente></div>' : ''}
+      ${cuandoHTML(s)}
       <p>${esc(s.desc)}</p>
       ${datos.length ? `<div class="datos">${datos.map(d => `<span>${d}</span>`).join('')}</div>` : ''}
       ${s.verificar ? `<div class="ver">⚠️ VERIFICAR${typeof s.verificar === 'string' ? ': ' + esc(s.verificar) : ''}</div>` : ''}
