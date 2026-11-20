@@ -6,7 +6,8 @@ const FB_DIR = 'vendor/firebase-10.14.1/';
 const K_GRUPO = 'esc.grupo';
 const EMOJIS = ['😀', '😎', '🤠', '🥳', '🤓', '😺', '🐶', '🦊', '🐼', '🐢', '🦜', '🐬', '🌋', '🌴', '🌻', '⛰️'];
 const COLORES = ['#0b6e4f', '#1f5fbf', '#c0392b', '#d97706', '#7c3aed', '#db2777', '#0f766e', '#475569'];
-const NUBE = { estado: 'apagada', user: null, perfil: null, editarPerfil: false, grupo: null, miembros: {}, msg: '', ocupado: false };
+const NUBE = { estado: 'apagada', user: null, perfil: null, editarPerfil: false, grupo: null, miembros: {}, msg: '', ocupado: false,
+  marcasGrupo: {}, recientes: [], sincronizado: false };
 const nubeConfigurada = () => !!(window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey);
 
 function cargarScript(src) {
@@ -37,6 +38,7 @@ async function iniciarNube() {
   NUBE.auth.onAuthStateChanged(async u => {
     NUBE.user = u; NUBE.perfil = null; NUBE.grupo = null; NUBE.miembros = {};
     if (NUBE.offGrupo) { NUBE.offGrupo(); NUBE.offGrupo = null; }
+    dejarMarcas();
     if (u) { await cargarPerfil(); await buscarGrupo(); }
     repintarNube();
   });
@@ -113,9 +115,11 @@ function seguirGrupo(gid) {
   if (NUBE.offGrupo) NUBE.offGrupo();
   NUBE.offGrupo = NUBE.db.collection('grupos').doc(gid).onSnapshot(async d => {
     if (!d.exists || !(d.data().miembros || []).includes(NUBE.user.uid)) { NUBE.grupo = null; return repintarNube(); }
+    const nuevo = !NUBE.grupo || NUBE.grupo.id !== d.id;
     NUBE.grupo = { id: d.id, ...d.data() };
-    await cargarMiembros(); repintarNube();
-  }, () => { NUBE.grupo = null; repintarNube(); });
+    if (nuevo) seguirMarcas(d.id);
+    await cargarMiembros(); repintarNube(); refrescarVista();
+  }, () => { NUBE.grupo = null; dejarMarcas(); repintarNube(); });
 }
 async function cargarMiembros() {
   const ids = NUBE.grupo.miembros || [];
@@ -149,7 +153,8 @@ async function salirGrupo() {
   const gid = NUBE.grupo.id;
   try { await NUBE.db.collection('grupos').doc(gid).update({ miembros: firebase.firestore.FieldValue.arrayRemove(NUBE.user.uid) }); } catch {}
   if (NUBE.offGrupo) { NUBE.offGrupo(); NUBE.offGrupo = null; }
-  NUBE.grupo = null; NUBE.miembros = {}; try { localStorage.removeItem(K_GRUPO); } catch {}
+  dejarMarcas(); NUBE.grupo = null; NUBE.miembros = {}; try { localStorage.removeItem(K_GRUPO); } catch {}
+  refrescarVista();
   repintarNube();
 }
 async function compartirCodigo() {
@@ -158,6 +163,116 @@ async function compartirCodigo() {
   try { if (navigator.share) { await navigator.share({ text: txt }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
   try { await navigator.clipboard.writeText(txt); alert('Copiado. Pégalo en WhatsApp.'); } catch { prompt('Copia este mensaje:', txt); }
 }
+
+// ---------- marcas compartidas (S4) ----------
+// Cada marca es grupos/{gid}/marcas/{uid}_{sitioId}. Las tuyas viven primero en el móvil (marcas, en app.js) y se
+// suben al grupo; sin red, Firestore las guarda y las envía al volver. Las de todos llegan al momento (onSnapshot).
+// Al quitar una marca se sube vacía (no se borra el documento) para que otro móvil tuyo sin red no la «resucite».
+const K_BORRADAS = 'esc.borradas'; // { sitioId: cuándo la quitaste } (solo hace falta hasta subirla)
+const vacia = m => !m || (!m.estado && !m.estrellas && !m.nota);
+const enGrupo = () => !!(NUBE.user && NUBE.grupo && NUBE.db);
+const refMarca = id => NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('marcas').doc(NUBE.user.uid + '_' + id);
+function datosMarca(id) {
+  const m = marcas[id], b = load(K_BORRADAS, {});
+  return { uid: NUBE.user.uid, sitioId: id, estado: (m && m.estado) || '', estrellas: (m && m.estrellas) | 0,
+    nota: (m && m.nota) || '', fecha: (m && m.fecha) || '', actualizado: (m && m.actualizado) || b[id] || Date.now() };
+}
+// La llama app.js cada vez que cambias una marca.
+function subirMarca(id) {
+  if (!marcas[id]) { const b = load(K_BORRADAS, {}); b[id] = Date.now(); save(K_BORRADAS, b); }
+  if (!enGrupo()) return; // ya se subirá al sincronizar con el grupo
+  refMarca(id).set(datosMarca(id)).catch(() => {});
+}
+function seguirMarcas(gid) {
+  dejarMarcas();
+  NUBE.offMarcas = NUBE.db.collection('grupos').doc(gid).collection('marcas').onSnapshot(q => {
+    const porSitio = {}, mias = {}, todas = [];
+    q.forEach(d => {
+      const m = d.data(); if (!m || !m.uid || !m.sitioId) return;
+      if (m.uid === NUBE.user.uid) mias[m.sitioId] = m;
+      if (vacia(m)) return;
+      (porSitio[m.sitioId] = porSitio[m.sitioId] || {})[m.uid] = m; todas.push(m);
+    });
+    NUBE.marcasGrupo = porSitio;
+    NUBE.recientes = todas.sort((a, b) => (b.actualizado || 0) - (a.actualizado || 0)).slice(0, 12);
+    sincronizarMias(mias);
+    refrescarVista();
+  }, () => {});
+}
+function dejarMarcas() {
+  if (NUBE.offMarcas) { NUBE.offMarcas(); NUBE.offMarcas = null; }
+  NUBE.marcasGrupo = {}; NUBE.recientes = []; NUBE.sincronizado = false;
+}
+// Junta lo del móvil con lo de la nube: gana lo más reciente de cada sitio.
+function sincronizarMias(mias) {
+  const b = load(K_BORRADAS, {}); let cambia = false;
+  for (const [id, r] of Object.entries(mias)) {
+    const l = marcas[id], tl = Math.max((l && l.actualizado) || 0, b[id] || 0);
+    if ((r.actualizado || 0) > tl) { // la nube es más nueva (otro móvil tuyo)
+      if (vacia(r)) delete marcas[id];
+      else { const m = { actualizado: r.actualizado }; if (r.estado) m.estado = r.estado; if (r.estrellas) m.estrellas = r.estrellas; if (r.nota) m.nota = r.nota; if (r.fecha) m.fecha = r.fecha; marcas[id] = m; }
+      delete b[id]; cambia = true;
+    }
+  }
+  if (cambia) save(K_MARCAS, marcas);
+  if (!NUBE.sincronizado) { // la primera vez: subir lo que el móvil tenga más nuevo
+    NUBE.sincronizado = true;
+    const ids = new Set([...Object.keys(marcas), ...Object.keys(b)]);
+    for (const id of ids) {
+      const r = mias[id], tl = Math.max((marcas[id] && marcas[id].actualizado) || 0, b[id] || 0);
+      if (!r ? !!marcas[id] : tl > (r.actualizado || 0)) refMarca(id).set(datosMarca(id)).catch(() => {});
+    }
+    save(K_BORRADAS, {});
+  }
+}
+// Repinta sin molestar: si estás escribiendo una nota, espera a que termines.
+let refrescoT = 0;
+function refrescarVista() {
+  clearTimeout(refrescoT);
+  refrescoT = setTimeout(() => {
+    const a = document.activeElement;
+    if (a && /^(TEXTAREA|INPUT)$/.test(a.tagName) && a.closest('#view')) { a.addEventListener('blur', refrescarVista, { once: true }); return; }
+    if (typeof tab !== 'undefined' && tab === 'mapa') pintarMapa(); else render();
+    pintarYo();
+  }, 150);
+}
+
+// Lo de los demás (sin ti) en un sitio: { fuimos: [[uid, m]], quiero: [...] }
+function otrosEn(id) {
+  const r = { fuimos: [], quiero: [], no: [] }, ms = NUBE.marcasGrupo[id] || {};
+  for (const [uid, m] of Object.entries(ms)) if (uid !== (NUBE.user && NUBE.user.uid) && r[m.estado]) r[m.estado].push([uid, m]);
+  return r;
+}
+const nadieFue = id => !Object.values(NUBE.marcasGrupo[id] || {}).some(m => m.estado === 'fuimos');
+const perfilDe = uid => NUBE.miembros[uid] || { nombre: '…', emoji: '👤' };
+// En la ficha abierta: quién fue (con sus ⭐) y quién quiere ir.
+function grupoEnFicha(id) {
+  if (!enGrupo()) return '';
+  const o = otrosEn(id), linea = (ic, txt, l) => l.length ? `<div class="gl"><span class="gl-t">${ic} ${txt}</span>${l.map(([u, m]) =>
+    `<span class="gm" title="${esc(perfilDe(u).nombre)}">${carita(perfilDe(u))}<span>${esc(perfilDe(u).nombre)}${m.estrellas ? ` <small>${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></span>`).join('')}</div>` : '';
+  const notas = [...o.fuimos, ...o.quiero].filter(([, m]) => m.nota).map(([u, m]) => `<div class="gnota">${esc(perfilDe(u).emoji)} «${esc(m.nota)}»</div>`).join('');
+  const h = linea('✅', 'Fueron', o.fuimos) + linea('🔖', 'Quieren ir', o.quiero) + notas;
+  return h ? `<div class="grupo-ficha">${h}</div>` : `<div class="grupo-ficha muted">👥 Nadie más del grupo lo ha marcado.</div>`;
+}
+// En la ficha cerrada y en el mapa: las caritas de quien fue (hasta 3).
+function caritasMini(id) {
+  if (!enGrupo()) return '';
+  const f = otrosEn(id).fuimos; if (!f.length) return '';
+  return `<span class="cmini" title="Fueron: ${esc(f.map(([u]) => perfilDe(u).nombre).join(', '))}">${f.slice(0, 3).map(([u]) => esc(perfilDe(u).emoji)).join('')}${f.length > 3 ? `<small>+${f.length - 3}</small>` : ''}</span>`;
+}
+// Pestaña Grupo: quién lleva más, últimas marcas y lo que nadie ha hecho.
+function resumenGrupoHTML() {
+  const g = NUBE.grupo, cuenta = {};
+  (g.miembros || []).forEach(u => { cuenta[u] = { fuimos: 0, quiero: 0 }; });
+  for (const ms of Object.values(NUBE.marcasGrupo)) for (const [u, m] of Object.entries(ms)) if (cuenta[u] && cuenta[u][m.estado] != null) cuenta[u][m.estado]++;
+  const rank = Object.entries(cuenta).sort((a, b) => b[1].fuimos - a[1].fuimos || b[1].quiero - a[1].quiero);
+  const total = typeof SITIOS !== 'undefined' ? SITIOS.length : 0, nadie = total ? SITIOS.filter(x => nadieFue(x.id)).length : 0;
+  const fechaCorta = t => t ? new Date(t).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
+  return `<h2>🏆 Quién lleva más</h2><div class="card">${rank.map(([u, c], i) => `<div class="row miembro">${carita(perfilDe(u))}<span style="flex:1">${esc(perfilDe(u).nombre)}${u === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span><span class="cifra">✅ ${c.fuimos}</span><span class="cifra muted">🔖 ${c.quiero}</span>${i === 0 && c.fuimos ? '<span>🥇</span>' : ''}</div>`).join('')}</div>
+    <h2>🕒 Últimas marcas</h2>${NUBE.recientes.length ? `<div class="card">${NUBE.recientes.map(m => { const s = typeof sitio === 'function' && sitio(m.sitioId); return s ? `<button class="reciente" data-irficha="${esc(s.id)}">${carita(perfilDe(m.uid))}<span><b>${esc(perfilDe(m.uid).nombre)}</b> ${m.estado ? ESTADOS[m.estado][0] : '⭐'} ${esc(s.nombre)}<small class="muted"> · ${fechaCorta(m.actualizado)}</small></span></button>` : ''; }).join('')}</div>` : '<div class="card muted">Todavía nadie ha marcado nada.</div>'}
+    <h2>🌱 Nadie ha ido todavía</h2><div class="card"><p><b>${nadie}</b> de ${total} sitios sin estrenar por nadie del grupo.</p><button class="sec" data-nadie>Ver cuáles</button></div>`;
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-nadie]')) { fTipo = ''; q = ''; fEst = 'nadie'; ir('sitios'); } });
 
 // ---------- pestaña 👥 Grupo ----------
 const carita = (p, uid) => `<span class="carita" style="--cc:${esc((p && p.color) || '#475569')}" title="${esc((p && p.nombre) || '')}">${esc((p && p.emoji) || '👤')}</span>`;
@@ -194,7 +309,7 @@ function viewNube() {
     <div class="card"><div class="muted">Código para invitar</div><div class="codigo">${esc(codigoBonito(g.id))}</div>
       <button class="sec" data-nube="compartir">📤 Pasar el código</button></div>
     <div class="card">${ms.map(([id, m]) => `<div class="row miembro">${carita(m)}<span>${esc((m && m.nombre) || '…')}${id === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span></div>`).join('')}</div>
-    <p class="muted">Pronto: las marcas de cada uno, al momento, en las fichas y en el mapa.</p>
+    ${resumenGrupoHTML()}
     <div class="row"><button class="sec" data-nube="salirgrupo">Salir del grupo</button><button class="sec" data-nube="salir">Cerrar sesión</button></div>`;
 }
 document.addEventListener('click', e => {

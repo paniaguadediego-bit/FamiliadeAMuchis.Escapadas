@@ -1,5 +1,23 @@
 # PROGRESO
 
+## v6 · S4 · Marcas compartidas al momento (2026-11-20)
+Hecho:
+- Cada marca (🔖 ✅ ✖️, ⭐, nota) se guarda en el móvil y se sube al grupo; sin red,
+  la persistencia de Firestore la envía al volver.
+- Las marcas de todos llegan al momento (onSnapshot). Tus marcas también se
+  sincronizan entre tus móviles (gana la más reciente; las quitadas no «resucitan»).
+- Fichas: caritas de quién fue (con sus ⭐), quién quiere ir y sus notas; en la ficha
+  cerrada, los emojis de quien fue.
+- Mapa: puntito naranja si alguien del grupo ha ido; caritas en la ficha del mapa.
+- Pestaña Grupo: 🏆 quién lleva más, 🕒 últimas marcas (toca → ficha),
+  🌱 «nadie ha ido todavía» con botón al filtro nuevo de Sitios «🌱 Nadie del grupo».
+
+Probado con una nube simulada (dos miembros más, sincronización móvil↔nube,
+marca quitada sin red, filtro y mapa). **Pendiente de probar con el grupo real**
+cuando se una otra persona.
+
+Siguiente: **S5** Este finde (tiempo por zona, 🎲 Sorpréndeme, distancia desde casa).
+
 ## v5 · S3 · Ajustes tras la primera prueba real (2026-11-20)
 - Entrar con Google funciona en el móvil del usuario (Chrome).
 - Arriba, junto a la versión: emoji y nombre de quien usa la app, con su color (toca → 👥 Grupo).

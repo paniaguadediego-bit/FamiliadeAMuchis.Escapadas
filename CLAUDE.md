@@ -83,11 +83,18 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
 - Tema: 🌓 auto · ☀️ claro · 🌙 oscuro.
 
-## Marcas en el móvil (S1-S3)
-`localStorage['esc.marcas']` = `{ [sitioId]: {estado: 'quiero'|'fuimos'|'no',
-estrellas: 0-5, nota, fecha, actualizado} }`. Mismos campos que tendrán en
-Firestore (`grupos/{gid}/marcas/{uid}_{sitioId}`), para subirlas tal cual en S4.
-Copia de seguridad: Más → Exportar / Importar marcas (archivo JSON).
+## Marcas
+- En el móvil: `localStorage['esc.marcas']` = `{ [sitioId]: {estado: 'quiero'|'fuimos'|'no',
+  estrellas: 0-5, nota, fecha, actualizado} }`. Siempre se guardan aquí primero.
+- En el grupo (S4, `nube.js`): `grupos/{gid}/marcas/{uid}_{sitioId}` con los mismos
+  campos + uid y sitioId. `setMarca` (app.js) llama a `subirMarca` (nube.js).
+- Quitar una marca = subirla vacía (estado '', estrellas 0, nota ''), nunca borrar
+  el documento; `localStorage['esc.borradas']` guarda cuándo se quitó hasta subirla.
+- Al conectar con el grupo (`sincronizarMias`): por cada sitio gana lo más
+  reciente (`actualizado`) entre el móvil y la nube.
+- Las de todos llegan con `onSnapshot` → `NUBE.marcasGrupo[sitioId][uid]`.
+  Sin red, la persistencia de Firestore guarda lo escrito y lo envía al volver.
+- Copia de seguridad: Más → Exportar / Importar marcas (archivo JSON).
 
 ## Compartir en el grupo (Firebase, de Google)
 - El usuario lo hace todo desde el móvil: la sesión le guía con pasos muy

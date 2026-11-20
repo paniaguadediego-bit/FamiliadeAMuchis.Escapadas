@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v5';
+const VERSION = 'v6';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -51,6 +51,7 @@ function setMarca(id, cambios) {
   if (!m.nota) delete m.nota;
   if (!m.estado && !m.estrellas && !m.nota) delete marcas[id]; else marcas[id] = m;
   save(K_MARCAS, marcas);
+  if (typeof subirMarca === 'function') subirMarca(id); // al grupo (nube.js), o en cola si no hay red
 }
 
 // ---------- tema ----------
@@ -96,7 +97,7 @@ function fichaHTML(s) {
   const datos = [s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
     <summary><span class="ic">${tipoIc(s.tipo)}</span><span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}</small></span>
-      <span class="est">${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
+      <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
       <p>${esc(s.desc)}</p>
       ${datos.length ? `<div class="datos">${datos.map(d => `<span>${d}</span>`).join('')}</div>` : ''}
@@ -106,9 +107,10 @@ function fichaHTML(s) {
         <a class="btn sec mini" href="${gmaps(s)}" target="_blank" rel="noopener">🌐 Google Maps</a>
         <button class="sec mini" data-vermapa="${esc(s.id)}">🗺️ Ver en el mapa</button>
       </div>
+      ${grupoEnFicha(s.id)}
       <div class="marcas">${Object.entries(ESTADOS).map(([k, [ic, n]]) => `<button class="${e === k ? 'on' : ''}" data-est="${k}" data-id="${esc(s.id)}">${ic} ${n}</button>`).join('')}</div>
       <div class="estrellas" aria-label="Valoración">${[1, 2, 3, 4, 5].map(n => `<button class="${(m.estrellas || 0) >= n ? 'on' : ''}" data-estr="${n}" data-id="${esc(s.id)}" aria-label="${n} estrellas">★</button>`).join('')}</div>
-      <textarea class="nota" data-nota="${esc(s.id)}" placeholder="📝 Nota (solo la ves tú por ahora)">${esc(m.nota || '')}</textarea>
+      <textarea class="nota" maxlength="1000" data-nota="${esc(s.id)}" placeholder="📝 Nota (${enGrupo() ? 'la verá el grupo' : 'solo en este móvil'})">${esc(m.nota || '')}</textarea>
       ${m.fecha ? `<div class="muted">Marcado el ${esc(new Date(m.fecha + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }))}</div>` : ''}
     </div></details>`;
 }
@@ -180,7 +182,7 @@ const muniAbiertos = new Set();
 function filtrados() {
   const a = sinTildes(q).trim();
   return SITIOS.filter(s => (!fTipo || s.tipo === fTipo)
-    && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
+    && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : fEst === 'nadie' ? nadieFue(s.id) : marca(s.id).estado === fEst))
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
 }
 function viewSitios() {
@@ -193,7 +195,7 @@ function viewSitios() {
   const conSitios = grupos.filter(g => g[1].length);
   return `<input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off">
     <div class="chips">${[['', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<button class="chip ${fTipo === k ? 'on' : ''}" data-ftipo="${k}">${n}</button>`).join('')}</div>
-    <div class="chips">${[['', 'Todas'], ['quiero', '🔖 Quiero ir'], ['fuimos', '✅ Fuimos'], ['no', '✖️ No'], ['sin', 'Sin marcar']].map(([k, n]) => `<button class="chip ${fEst === k ? 'on' : ''}" data-fest="${k}">${n}</button>`).join('')}</div>
+    <div class="chips">${[['', 'Todas'], ['quiero', '🔖 Quiero ir'], ['fuimos', '✅ Fuimos'], ['no', '✖️ No'], ['sin', 'Sin marcar'], ...(enGrupo() ? [['nadie', '🌱 Nadie del grupo']] : [])].map(([k, n]) => `<button class="chip ${fEst === k ? 'on' : ''}" data-fest="${k}">${n}</button>`).join('')}</div>
     <p class="muted">${lista.length} de ${SITIOS.length} sitios · ${conSitios.length} municipios</p>
     <div id="lista">${conSitios.map(([m, ss]) => `<details class="muni" data-muni="${esc(m)}" ${filtro || muniAbiertos.has(m) ? 'open' : ''}>
       <summary>🏘️ ${esc(m)}<span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length}✅ · ${ss.length}</span></summary>
@@ -276,7 +278,7 @@ function mpDibujar(el) {
   if (hilos.length) h += `<svg class="mp-hilo" width="${W}" height="${H}">${hilos.map(o => `<line x1="${o.x0.toFixed(1)}" y1="${o.y0.toFixed(1)}" x2="${o.x.toFixed(1)}" y2="${o.y.toFixed(1)}"/>`).join('')}</svg>`;
   vis.forEach(({ s, x, y }) => {
     const e = marca(s.id).estado;
-    h += `<button class="mp-pt ${peq ? 'peq' : ''} ${e ? 'e-' + e : ''} ${MP.sel === s.id ? 'sel' : ''}" data-mpp="${esc(s.id)}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px" aria-label="${esc(s.nombre)}">${tipoIc(s.tipo)}</button>`;
+    h += `<button class="mp-pt ${peq ? 'peq' : ''} ${e ? 'e-' + e : ''} ${MP.sel === s.id ? 'sel' : ''} ${enGrupo() && otrosEn(s.id).fuimos.length ? 'g-fue' : ''}" data-mpp="${esc(s.id)}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px" aria-label="${esc(s.nombre)}">${tipoIc(s.tipo)}</button>`;
   });
   if (MP.yo) { const [x, y] = P(MP.yo[0], MP.yo[1]); h += `<span class="mp-yo" style="left:${x}px;top:${y}px"></span>`; }
   const capa = el.querySelector('.mp-capa'); capa.style.transform = ''; capa.style.setProperty('--mps', S); capa.innerHTML = h;
@@ -287,6 +289,7 @@ function mpFicha(s) {
   const m = marca(s.id);
   return `<div class="mp-f"><div class="row"><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><button class="sec mini" data-mpcerrar aria-label="Cerrar">✕</button></div>
     <div class="muted">${esc(s.municipio)}${m.estado ? ' · ' + ESTADOS[m.estado].join(' ') : ''}${m.estrellas ? ' · ' + '⭐'.repeat(m.estrellas) : ''}</div>
+    ${grupoEnFicha(s.id)}
     ${s.verificar ? '<div class="ver">⚠️ VERIFICAR</div>' : ''}
     <div class="acciones"><button class="mini" data-irficha="${esc(s.id)}">📍 Ver ficha</button><a class="btn sec mini" href="${gmaps(s)}" target="_blank" rel="noopener">🌐 Google Maps</a></div></div>`;
 }

@@ -177,5 +177,22 @@ ol.pasos { padding-left: 1.3em; } ol.pasos li { margin: 6px 0; }
 .elige button.color.on { border-color: var(--bg); }
 button[disabled] { opacity: .5; }
 
+/* Marcas del grupo */
+.grupo-ficha { margin-top: 10px; padding: 8px 10px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font-size: .92em; }
+.gl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 4px 0; }
+.gl-t { font-weight: 600; min-width: 92px; }
+.gm { display: inline-flex; align-items: center; gap: 4px; }
+.gm .carita { width: 28px; height: 28px; font-size: 15px; }
+.gnota { color: var(--muted); font-style: italic; margin-top: 4px; }
+.cmini { font-size: .85rem; margin-right: 4px; letter-spacing: -2px; }
+.cmini small { letter-spacing: 0; color: var(--muted); }
+.cifra { font-size: .9em; min-width: 46px; text-align: right; }
+button.reciente { display: flex; align-items: center; gap: 8px; text-align: left; background: none; color: var(--fg); padding: 6px 0; margin: 0;
+  min-height: 44px; border-radius: 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+button.reciente:last-child { border-bottom: 0; }
+button.reciente .carita { width: 32px; height: 32px; font-size: 17px; }
+.mp-pt.g-fue::after { content: ""; position: absolute; right: -4px; top: -4px; width: 11px; height: 11px; border-radius: 50%;
+  background: #f59e0b; border: 2px solid #fff; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v5"; }
+:root { --css-ver: "v6"; }
