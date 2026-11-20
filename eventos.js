@@ -79,7 +79,7 @@ function eventosSemanaHTML(lun, dom) {
 
 // ---------- 📰 agenda automática (data/agenda.json, la actualiza GitHub Actions dos veces por semana) ----------
 let AGENDA_SITIOS = [], FOTOS_AG = {}, AGENDA_INFO = null;
-const CAT_EV = { fiestas: ['🎉', 'Fiestas'], musica: ['🎵', 'Música'], teatro: ['🎭', 'Teatro y espectáculos'], deporte: ['🏃', 'Deporte'],
+const CAT_EV = { fiestas: ['🎉', 'Fiestas'], musica: ['🎵', 'Música'], cine: ['🎬', 'Cine'], teatro: ['🎭', 'Teatro y espectáculos'], deporte: ['🏃', 'Deporte'],
   expo: ['🖼️', 'Exposiciones'], feria: ['🛍️', 'Ferias y mercados'], ninos: ['🧸', 'Con niños'], otros: ['🎟️', 'Otros'] };
 const catDe = s => s.categoria || (s.tipo === 'evento' ? 'fiestas' : 'otros');
 const catIc = s => (CAT_EV[catDe(s)] || CAT_EV.otros)[0];

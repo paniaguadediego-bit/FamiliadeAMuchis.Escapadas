@@ -166,7 +166,7 @@ function bloqueDe(f) {
   // Festivo suelto (o su víspera).
   const fest = festivo(f) ? f : esVispera(f) ? masDias(f, 1) : null;
   if (fest) return { tipo: 'festivo', sab: fest, dias: vale([...(esVispera(masDias(fest, -1)) ? [masDias(fest, -1) + 'T'] : []), fest]) };
-  return { tipo: 'dia', sab: f, dias: vale([f]) };
+  return { tipo: 'suelto', sab: f, dias: vale([f]) }; // cualquier otro día (un cumpleaños un miércoles…)
 }
 const planesDelDia = f => proximosPlanes().filter(p => p.fecha <= f && finPlan(p) >= f);
 let calMes = null, calSel = null; // mes que se ve ('AAAA-MM') y día elegido
@@ -185,9 +185,9 @@ function calendarioHTML() {
     const fest = festivo(f), visp = esVispera(f) || (w === 5 && !fest), ps = fuera ? [] : planesDelDia(f);
     const k = visp && !fest ? f + 'T' : f, mio = fuera ? '' : dispoDe(yo, k) || (w === 5 ? dispoDe(yo, f) : '');
     const si = fuera ? 0 : otros.filter(u => dispoDe(u, k) === 'si').length;
-    const cls = ['cal-d', fuera && 'fuera', f === hoy && 'hoy', (w === 0 || w === 6) && 'finde', fest && 'fest', esVispera(f) && 'visp', f === calSel && 'sel', mio && 'm-' + mio].filter(Boolean).join(' ');
+    const cls = ['cal-d', fuera && 'fuera', f === hoy && 'hoy', (w === 0 || w === 6) && 'finde', fest && 'fest', f === calSel && 'sel', mio && 'm-' + mio].filter(Boolean).join(' ');
     celdas += `<button class="${cls}" ${fuera ? 'disabled' : `data-cal="${f}"`} aria-label="${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }))}${fest ? ', festivo' : ''}${ps.length ? `, ${ps.length} plan` : ''}">
-      <span class="cal-n">${d}</span><span class="cal-m">${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
+      <span class="cal-n">${d}</span><span class="cal-m">${esVispera(f) ? '<span class="cal-v" title="Víspera de festivo">🌆</span>' : ''}${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
   }
   const mesNom = new Date(d1 + 'T12:00').toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
   const prev = masDias(d1, -1).slice(0, 7), next = masDias(`${calMes}-${nDias}`, 1).slice(0, 7);
@@ -197,7 +197,7 @@ function calendarioHTML() {
   const ps = proximosPlanes(), mas = ps.filter(p => p.fecha > masDias(proximoSabado(), 9) && ![...enDia].some(d => p.fecha <= d && finPlan(p) >= d));
   return `<h2>📅 Calendario: findes, festivos y vísperas</h2>${miMuni() ? '' : '<p class="muted mini-nota">🎉 Para ver los festivos locales de tu municipio, elígelo en ☰ Más.</p>'}
     <div class="card cal">${nav}<div class="cal-g">${celdas}</div>
-      <div class="cal-ley"><span><i class="cal-p"></i> plan</span><span class="l-fest">🎉 festivo</span><span class="l-visp">víspera</span><span>👍 / 🙅 tú</span><span>👍n el grupo</span></div></div>
+      <div class="cal-ley"><span><i class="cal-p"></i> plan</span><span class="l-fest">🎉 festivo</span><span>🌆 víspera</span><span>👍 / 🙅 tú</span><span>👍n el grupo</span></div></div>
     ${diaHTML(calSel)}
     ${mas.length ? `<h2>🔭 Más planes por delante</h2>${mas.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;
 }
@@ -311,7 +311,7 @@ function dispoHTML(dias) {
   }).filter(Boolean).join('');
   const k = dias.join(',');
   return `<div class="dispo"><div class="dias">${botones}</div>
-    <div class="dispo-atajos"><button class="sec mini" data-dias="${k}" data-v="si">👍 Todo libre</button><button class="sec mini" data-dias="${k}" data-v="no">🙅 No puedo</button></div>
+    ${dias.length > 1 ? `<div class="dispo-atajos"><button class="sec mini" data-dias="${k}" data-v="si">👍 Todo libre</button><button class="sec mini" data-dias="${k}" data-v="no">🙅 No puedo</button></div>` : ''}
     ${quien ? `<div class="dispo-quien">${quien}</div>` : ''}</div>`;
 }
 document.addEventListener('click', e => {

@@ -315,7 +315,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   salen en Sitios ni en el mapa salvo con el tipo «Evento»; Google Maps busca por el lugar.
 - Descartado: sacar fiestas de los artículos de municipios de Wikipedia de forma automática (casi todas
   las fechas del texto eran de otras cosas: plenos, himnos…). Las fiestas siguen siendo las 14 revisadas.
-- Pestaña 🎟️ Eventos: categorías (🎉 fiestas, 🎵 música, 🎭 teatro, 🏃 deporte, 🖼️ expos, 🛍️ ferias,
+- Pestaña 🎟️ Eventos: categorías (🎉 fiestas, 🎵 música, 🎬 cine (v24), 🎭 teatro, 🏃 deporte, 🖼️ expos, 🛍️ ferias,
   🧸 niños), cuándo (este finde, el que viene, próximo mes, 4 meses) y zona; agrupados por semana; enlace
   a Este finde. «➕ Añadir un evento» del grupo (sitios del grupo con `desde`/`hasta`).
 - Orden de importancia (portada y listas): lo que empieza en esas fechas, lo corto, destacados, con foto.
@@ -342,8 +342,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   luego 🎟️ eventos con «📅 Proponer» y 3 💡 ideas que encajan con el tiempo; sin grupo, eventos e ideas) → Ver todos
   los eventos → 📅 Calendario mensual → 🔭 Más planes por delante → 🎲 → 🎭 → ganas.
 - Calendario: rejilla del mes (L-D, ‹ ›), 10 semanas por delante. Findes tintados, 🎉 festivos en amarillo, vísperas
-  con raya amarilla, punto azul = planes, 👍/🙅 tuyo y 👍n del grupo. Al tocar un día, debajo: festivo/víspera, lluvia,
-  ¿puedes? de su bloque (`bloqueDe`), sus planes y «＋ Plan este día».
+  con 🌆 pequeño (v24), punto azul = planes, 👍/🙅 tuyo y 👍n del grupo. Al tocar un día, debajo: festivo/víspera, lluvia,
+  ¿puedes? de su bloque (`bloqueDe`), sus planes y «＋ Plan este día». Vale cualquier día de la semana (tipo
+  `suelto`, p. ej. un cumpleaños un miércoles); no usar la clase CSS `dia` fuera de los botones de día.
 - Vísperas: la tarde (clave 'AAAA-MM-DDT', tiempo de 14 a 20 h de cualquier día) antes de un festivo de lunes a jueves
   cuenta como el viernes tarde: se marca 👍/🙅, se propone plan y Sorpréndeme la ofrece (🌆). Jueves/viernes festivos
   forman puente con el finde (y la tarde de su víspera).

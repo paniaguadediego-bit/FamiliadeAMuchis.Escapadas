@@ -41,6 +41,7 @@ ALIAS = [
 ]
 CATS = [  # categoría del evento a partir del texto (para filtrar en la app)
     ('fiestas', r'romer[ií]a|fiestas? (de|en honor|patronal)|verbena|procesi[oó]n|bajada de|carnaval|baile de magos'),
+    ('cine', r'\bcine\b|cinema|pel[ií]cula|cortometraje|filmoteca|cinef[oó]rum|\bfilm\b'),
     ('teatro', r'teatro|experience|musical|danza|ballet|ópera|opera|comedia|mon[oó]logo|magia|circo|flamenco'),
     ('musica', r'concierto|tour\b|gira|cantante|guitarr|piano|festival|m[uú]sica|orquesta|sinf[oó]nic|jazz|banda|coro|gospel|dj\b|recital|tribute|tributo'),
     ('deporte', r'carrera|marat[oó]n|trail|san silvestre|torneo|campeonato|surf|regata|ciclis|triatl|spartan|deka|pit\b|copa|\d+ ?km\b|race\b|running|hyrox|nocturna|k42'),
@@ -102,7 +103,10 @@ def evento(url, pag):
         muni = next((mu for p, mu in ALIAS if re.search(p, ' '.join([lugar, calle, loc, nombre]), re.I)), '')
     if not muni:
         muni = next((mu for p, mu in ALIAS if re.search(p, desc, re.I)), '')
-    cat = next((c for c, p in CATS if re.search(p, nombre, re.I)), '') or next((c for c, p in CATS if re.search(p, desc, re.I)), 'otros')
+    # En la descripción, «cine» solo con frases claras (un concierto en un cine o una expo sobre una película no lo son).
+    CINE_DESC = r'ciclo de cine|festival de cine|muestra de cine|cinef[oó]rum|filmoteca|proyecci[oó]n de (la )?pel[ií]cula|estreno de (la )?pel[ií]cula'
+    cat = next((c for c, p in CATS if re.search(p, nombre, re.I)), '') or ('cine' if re.search(CINE_DESC, desc, re.I) else '') \
+        or next((c for c, p in CATS if c != 'cine' and re.search(p, desc, re.I)), 'otros')
     slug = url.rstrip('/').split('/')[-1]
     corto = desc if len(desc) <= 240 else desc[:240].rsplit(' ', 1)[0] + '…'
     return {"id": "ag-" + slug[:60], "nombre": nombre[:100], "desde": ini, "hasta": fin, "lugar": lugar[:140], "municipio": muni,

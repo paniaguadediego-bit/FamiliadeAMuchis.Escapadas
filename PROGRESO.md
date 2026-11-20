@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v24 · Cine, planes cualquier día y víspera más clara (2026-11-20)
+- 🎬 Cine, categoría nueva de Eventos (también en el lector de la agenda).
+- Calendario: un día entre semana se abría encogido y a la izquierda (choque de estilos); ahora se ve bien y se
+  propone plan cualquier día (un cumpleaños un miércoles…). En un día suelto no salen los atajos de finde.
+- Víspera: un 🌆 pequeño en la casilla en vez de la raya discontinua.
+
 ## v23 · Zoom del mapa a medida (2026-11-20)
 - Iconos de cada tipo desde el zoom 12 (antes 14) y zoom máximo 16 (antes 18), como pidió el usuario.
 
