@@ -1,0 +1,46 @@
+# Publica firebase/firestore.rules en Firebase cada vez que cambian en main (o a mano desde Actions).
+# Usa el secreto FIREBASE_REGLAS_KEY: la llave JSON de una cuenta de servicio que SOLO puede cambiar reglas
+# (roles «Administrador de reglas de Firebase» y «Consumidor de Service Usage»). La llave no está en el repo.
+name: Publicar reglas de Firestore
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'firebase/firestore.rules'
+      - 'firebase.json'
+      - '.github/workflows/reglas-firestore.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reglas-firestore
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprobar que existe la llave
+        env:
+          KEY: ${{ secrets.FIREBASE_REGLAS_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::error::Falta el secreto FIREBASE_REGLAS_KEY (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_REGLAS_KEY }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Publicar reglas
+        run: npx --yes firebase-tools@13.29.1 deploy --only firestore:rules --project familiadeamuchis-escapadas --non-interactive
