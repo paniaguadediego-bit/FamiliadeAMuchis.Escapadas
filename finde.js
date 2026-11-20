@@ -71,10 +71,10 @@ async function pedirTiempo() {
     zs.forEach((z, i) => {
       const x = arr[i] && arr[i].daily; if (!x) return;
       porZona[z] = {}; x.time.forEach((f, j) => { porZona[z][f] = { c: x.weather_code[j], max: x.temperature_2m_max[j], min: x.temperature_2m_min[j], p: x.precipitation_probability_max[j], v: x.wind_speed_10m_max[j] }; });
-      // Viernes por la tarde (14 a 20 h), con la previsión por horas: se guarda como «AAAA-MM-DDT».
+      // La tarde (14 a 20 h) de cada día, con la previsión por horas: se guarda como «AAAA-MM-DDT» (viernes y vísperas de festivo).
       const h = arr[i].hourly; if (!h) return;
       const tardes = {};
-      h.time.forEach((t, j) => { const f = t.slice(0, 10), hora = +t.slice(11, 13); if (hora < 14 || hora > 20 || new Date(f + 'T12:00').getDay() !== 5) return;
+      h.time.forEach((t, j) => { const f = t.slice(0, 10), hora = +t.slice(11, 13); if (hora < 14 || hora > 20) return;
         const a = tardes[f] = tardes[f] || { c: 0, max: -99, min: 99, p: 0, v: 0 };
         a.c = Math.max(a.c, h.weather_code[j] ?? 0); a.max = Math.max(a.max, h.temperature_2m[j]); a.min = Math.min(a.min, h.temperature_2m[j]);
         a.p = Math.max(a.p, h.precipitation_probability[j] ?? 0); a.v = Math.max(a.v, h.wind_speed_10m[j] ?? 0); });
@@ -114,8 +114,9 @@ function diasSorp() {
   if (festivo(vie) && vie >= hoy) r.push([vie, '🎉 Viernes']); else if (!tardeYa) r.push([vie + 'T', 'Viernes tarde']);
   if (sab >= hoy) r.push([sab, 'Sábado']); r.push([masDias(sab, 1), 'Domingo']);
   const ya = new Set(r.map(([f]) => f.slice(0, 10)));
-  festivosEntre(hoy, masDias(hoy, 28)).filter(([f]) => !ya.has(f) && ![0, 6].includes(diaSemana(f)))
-    .forEach(([f]) => r.push([f, '🎉 ' + new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })]));
+  festivosEntre(hoy, masDias(hoy, 28)).filter(([f]) => !ya.has(f) && ![0, 6].includes(diaSemana(f))).forEach(([f]) => {
+    const v = masDias(f, -1); if (esVispera(v) && tardeAunVale(v)) r.push([v + 'T', '🌆 ' + DSEM[diaSemana(v)].toLowerCase() + ' ' + +v.slice(8) + ' tarde']);
+    r.push([f, '🎉 ' + new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })]); });
   return r;
 }
 // Findes con previsión (Open-Meteo da 16 días): este, el que viene y, a veces, el siguiente.
@@ -263,7 +264,8 @@ function viewFindeS5() {
   const sab = proximoSabado(), v = masDias(sab, -1), dom = masDias(sab, 1), d = x => new Date(x + 'T12:00');
   const fechas = `Viernes ${d(v).getDate()} · Sábado ${d(sab).getDate()} · Domingo ${d(dom).getDate()} de ${d(dom).toLocaleDateString('es-ES', { month: 'long' })}`;
   return `<p class="finde-fechas">${esc(fechas)}</p>
-    ${eventosDestacadosHTML(sab)}
+    ${carruselFindeHTML(0)}${carruselFindeHTML(1)}
+    <button class="sec ver-eventos" data-tab="eventos">🎟️ Ver todos los eventos ›</button>
     ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '<div class="card muted centro">👥 Entra en el grupo (pestaña Grupo) para ver y proponer planes y decir qué días puedes.</div>'}
     <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
     <h2>🎭 ¿Qué hay?</h2>${typeof agendaHTML === 'function' ? agendaHTML() : ''}

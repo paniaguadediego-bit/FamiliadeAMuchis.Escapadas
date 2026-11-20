@@ -66,35 +66,6 @@ const durDias = f => Math.round((new Date(f[1] + 'T12:00') - new Date(f[0] + 'T1
 const pesoEvento = (s, f, desde) => (s.destacado ? 0 : 2) + (FOTOS[s.id] || (typeof FOTOS_AG !== 'undefined' && FOTOS_AG[s.id]) ? 0 : 1)
   + (durDias(f) > 14 ? 4 : durDias(f) > 4 ? 1 : 0) + (desde && f[0] < desde ? 2 : 0);
 const ordenarEventos = (l, desde) => l.slice().sort((a, b) => pesoEvento(a[0], a[1], desde) - pesoEvento(b[0], b[1], desde) || a[1][0].localeCompare(b[1][0]));
-// Arriba de Planes: carrusel con TODOS los eventos de este finde (viernes a domingo), primero los más especiales; si
-// hay pocos, lo grande que viene. Cada uno con «🙋 Me apunto» (si ya hay plan) o «📅 Proponer». Enlaza con Eventos.
-function eventosDestacadosHTML(sab) {
-  const v = isoMas(sab, -1), dom = isoMas(sab, 1), hoy = hoyISO();
-  const esteFinde = ordenarEventos(eventosEntre(v, dom), v), ids = new Set(esteFinde.map(([s]) => s.id));
-  const pronto = esteFinde.length >= 3 ? [] : ordenarEventos(eventosEntre(isoMas(dom, 1), isoMas(dom, 14))).filter(([s]) => s.destacado || !s.agenda).slice(0, 2);
-  const grandes = esteFinde.length + pronto.length >= 3 ? [] : eventosEntre(isoMas(dom, 15), isoMas(hoy, 120)).filter(([s]) => s.destacado).slice(0, 1);
-  const tarjetas = [...esteFinde, ...pronto, ...grandes];
-  if (!tarjetas.length) return `<div class="card muted centro">🎟️ No hay eventos a la vista este finde. <button class="sec mini" data-tab="eventos">Ver todos los eventos ›</button></div>`;
-  const grupo = typeof enGrupo === 'function' && enGrupo();
-  const tarjeta = ([s, f]) => {
-    const dias = Math.round((new Date(f[0] + 'T12:00') - new Date(hoy + 'T12:00')) / 864e5), ya = f[0] <= hoy && f[1] >= hoy;
-    const cuenta = ya ? '¡Ahora!' : ids.has(s.id) ? '¡Este finde!' : dias === 1 ? 'Mañana' : f[0] <= isoMas(dom, 7) ? `En ${dias} días · el finde que viene` : `En ${dias} días`;
-    let acc = '';
-    if (grupo) {
-      const p = proximosPlanes().find(x => x.sitioId === s.id), voy = p && (p.apuntados || []).includes(NUBE.user.uid);
-      acc = p ? `<button class="mini ${voy ? 'sec' : ''}" data-plan="${voy ? 'no' : 'si'}" data-id="${esc(p.id)}">${voy ? '✓ Vas' : '🙋 Me apunto'} · ${(p.apuntados || []).length} van</button>`
-        : `<button class="sec mini" data-plan="abrir" data-sitio="${esc(s.id)}" data-sabado="${f[0] < hoy ? hoy : f[0]}" data-carrusel="1">📅 Proponer al grupo</button>`;
-    }
-    return `<div class="ev-tarjeta"><button class="ev-ban banner-plano ${ids.has(s.id) ? 'ya' : ''}" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
-      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${esc(cuenta)}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
-      ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
-  };
-  const form = grupo && planForm && planForm.carrusel ? formPlanHTML(planForm) : '';
-  return `<div class="ev-carrusel" aria-label="Eventos de este finde">${tarjetas.map(tarjeta).join('')}</div>
-    ${tarjetas.length > 1 ? `<div class="ev-pista">${esteFinde.length ? `${esteFinde.length} evento${esteFinde.length > 1 ? 's' : ''} este finde` : 'Lo próximo'} · desliza ↔</div>` : ''}
-    ${form}
-    <button class="sec ver-eventos" data-tab="eventos">🎟️ Ver todos los eventos ›</button>`;
-}
 // Este finde: lo que hay (viernes a domingo).
 function eventosFindeHTML(sab) {
   const ev = eventosEntre(isoMas(sab, -1), isoMas(sab, 1));

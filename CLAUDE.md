@@ -100,7 +100,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
 - Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
-- Días: 👍 puedo ese día · 🙅 no puedo · 🎉 festivo.
+- Días: 👍 puedo ese día · 🙅 no puedo · 🎉 festivo · 🌆 víspera (tarde antes de un festivo).
+- Planes: 🎠 carrusel de un finde · 💡 idea (sitio que encaja) · 🔎 nivel de zoom del mapa.
 - Tema: 🌓 auto · ☀️ claro · 🌙 oscuro.
 
 ## Marcas
@@ -335,3 +336,15 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Sitios: filtros siempre a la vista en botoncitos (tocar otra vez quita). Mapa: tipos como botones (ninguno =
   todos, uno o varios); iconos solo en el zoom máximo y los 4 anteriores (z ≥ 14), puntitos antes; al tocar un punto
   se marca 🔖/✅/✖️ desde ahí. Menús centrados. Franja de Canarias blanco-azul-amarillo, 8 px.
+
+## Calendario y carruseles (v22, pedido del usuario)
+- Planes: fechas → 🎠 Este finde y 🎠 El que viene (carruseles: primero 🙋 planes del grupo con caritas y «Me apunto»,
+  luego 🎟️ eventos con «📅 Proponer» y 3 💡 ideas que encajan con el tiempo; sin grupo, eventos e ideas) → Ver todos
+  los eventos → 📅 Calendario mensual → 🔭 Más planes por delante → 🎲 → 🎭 → ganas.
+- Calendario: rejilla del mes (L-D, ‹ ›), 10 semanas por delante. Findes tintados, 🎉 festivos en amarillo, vísperas
+  con raya amarilla, punto azul = planes, 👍/🙅 tuyo y 👍n del grupo. Al tocar un día, debajo: festivo/víspera, lluvia,
+  ¿puedes? de su bloque (`bloqueDe`), sus planes y «＋ Plan este día».
+- Vísperas: la tarde (clave 'AAAA-MM-DDT', tiempo de 14 a 20 h de cualquier día) antes de un festivo de lunes a jueves
+  cuenta como el viernes tarde: se marca 👍/🙅, se propone plan y Sorpréndeme la ofrece (🌆). Jueves/viernes festivos
+  forman puente con el finde (y la tarde de su víspera).
+- Mapa: etiqueta «🔎 Zoom N de 18 · iconos desde 14» arriba a la izquierda, para hablar de zoom con números.

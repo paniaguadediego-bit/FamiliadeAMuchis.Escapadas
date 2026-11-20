@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v21';
+const VERSION = 'v22';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -329,11 +329,11 @@ function viewMapa() {
   if (MP.elegir) return `<div class="aviso-elegir">👆 <b>Toca en el mapa dónde está el sitio.</b> Acerca con ＋ o con dos dedos para afinar.<button class="sec mini" data-propio="cancelar-mapa">Cancelar</button></div>
     <div class="mapa elegir" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
-      <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>`;
+      <div class="mp-zoom" aria-live="polite"></div><div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>`;
   return `<div class="mp-tipos">${tiposHay.map(t => `<button class="mp-tipo ${mpTipos.has(t) ? 'on' : ''}" data-mptipo="${t}" aria-pressed="${mpTipos.has(t)}"><span>${tipoIc(t)}</span>${esc(tipoNom(t).split(' ')[0])}</button>`).join('')}${mpTipos.size ? '<button class="mp-tipo todos" data-mptipo="">✕<span class="vh"> Ver todos</span></button>' : ''}</div>
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
-      <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
+      <div class="mp-zoom" aria-live="polite"></div><div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
     <p class="leyenda">Acerca bastante el mapa (＋ o con dos dedos) para ver los iconos; toca un punto para marcarlo. Azul 🔖 quiero ir · verde ✅ visitado · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
 // Los de la agenda solo salen si se elige «Evento» (van al centro de su municipio, aproximados).
@@ -388,6 +388,7 @@ function mpDibujar(el) {
     h += `<button class="mp-pt ${peq ? 'peq' : ''} ${e ? 'e-' + e : ''} ${MP.sel === s.id ? 'sel' : ''} ${enGrupo() && otrosEn(s.id).fuimos.length ? 'g-fue' : ''}" data-mpp="${esc(s.id)}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px" aria-label="${esc(s.nombre)}">${tipoIc(s.tipo)}</button>`;
   });
   if (MP.yo) { const [x, y] = P(MP.yo[0], MP.yo[1]); h += `<span class="mp-yo" style="left:${x}px;top:${y}px"></span>`; }
+  const zb = el.querySelector('.mp-zoom'); if (zb) zb.innerHTML = `🔎 Zoom <b>${z}</b> de ${MPZ[1]}${peq ? ` · iconos desde ${MPZ[1] - 4}` : ''}`;
   const capa = el.querySelector('.mp-capa'); capa.style.transform = ''; capa.style.setProperty('--mps', S); capa.innerHTML = h;
   const inf = el.querySelector('.mp-info'), s = MP.sel && sitio(MP.sel);
   inf.innerHTML = s ? mpFicha(s) : ''; inf.classList.toggle('on', !!s);

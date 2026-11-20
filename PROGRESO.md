@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v22 · Calendario mensual, vísperas y carruseles de planes (2026-11-20)
+- Planes: dos carruseles, «Este finde» y «El que viene», con los planes del grupo (quién va y apuntarse), los eventos
+  (proponer) y 3 ideas que encajan con el tiempo.
+- Calendario mensual en vez de tarjetas por finde: festivos, vísperas, planes y quién puede; al tocar un día, su detalle.
+- Vísperas de festivo: su tarde se marca y se propone como el viernes tarde; también en Sorpréndeme.
+- Mapa: referencia de zoom («🔎 Zoom 14 de 18») para decir cuándo se ven pequeños los iconos.
+
 ## v21 · Planes, días que puedes, festivos y mapa por tipos (2026-11-20)
 - «Este finde» pasa a ser **Planes**: carrusel con todos los eventos del finde (apuntarse o proponerlo desde ahí),
   «Próximos findes y festivos» con cada finde en su tarjeta y quién va a cada plan. Fuera el bloque del tiempo.

@@ -143,53 +143,134 @@ function planesEnFicha(id) {
 }
 
 // ---------- 📅 Próximos findes y festivos (en Planes) ----------
-// Cada finde es un bloque: viernes por la tarde (el viernes entero si es festivo), sábado, domingo y el lunes si es
-// festivo. Los festivos de entre semana van en su propio bloque. Claves de día: 'AAAA-MM-DD', y 'AAAA-MM-DDT' para la
-// tarde del viernes (las mismas que el tiempo).
-const nomDia = k => { const f = k.slice(0, 10), w = diaSemana(f); return k.endsWith('T') ? 'Vie tarde' : ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][w] + ' ' + +f.slice(8); };
-function bloquesCalendario() {
-  const sab0 = proximoSabado(), hoy = hoyISO(), ahora = new Date(), r = [];
-  const fin = masDias(sab0, 7 * (SEMANAS_CAL - 1) + 1);
-  const enFinde = new Set();
-  for (let i = 0; i < SEMANAS_CAL; i++) {
-    const sab = masDias(sab0, 7 * i), vie = masDias(sab, -1), dom = masDias(sab, 1), lun = masDias(sab, 2);
-    const dias = [];
-    if (festivo(vie)) dias.push(vie); else if (vie > hoy || (vie === hoy && ahora.getHours() < 20)) dias.push(vie + 'T');
-    if (festivo(masDias(vie, -1))) dias.unshift(masDias(vie, -1)); // jueves festivo: puente
-    dias.push(sab, dom); if (festivo(lun)) dias.push(lun);
-    const ds = dias.filter(k => k.slice(0, 10) >= hoy); ds.forEach(k => enFinde.add(k.slice(0, 10)));
-    r.push({ tipo: 'finde', i, sab, dias: ds, desde: masDias(sab, -5), hasta: ds[ds.length - 1].slice(0, 10) > dom ? ds[ds.length - 1].slice(0, 10) : dom });
+// Claves de día: 'AAAA-MM-DD' (el día entero) y 'AAAA-MM-DDT' (la tarde: viernes y vísperas de festivo, las mismas del
+// tiempo). Un «bloque» son los días que se deciden juntos: un finde (viernes tarde —o el viernes entero si es festivo—,
+// sábado, domingo y jueves/lunes festivos de puente, con la tarde de su víspera) o un festivo suelto con su víspera.
+const DSEM = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const nomDia = k => { const f = k.slice(0, 10); return DSEM[diaSemana(f)] + (k.endsWith('T') ? ' tarde' : ' ' + +f.slice(8)); };
+// Víspera de festivo de lunes a jueves: su tarde cuenta (al día siguiente no se trabaja). Viernes y finde ya cuentan.
+const esVispera = f => !!festivo(masDias(f, 1)) && !festivo(f) && [1, 2, 3, 4].includes(diaSemana(f));
+const tardeAunVale = f => f > hoyISO() || (f === hoyISO() && new Date().getHours() < 20);
+function bloqueDe(f) {
+  const hoy = hoyISO(), w = diaSemana(f), vale = ks => ks.filter(k => k.endsWith('T') ? tardeAunVale(k.slice(0, 10)) : k >= hoy);
+  // ¿Pertenece a un finde (con su puente)?
+  const sab = w === 6 ? f : w === 0 ? masDias(f, -1) : w === 5 ? masDias(f, 1) : w === 1 && festivo(f) ? masDias(f, -2) : w === 4 && festivo(f) ? masDias(f, 2)
+    : w === 3 && festivo(masDias(f, 1)) ? masDias(f, 3) : w === 4 && festivo(masDias(f, 1)) ? masDias(f, 2) : null;
+  if (sab) {
+    const vie = masDias(sab, -1), jue = masDias(sab, -2), lun = masDias(sab, 2), ks = [];
+    if (festivo(jue)) ks.push(masDias(jue, -1) + 'T', jue); else if (festivo(vie)) ks.push(jue + 'T'); // víspera del viernes festivo
+    ks.push(festivo(vie) ? vie : festivo(jue) ? vie : vie + 'T', sab, masDias(sab, 1));
+    if (festivo(lun)) ks.push(lun);
+    return { tipo: 'finde', sab, dias: vale(ks) };
   }
-  festivosEntre(hoy, fin).filter(([f]) => !enFinde.has(f)).forEach(([f]) => r.push({ tipo: 'festivo', sab: f, dias: [f], desde: f, hasta: f }));
-  return r.sort((a, b) => a.dias[0].slice(0, 10).localeCompare(b.dias[0].slice(0, 10)));
+  // Festivo suelto (o su víspera).
+  const fest = festivo(f) ? f : esVispera(f) ? masDias(f, 1) : null;
+  if (fest) return { tipo: 'festivo', sab: fest, dias: vale([...(esVispera(masDias(fest, -1)) ? [masDias(fest, -1) + 'T'] : []), fest]) };
+  return { tipo: 'dia', sab: f, dias: vale([f]) };
 }
+const planesDelDia = f => proximosPlanes().filter(p => p.fecha <= f && finPlan(p) >= f);
+let calMes = null, calSel = null; // mes que se ve ('AAAA-MM') y día elegido
+const CAL_DIAS = 7 * SEMANAS_CAL; // hasta dónde se puede decir si puedes y proponer
 function calendarioHTML() {
   if (!enGrupo()) return '';
-  const ps = proximosPlanes(), bloques = bloquesCalendario(), usados = new Set();
-  // Primero los festivos sueltos se quedan sus planes; luego cada finde, los de su semana.
-  bloques.filter(b => b.tipo === 'festivo').forEach(b => { b.planes = ps.filter(p => p.fecha === b.sab); b.planes.forEach(p => usados.add(p.id)); });
-  bloques.filter(b => b.tipo === 'finde').forEach(b => { b.planes = ps.filter(p => !usados.has(p.id) && p.fecha <= b.hasta && finPlan(p) >= b.desde); b.planes.forEach(p => usados.add(p.id)); });
-  const filas = bloques.map(b => {
-    const abierto = planForm && !planForm.sitioId && planForm.sabado === b.sab;
-    const fests = b.dias.map(k => [k, festivo(k)]).filter(([, n]) => n);
-    const cuando = b.tipo === 'festivo' ? '🎉 Festivo' : b.i === 0 ? 'Este finde' : b.i === 1 ? 'El que viene' : `En ${b.i} semanas`;
-    const f0 = b.dias[0].slice(0, 10), fN = b.dias[b.dias.length - 1].slice(0, 10);
-    const rango = f0 === fN ? new Date(f0 + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }) : `${diaCorto(f0)} – ${diaCorto(fN)} ${new Date(fN + 'T12:00').toLocaleDateString('es-ES', { month: 'short' })}`;
-    return `<section class="finde ${b.tipo} ${b.planes.length ? 'con-planes' : 'libre'}">
-      <div class="finde-cab"><span class="finde-f"><b>${esc(rango)}</b></span><span class="finde-c">${cuando}</span>
-        ${abierto ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${b.sab}" aria-label="Proponer plan">＋ Plan</button>`}</div>
-      ${fests.length ? `<div class="fest-l">🎉 ${fests.map(([k, n]) => `<b>${esc(nomDia(k))}</b> ${esc(n)}`).join(' · ')}</div>` : ''}
-      ${b.tipo === 'finde' && typeof tiempoFindeMini === 'function' ? tiempoFindeMini(b.sab) : ''}
-      ${dispoHTML(b.dias)}
-      ${b.planes.map(p => planHTML(p, { compacto: true })).join('')}
-      ${abierto ? formPlanHTML(planForm) : ''}</section>`;
-  });
-  const ultimo = bloques.length ? bloques[bloques.length - 1].hasta : hoyISO();
-  const luego = ps.filter(p => !usados.has(p.id) && p.fecha > ultimo);
-  return `<h2>📅 Próximos findes y festivos</h2>${miMuni() ? '' : '<p class="muted mini-nota">🎉 Para ver los festivos locales de tu municipio, elígelo en ☰ Más.</p>'}
-    <div class="calendario">${filas.join('')}</div>
-    ${luego.length ? `<h2>🔭 Más adelante</h2>${luego.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;
+  const hoy = hoyISO(), limite = masDias(hoy, CAL_DIAS);
+  if (!calSel || calSel < hoy) calSel = proximoSabado() < hoy ? hoy : proximoSabado();
+  if (!calMes) calMes = calSel.slice(0, 7);
+  const [y, m] = calMes.split('-').map(Number), d1 = `${calMes}-01`, nDias = new Date(y, m, 0).getDate();
+  const hueco = (diaSemana(d1) + 6) % 7, yo = NUBE.user.uid, otros = (NUBE.grupo.miembros || []).filter(u => u !== yo);
+  let celdas = '<span class="cal-h">L</span><span class="cal-h">M</span><span class="cal-h">X</span><span class="cal-h">J</span><span class="cal-h">V</span><span class="cal-h">S</span><span class="cal-h">D</span>'
+    + '<span></span>'.repeat(hueco);
+  for (let d = 1; d <= nDias; d++) {
+    const f = `${calMes}-${String(d).padStart(2, '0')}`, w = diaSemana(f), fuera = f < hoy || f > limite;
+    const fest = festivo(f), visp = esVispera(f) || (w === 5 && !fest), ps = fuera ? [] : planesDelDia(f);
+    const k = visp && !fest ? f + 'T' : f, mio = fuera ? '' : dispoDe(yo, k) || (w === 5 ? dispoDe(yo, f) : '');
+    const si = fuera ? 0 : otros.filter(u => dispoDe(u, k) === 'si').length;
+    const cls = ['cal-d', fuera && 'fuera', f === hoy && 'hoy', (w === 0 || w === 6) && 'finde', fest && 'fest', esVispera(f) && 'visp', f === calSel && 'sel', mio && 'm-' + mio].filter(Boolean).join(' ');
+    celdas += `<button class="${cls}" ${fuera ? 'disabled' : `data-cal="${f}"`} aria-label="${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }))}${fest ? ', festivo' : ''}${ps.length ? `, ${ps.length} plan` : ''}">
+      <span class="cal-n">${d}</span><span class="cal-m">${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
+  }
+  const mesNom = new Date(d1 + 'T12:00').toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  const prev = masDias(d1, -1).slice(0, 7), next = masDias(`${calMes}-${nDias}`, 1).slice(0, 7);
+  const nav = `<div class="cal-nav"><button class="sec mini" data-calmes="${prev}" ${prev < hoy.slice(0, 7) ? 'disabled' : ''} aria-label="Mes anterior">‹</button>
+    <b>${esc(mesNom[0].toUpperCase() + mesNom.slice(1))}</b><button class="sec mini" data-calmes="${next}" ${next > limite.slice(0, 7) ? 'disabled' : ''} aria-label="Mes siguiente">›</button></div>`;
+  const enDia = new Set(bloqueDe(calSel).dias.map(k => k.slice(0, 10)));
+  const ps = proximosPlanes(), mas = ps.filter(p => p.fecha > masDias(proximoSabado(), 9) && ![...enDia].some(d => p.fecha <= d && finPlan(p) >= d));
+  return `<h2>📅 Calendario: findes, festivos y vísperas</h2>${miMuni() ? '' : '<p class="muted mini-nota">🎉 Para ver los festivos locales de tu municipio, elígelo en ☰ Más.</p>'}
+    <div class="card cal">${nav}<div class="cal-g">${celdas}</div>
+      <div class="cal-ley"><span><i class="cal-p"></i> plan</span><span class="l-fest">🎉 festivo</span><span class="l-visp">víspera</span><span>👍 / 🙅 tú</span><span>👍n el grupo</span></div></div>
+    ${diaHTML(calSel)}
+    ${mas.length ? `<h2>🔭 Más planes por delante</h2>${mas.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;
 }
+// Detalle del día elegido: festivo/víspera, ¿puedes? (los días de su bloque), planes de esos días y «＋ Plan».
+function diaHTML(f) {
+  const b = bloqueDe(f), fest = festivo(f), visp = esVispera(f);
+  const titulo = new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  const dias = [...new Set(b.dias.map(k => k.slice(0, 10)))], ps = proximosPlanes().filter(p => dias.some(d => p.fecha <= d && finPlan(p) >= d));
+  const fests = dias.map(d => [d, festivo(d)]).filter(([, n]) => n);
+  const abierto = planForm && !planForm.sitioId && planForm.sabado === f;
+  return `<section class="finde dia-sel ${b.tipo}">
+    <div class="finde-cab"><span class="finde-f"><b>${esc(titulo[0].toUpperCase() + titulo.slice(1))}</b></span>
+      ${abierto ? '' : `<button class="mini" data-plan="abrir" data-sabado="${f}">＋ Plan este día</button>`}</div>
+    ${fests.length ? `<div class="fest-l">🎉 ${fests.map(([d, n]) => `<b>${esc(nomDia(d))}</b> ${esc(n)}`).join(' · ')}</div>` : ''}
+    ${visp && !fest ? `<div class="fest-l">🌆 Víspera de festivo: mañana no se trabaja, buena tarde para quedar.</div>` : ''}
+    ${b.tipo === 'finde' && typeof tiempoFindeMini === 'function' ? tiempoFindeMini(b.sab) : ''}
+    ${b.dias.length ? dispoHTML(b.dias) : ''}
+    ${ps.map(p => planHTML(p, { compacto: true })).join('') || (abierto ? '' : '<div class="muted centro">Sin planes todavía.</div>')}
+    ${abierto ? formPlanHTML(planForm) : ''}</section>`;
+}
+document.addEventListener('click', e => {
+  const d = e.target.closest('[data-cal]'); if (d) { calSel = d.dataset.cal; planForm = null; render(); const x = document.querySelector('.dia-sel'); if (x) x.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+  const m = e.target.closest('[data-calmes]'); if (m) { calMes = m.dataset.calmes; render(); }
+});
+
+// ---------- 🎠 Carruseles de Planes: este finde y el que viene ----------
+// Primero los planes del grupo (quién va, «🙋 Me apunto»), luego los eventos y, al final, 💡 ideas que encajan con el
+// tiempo (que tú no hayas visitado; antes lo que el grupo tiene en 🔖). Sin grupo: eventos e ideas.
+const hashTxt = t => [...t].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+function ideasFinde(sab, n, fuera) {
+  const g = typeof enGrupo === 'function' && enGrupo();
+  return SITIOS.filter(s => s.tipo !== 'evento' && !s.agenda && enIsla(s) && !fuera.has(s.id) && !['fuimos', 'no'].includes(marca(s.id).estado)
+      && (typeof tiempoVale !== 'function' || tiempoVale(s, sab).ok))
+    .map(s => [s, -10 * ganas(s.id) - (g && nadieFue(s.id) ? 3 : 0) - (fotoSrc(s.id) ? 2 : 0) + (hashTxt(s.id + sab) % 100) / 100])
+    .sort((a, b) => a[1] - b[1]).slice(0, n).map(([s]) => s);
+}
+function carruselFindeHTML(i) {
+  const sab = masDias(proximoSabado(), 7 * i), b = bloqueDe(sab), g = typeof enGrupo === 'function' && enGrupo();
+  const d0 = b.dias[0] ? b.dias[0].slice(0, 10) : sab, dN = b.dias.length ? b.dias[b.dias.length - 1].slice(0, 10) : masDias(sab, 1);
+  const ps = g ? proximosPlanes().filter(p => p.fecha <= dN && finPlan(p) >= d0) : [];
+  const evs = ordenarEventos(eventosEntre(masDias(sab, -1), dN), masDias(sab, -1));
+  const usados = new Set([...ps.map(p => p.sitioId), ...evs.map(([s]) => s.id)]);
+  const ideas = ideasFinde(sab, 3, usados), hoy = hoyISO();
+  const caras = us => us.slice(0, 5).map(u => carita(perfilDe(u))).join('') + (us.length > 5 ? `<small>+${us.length - 5}</small>` : '');
+  const tPlan = p => {
+    const s = p.sitioId && sitio(p.sitioId), voy = (p.apuntados || []).includes(NUBE.user.uid), isla = ISLAS[p.isla] || ISLAS.tenerife;
+    return `<div class="ev-tarjeta t-plan"><button class="ev-ban banner-plano" ${s ? `data-irficha="${esc(s.id)}"` : `data-cal-ir="${p.fecha}"`} style="${s ? varsMuni(s.municipio) : '--h:200'}">${s ? fotoImg(s.id, 'banner-foto') : ''}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-plan">🙋 Plan · ${esc(nomDia(p.fecha))}</span><b>${s ? esc(s.nombre) : `${isla.ic} ${esc(p.destino || 'Plan')}`}</b><small>${p.nota ? '«' + esc(p.nota) + '»' : s ? esc(s.municipio) : ''}</small></span></span></button>
+      <div class="ev-acc"><span class="t-caras">${caras(p.apuntados || [])}</span><button class="mini ${voy ? 'sec' : ''}" data-plan="${voy ? 'no' : 'si'}" data-id="${esc(p.id)}">${voy ? '✓ Vas' : '🙋 Me apunto'}</button></div></div>`;
+  };
+  const tEv = ([s, f]) => {
+    const ya = f[0] <= hoy && f[1] >= hoy, p = g && proximosPlanes().find(x => x.sitioId === s.id);
+    const acc = !g ? '' : p ? '' : `<button class="sec mini" data-plan="abrir" data-sitio="${esc(s.id)}" data-sabado="${f[0] < d0 ? (sab < hoy ? hoy : sab) : f[0]}" data-carrusel="${i}">📅 Proponer</button>`;
+    return `<div class="ev-tarjeta"><button class="ev-ban banner-plano ya" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${ya ? '¡Ahora!' : s.destacado ? '¡No te lo pierdas!' : 'Evento'}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
+      ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
+  };
+  const tIdea = s => {
+    const tv = typeof tiempoVale === 'function' ? tiempoVale(s, sab) : {}, q = ganas(s.id);
+    return `<div class="ev-tarjeta t-idea"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">💡 Idea${tv.nota ? ' · ' + esc(tv.nota) : ''}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}${q ? ` · 🔖 ${q} con ganas` : ''}</small></span></span></button>
+      ${g ? `<div class="ev-acc"><button class="sec mini" data-plan="abrir" data-sitio="${esc(s.id)}" data-sabado="${sab < hoy ? hoy : sab}" data-carrusel="${i}">📅 Proponer</button></div>` : ''}</div>`;
+  };
+  const tarjetas = [...ps.map(tPlan), ...evs.map(tEv), ...ideas.map(tIdea)];
+  const fests = b.dias.map(k => festivo(k)).filter(Boolean);
+  const rango = `${nomDia(d0)} – ${nomDia(dN)} ${new Date(dN + 'T12:00').toLocaleDateString('es-ES', { month: 'short' })}`;
+  const form = g && planForm && planForm.carrusel === String(i) ? formPlanHTML(planForm) : '';
+  return `<div class="car-cab"><h2>${i === 0 ? '🎠 Este finde' : '🎠 El que viene'}</h2><span class="muted">${esc(rango)}${fests.length ? ' · 🎉 puente' : ''}</span></div>
+    <div class="ev-pista">${ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} · ` : ''}${evs.length ? `🎟️ ${evs.length} evento${evs.length > 1 ? 's' : ''} · ` : ''}💡 ${ideas.length} ideas · desliza ↔</div>
+    <div class="ev-carrusel">${tarjetas.join('')}</div>${form}`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-cal-ir]'); if (b) { calSel = b.dataset.calIr; calMes = calSel.slice(0, 7); render(); const x = document.querySelector('.cal'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); } });
+
 // ---------- 👍 / 🙅 ¿Puedes ese día? ----------
 // grupos/{gid}/disponibilidad/{uid}: { uid, no: [claves de día], si: [claves de día], actualizado }. Cada uno el suyo.
 // (Antes era `nopuedo: [sábados]` = todo el finde: se sigue leyendo así.)
@@ -245,7 +326,7 @@ const avisoPlanesHTML = () => { const n = proximosPlanes().length; return n ? `<
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-plan]'); if (!b) return;
   const a = b.dataset.plan, id = b.dataset.id, val = k => (document.getElementById(k) || {}).value || '';
-  if (a === 'abrir') { planForm = b.dataset.sitio ? { sitioId: b.dataset.sitio, sabado: b.dataset.sabado, carrusel: !!b.dataset.carrusel } : { sabado: b.dataset.sabado }; render(); const f = document.querySelector('.plan-form'); if (f) f.scrollIntoView({ block: 'center' }); }
+  if (a === 'abrir') { planForm = b.dataset.sitio ? { sitioId: b.dataset.sitio, sabado: b.dataset.sabado, carrusel: b.dataset.carrusel } : { sabado: b.dataset.sabado }; render(); const f = document.querySelector('.plan-form'); if (f) f.scrollIntoView({ block: 'center' }); }
   else if (a === 'cerrar') { planForm = null; render(); }
   else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), hasta: val('pl-hasta'), nota: val('pl-nota'), planB: val('pl-b') });
   else if (a === 'si' || a === 'no') apuntarse(id, a === 'si');

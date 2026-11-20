@@ -612,4 +612,42 @@ button.mp-tipo.todos { color: var(--red); }
 button.fm, button.mp-tipo, .dispo-atajos button, .ev-acc button, .finde-cab button { width: auto; flex: none; }
 .mp-f-foto { max-height: 6.5rem; overflow: hidden; }
 .mp-f-foto img { width: 100%; height: 6.5rem; object-fit: cover; }
-:root { --css-ver: "v21"; }
+
+.mp-zoom { position: absolute; left: 8px; top: 8px; z-index: 6; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; font-size: .72rem; box-shadow: var(--sombra); pointer-events: none; }
+
+/* ===== v22: calendario mensual, carruseles de Planes ===== */
+.car-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.car-cab h2 { margin-bottom: 2px; }
+.car-cab .muted { font-size: .76rem; }
+.ev-cuenta.c-plan { background: var(--quiero); color: #fff; }
+.ev-cuenta.c-idea { background: rgba(255,255,255,.9); color: #1a1a1a; }
+.t-plan .ev-ban { outline: 3px solid var(--quiero); outline-offset: -3px; }
+.ev-acc { align-items: center; gap: 8px; }
+.t-caras { display: inline-flex; }
+.t-caras .carita { width: 1.5rem; height: 1.5rem; font-size: .8rem; margin-left: -5px; border: 2px solid var(--card); }
+.t-caras .carita:first-child { margin-left: 0; }
+.ver-eventos { display: block; margin: 8px auto 4px; }
+.cal { padding: 8px 8px 6px; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.cal-nav button { width: 2.4rem; flex: none; }
+.cal-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-h { text-align: center; font-size: .66rem; font-weight: 700; color: var(--muted); }
+.cal-d { margin: 0; padding: 2px 0; min-height: 2.9rem; width: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 0;
+  background: var(--bg); color: var(--fg); border: 1.5px solid transparent; border-radius: 9px; line-height: 1.1; }
+.cal-d.finde { background: color-mix(in srgb, var(--pri) 9%, var(--card)); }
+.cal-d.fest { background: color-mix(in srgb, var(--amarillo-ic) 38%, var(--card)); }
+.cal-d.visp { border-bottom: 3px dashed var(--amarillo-ic); }
+.cal-d.hoy .cal-n { background: var(--fg); color: var(--bg); border-radius: 999px; padding: 0 5px; }
+.cal-d.sel { border-color: var(--pri); box-shadow: 0 0 0 2px color-mix(in srgb, var(--pri) 35%, transparent); }
+.cal-d.fuera { opacity: .35; }
+.cal-d.m-no .cal-n { text-decoration: line-through; color: var(--red); }
+.cal-n { font-size: .82rem; font-weight: 600; }
+.cal-m { display: flex; align-items: center; gap: 1px; font-size: .7rem; min-height: 1rem; }
+.cal-m small { font-size: .58rem; color: var(--muted); }
+i.cal-p { display: inline-block; min-width: .55rem; height: .55rem; border-radius: 999px; background: var(--quiero); color: #fff; font-style: normal; font-size: .5rem; line-height: .55rem; padding: 0 1px; }
+.cal-ley { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 10px; font-size: .66rem; color: var(--muted); margin-top: 6px; }
+.cal-ley .l-fest { background: color-mix(in srgb, var(--amarillo-ic) 38%, var(--card)); border-radius: 6px; padding: 0 4px; }
+.cal-ley .l-visp { border-bottom: 2px dashed var(--amarillo-ic); }
+.dia-sel { border-top: 4px solid var(--pri); }
+.dia-sel .finde-cab button { background: var(--pri); color: var(--pri-fg); }
+:root { --css-ver: "v22"; }
