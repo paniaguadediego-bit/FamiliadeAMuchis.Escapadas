@@ -1,5 +1,14 @@
 # PROGRESO
 
+## v20 · Simulación con tres usuarios y arreglos (2026-11-20)
+- Simulación como recién llegado, local con grupo y organizador de eventos: informe en `SIMULACION.md`
+  (problemas, arreglos y prioridades).
+- Buscar: lista seguida con lo que coincide en el nombre primero («teide» ya saca el Parque Nacional).
+- Calendario de findes: los eventos de cada fila son solo los de viernes a domingo.
+- Aviso de tiempo de un plan de playa: dice el motivo («Fresco para playa (20°)», «Poco sol para playa»)
+  en vez de «pinta mal» con nubes y claros.
+- Agenda: carreras (km, race, nocturna…) a 🏃 deporte; giras y recitales a 🎵 música.
+
 ## v19 · Eventos automáticos, pestaña Eventos y lluvia en el calendario (2026-11-20)
 - Agenda automática: GitHub Actions lee la agenda de Turismo de Tenerife (lunes y jueves) y actualiza
   `data/agenda.json` (41 eventos ahora). Salen en Este finde (en grande lo que empieza este finde, el

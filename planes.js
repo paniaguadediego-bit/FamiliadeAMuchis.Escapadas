@@ -80,7 +80,8 @@ function planBHTML(p) {
   let h = '';
   if (av) {
     const [ic, txt] = cielo(av.t.c);
-    h += `<div class="aviso-tiempo">🌧️ <b>El tiempo pinta mal</b> en ${esc(av.zona.nom)}: ${ic} ${esc(txt.toLowerCase())}${av.t.p >= 20 ? `, ${av.t.p}% de probabilidad de lluvia`.replace(/ de lluvia$/, /lluv|chubas/i.test(txt) ? '' : ' de lluvia') : ''}${av.t.v >= 40 ? `, viento ${Math.round(av.t.v)} km/h` : ''}.
+    const por = tiempoVale(av.s, p.fecha).por || '';
+    h += `<div class="aviso-tiempo">${por ? `🏖️ <b>${esc(por)}</b>` : '🌧️ <b>El tiempo pinta mal</b>'} en ${esc(av.zona.nom)}: ${ic} ${esc(txt.toLowerCase())}${av.t.p >= 20 ? `, ${av.t.p}% de probabilidad de lluvia`.replace(/ de lluvia$/, /lluv|chubas/i.test(txt) ? '' : ' de lluvia') : ''}${av.t.v >= 40 ? `, viento ${Math.round(av.t.v)} km/h` : ''}.
       ${b ? '' : (() => { const ideas = ideasB(p); return ideas.length ? `<div class="ideas-b">Ideas de plan B para ese día:${ideas.map(x => `<div class="idea-b"><button class="plan-b-s" data-irficha="${esc(x.id)}">${tipoIc(x.tipo)} ${esc(x.nombre)}</button><small class="muted"> ${esc(x.municipio)}</small><button class="sec mini" data-plan="b-usar" data-id="${esc(p.id)}" data-sitio="${esc(x.id)}">🅱️ Usar</button></div>`).join('')}</div>` : ''; })()}</div>`;
   }
   if (planBForm === p.id) {
@@ -159,7 +160,7 @@ function calendarioHTML() {
         ${planForm && planForm.sabado === sab ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${sab}" aria-label="Proponer plan este finde">＋</button>`}</div>
       ${typeof tiempoFindeMini === 'function' ? tiempoFindeMini(sab) : ''}
       ${noPueden.length ? `<div class="nopueden">🙅 No ${noPueden.length > 1 ? 'pueden' : 'puede'}: ${noPueden.map(u => `<span class="gm">${carita(perfilDe(u))}<span>${esc(u === NUBE.user.uid ? 'tú' : perfilDe(u).nombre)}</span></span>`).join('')}</div>` : ''}
-      ${eventosSemanaHTML(lun, dom)}
+      ${eventosSemanaHTML(masDias(sab, -1), dom)}
       ${deEsa.map(p => planHTML(p, { compacto: true })).join('')}
       ${!deEsa.length && !(planForm && planForm.sabado === sab) ? '<div class="muted finde-libre">Libre</div>' : ''}
       ${planForm && planForm.sabado === sab ? formPlanHTML(planForm) : ''}</div>`);

@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v19';
+const VERSION = 'v20';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -229,7 +229,9 @@ function filtrados() {
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
 }
 function ordenar(lista) {
-  const l = lista.slice(), nom = (x, y) => x.nombre.localeCompare(y.nombre, 'es');
+  const l = lista.slice(), nom = (x, y) => x.nombre.localeCompare(y.nombre, 'es'), a = sinTildes(q).trim();
+  // Al buscar, primero lo que lo lleva en el nombre, luego en el municipio y luego en la descripción.
+  if (a && (orden === 'municipio' || orden === 'zona')) { const r = x => sinTildes(x.nombre).includes(a) ? 0 : sinTildes(x.municipio).includes(a) ? 1 : 2; return l.sort((x, y) => r(x) - r(y) || nom(x, y)); }
   if (orden === 'nombre') return l.sort(nom);
   if (orden === 'cerca') return casa() ? l.sort((x, y) => distCasa(x) - distCasa(y)) : l.sort(nom);
   if (orden === 'valorados') return l.sort((x, y) => notaMedia(y.id) - notaMedia(x.id) || nom(x, y));
@@ -270,6 +272,8 @@ function viewSitios() {
   const cab = propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · guarda tu casa en ☰ Más para ordenar por distancia' : ''}</p>`;
   if (!lista.length) return cab + '<div class="card muted">Nada con esos filtros.</div>';
   // Agrupado: por municipio (banners) o por zona; si no, lista seguida en el orden elegido.
+  // Buscando: lista seguida, primero lo que coincide en el nombre (ver ordenar).
+  if (sinTildes(q).trim() && (orden === 'municipio' || orden === 'zona')) return cab + `<div class="lista-plana">${lista.map(fichaHTML).join('')}</div>`;
   if (orden === 'zona') {
     return cab + Object.entries(ZONAS).map(([z, Z]) => { const ss = lista.filter(s => zonaNom(s) === z).sort((x, y) => x.nombre.localeCompare(y.nombre, 'es'));
       return ss.length ? `<details class="muni zona" data-muni="z:${z}" ${filtro || muniAbiertos.has('z:' + z) ? 'open' : ''}><summary class="banner" style="--h:${{ oeste: 25, sur: 40, este: 210, laguna: 345, norte: 130, teide: 8 }[z]}">${fotoImg(({ oeste: 'los-gigantes', sur: 'el-medano', este: 'teresitas', laguna: 'catedral-laguna', norte: 'garachico-caleton', teide: 'teide' })[z], 'banner-foto')}<span class="banner-tx"><span class="banner-ic">${Z.ic}</span><span class="banner-n"><b>${esc(Z.nom)}</b><small>${ss.length} sitios</small></span></span></summary><div class="fichas">${ss.map(fichaHTML).join('')}</div></details>` : ''; }).join('');

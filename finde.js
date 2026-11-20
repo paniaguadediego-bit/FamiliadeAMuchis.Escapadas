@@ -94,7 +94,8 @@ function tiempoVale(s, f) {
   const lluvia = t.p >= 50 || (t.c >= 51 && t.c !== 3), nieve = (t.c >= 71 && t.c <= 77) || t.c === 85 || t.c === 86;
   if (s.tipo === 'museo') return { ok: true, nota: lluvia ? 'bajo techo ☂️' : '' };
   if (zonaDe(s) === 'teide' && (nieve || t.v >= 60)) return { ok: false };
-  if (s.tipo === 'playa') return { ok: t.c <= 2 && t.p < 30 && t.max >= 21, nota: `${cielo(t.c)[0]} ${Math.round(t.max)}°` };
+  if (s.tipo === 'playa') { const ok = t.c <= 2 && t.p < 30 && t.max >= 21;
+    return { ok, nota: `${cielo(t.c)[0]} ${Math.round(t.max)}°`, por: ok || lluvia ? '' : t.max < 21 ? `Fresco para playa (${Math.round(t.max)}°)` : 'Poco sol para playa' }; }
   if (lluvia) return { ok: false };
   if (s.tipo === 'sendero' && t.v >= 50) return { ok: false };
   return { ok: true, nota: `${cielo(t.c)[0]} ${Math.round(t.max)}°` };

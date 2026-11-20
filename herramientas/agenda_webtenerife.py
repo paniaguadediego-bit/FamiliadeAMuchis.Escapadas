@@ -41,9 +41,9 @@ ALIAS = [
 ]
 CATS = [  # categoría del evento a partir del texto (para filtrar en la app)
     ('fiestas', r'romer[ií]a|fiestas? (de|en honor|patronal)|verbena|procesi[oó]n|bajada de|carnaval|baile de magos'),
-    ('teatro', r'teatro|musical|danza|ballet|ópera|opera|comedia|mon[oó]logo|magia|circo|flamenco'),
-    ('musica', r'concierto|festival|m[uú]sica|orquesta|sinf[oó]nic|jazz|banda|coro|gospel|dj\b|recital|tribute|tributo'),
-    ('deporte', r'carrera|marat[oó]n|trail|san silvestre|torneo|campeonato|surf|regata|ciclis|triatl|spartan|deka|pit\b|copa'),
+    ('teatro', r'teatro|experience|musical|danza|ballet|ópera|opera|comedia|mon[oó]logo|magia|circo|flamenco'),
+    ('musica', r'concierto|tour\b|gira|cantante|guitarr|piano|festival|m[uú]sica|orquesta|sinf[oó]nic|jazz|banda|coro|gospel|dj\b|recital|tribute|tributo'),
+    ('deporte', r'carrera|marat[oó]n|trail|san silvestre|torneo|campeonato|surf|regata|ciclis|triatl|spartan|deka|pit\b|copa|\d+ ?km\b|race\b|running|hyrox|nocturna|k42'),
     ('expo', r'exposici[oó]n|muestra|museo|fotograf|instalaci[oó]n'),
     ('feria', r'feria|mercad|gastron|vino|degustaci|navidad|belén|belen'),
     ('ninos', r'infantil|niñ[oa]s|familia'),

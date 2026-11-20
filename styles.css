@@ -545,4 +545,4 @@ button.ev-enlace { display: block; width: 100%; text-align: left; color: var(--f
 .agenda-de { font-size: .8rem; }
 
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v19"; }
+:root { --css-ver: "v20"; }
