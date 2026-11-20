@@ -84,13 +84,15 @@ service cloud.firestore {
         allow delete: if esMiembro(gid) && resource.data.autor == yo();
       }
 
-      // Disponibilidad: cada uno dice qué findes no puede (lista de sábados). Lo ve el grupo; cada uno escribe el suyo.
+      // Disponibilidad: cada uno dice qué días puede (si) y cuáles no (no): 'AAAA-MM-DD' o 'AAAA-MM-DDT' (viernes tarde).
+      // (Antes: nopuedo = lista de sábados.) Lo ve el grupo; cada uno escribe el suyo.
       match /disponibilidad/{uid} {
+        function listaOk(d, k) { return !(k in d) || (d[k] is list && d[k].size() <= 150); }
         allow read: if esMiembro(gid);
         allow write: if esMiembro(gid) && uid == yo()
-          && request.resource.data.keys().hasOnly(['uid', 'nopuedo', 'actualizado'])
+          && request.resource.data.keys().hasOnly(['uid', 'nopuedo', 'no', 'si', 'actualizado'])
           && request.resource.data.uid == yo()
-          && request.resource.data.nopuedo is list && request.resource.data.nopuedo.size() <= 60;
+          && listaOk(request.resource.data, 'nopuedo') && listaOk(request.resource.data, 'no') && listaOk(request.resource.data, 'si');
       }
 
       // Planes: cualquiera del grupo propone (y queda apuntado); cada uno se apunta o se borra a sí mismo;

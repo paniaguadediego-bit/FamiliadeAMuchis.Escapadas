@@ -66,24 +66,33 @@ const durDias = f => Math.round((new Date(f[1] + 'T12:00') - new Date(f[0] + 'T1
 const pesoEvento = (s, f, desde) => (s.destacado ? 0 : 2) + (FOTOS[s.id] || (typeof FOTOS_AG !== 'undefined' && FOTOS_AG[s.id]) ? 0 : 1)
   + (durDias(f) > 14 ? 4 : durDias(f) > 4 ? 1 : 0) + (desde && f[0] < desde ? 2 : 0);
 const ordenarEventos = (l, desde) => l.slice().sort((a, b) => pesoEvento(a[0], a[1], desde) - pesoEvento(b[0], b[1], desde) || a[1][0].localeCompare(b[1][0]));
-// Arriba de Este finde: los eventos de este finde (en grande los más importantes, el resto en lista) y, si hay
-// pocos, lo grande que viene. Enlaza con la pestaña Eventos.
+// Arriba de Planes: carrusel con TODOS los eventos de este finde (viernes a domingo), primero los más especiales; si
+// hay pocos, lo grande que viene. Cada uno con «🙋 Me apunto» (si ya hay plan) o «📅 Proponer». Enlaza con Eventos.
 function eventosDestacadosHTML(sab) {
   const v = isoMas(sab, -1), dom = isoMas(sab, 1), hoy = hoyISO();
   const esteFinde = ordenarEventos(eventosEntre(v, dom), v), ids = new Set(esteFinde.map(([s]) => s.id));
   const pronto = esteFinde.length >= 3 ? [] : ordenarEventos(eventosEntre(isoMas(dom, 1), isoMas(dom, 14))).filter(([s]) => s.destacado || !s.agenda).slice(0, 2);
   const grandes = esteFinde.length + pronto.length >= 3 ? [] : eventosEntre(isoMas(dom, 15), isoMas(hoy, 120)).filter(([s]) => s.destacado).slice(0, 1);
-  const banners = [...esteFinde.slice(0, 3), ...pronto, ...grandes].slice(0, 4), resto = esteFinde.slice(3);
-  if (!banners.length) return `<div class="card muted">🎟️ No hay eventos a la vista este finde. <button class="sec mini" data-tab="eventos">Ver todos los eventos ›</button></div>`;
-  const banner = ([s, f]) => {
+  const tarjetas = [...esteFinde, ...pronto, ...grandes];
+  if (!tarjetas.length) return `<div class="card muted centro">🎟️ No hay eventos a la vista este finde. <button class="sec mini" data-tab="eventos">Ver todos los eventos ›</button></div>`;
+  const grupo = typeof enGrupo === 'function' && enGrupo();
+  const tarjeta = ([s, f]) => {
     const dias = Math.round((new Date(f[0] + 'T12:00') - new Date(hoy + 'T12:00')) / 864e5), ya = f[0] <= hoy && f[1] >= hoy;
     const cuenta = ya ? '¡Ahora!' : ids.has(s.id) ? '¡Este finde!' : dias === 1 ? 'Mañana' : f[0] <= isoMas(dom, 7) ? `En ${dias} días · el finde que viene` : `En ${dias} días`;
-    return `<button class="ev-ban banner-plano ${ids.has(s.id) ? 'ya' : ''}" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
-      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${esc(cuenta)}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>`;
+    let acc = '';
+    if (grupo) {
+      const p = proximosPlanes().find(x => x.sitioId === s.id), voy = p && (p.apuntados || []).includes(NUBE.user.uid);
+      acc = p ? `<button class="mini ${voy ? 'sec' : ''}" data-plan="${voy ? 'no' : 'si'}" data-id="${esc(p.id)}">${voy ? '✓ Vas' : '🙋 Me apunto'} · ${(p.apuntados || []).length} van</button>`
+        : `<button class="sec mini" data-plan="abrir" data-sitio="${esc(s.id)}" data-sabado="${f[0] < hoy ? hoy : f[0]}" data-carrusel="1">📅 Proponer al grupo</button>`;
+    }
+    return `<div class="ev-tarjeta"><button class="ev-ban banner-plano ${ids.has(s.id) ? 'ya' : ''}" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${esc(cuenta)}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
+      ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
   };
-  return `<div class="eventos-top">${banners.map(banner).join('')}</div>
-    ${resto.length ? `<div class="card ev-resto"><div class="ev-resto-t">Y además este finde:</div>${resto.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${catIc(s)}</span>
-      <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></button>`).join('')}</div>` : ''}
+  const form = grupo && planForm && planForm.carrusel ? formPlanHTML(planForm) : '';
+  return `<div class="ev-carrusel" aria-label="Eventos de este finde">${tarjetas.map(tarjeta).join('')}</div>
+    ${tarjetas.length > 1 ? `<div class="ev-pista">${esteFinde.length ? `${esteFinde.length} evento${esteFinde.length > 1 ? 's' : ''} este finde` : 'Lo próximo'} · desliza ↔</div>` : ''}
+    ${form}
     <button class="sec ver-eventos" data-tab="eventos">🎟️ Ver todos los eventos ›</button>`;
 }
 // Este finde: lo que hay (viernes a domingo).
@@ -128,7 +137,7 @@ function viewEventos() {
   lista.forEach(([s, f]) => { const ini = f[0] < a ? a : f[0], sb = typeof sabadoDe === 'function' ? sabadoDe(ini) : ini; (semanas[sb] = semanas[sb] || []).push([s, f]); });
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
-  return `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Este finde ›</span></button>
+  return `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
     ${rejilla('evcat', evCat, [['', '🗂️', 'Todos'], ...Object.entries(CAT_EV).map(([k, [ic, n]]) => [k, ic, n])])}
     <div class="filtros-barra">
       <label class="orden-sel"><span class="vh">Cuándo</span><select id="ev-rango">${Object.entries(RANGOS).map(([k, n]) => `<option value="${k}" ${evRango === k ? 'selected' : ''}>📅 ${n}</option>`).join('')}</select></label>

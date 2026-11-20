@@ -8,7 +8,7 @@ const misFuimos = () => SITIOS.filter(s => marca(s.id).estado === 'fuimos').map(
 // En la ficha de un sitio con ✅: el día que fuisteis (se puede cambiar o dejar vacío si no os acordáis).
 function fechaFuimosHTML(s) {
   const m = marca(s.id); if (m.estado !== 'fuimos') return '';
-  return `<div class="fecha-fuimos"><label for="ff-${esc(s.id)}">📅 Fuimos el</label>
+  return `<div class="fecha-fuimos"><label for="ff-${esc(s.id)}">📅 Visitado el</label>
     <input type="date" id="ff-${esc(s.id)}" data-fecha="${esc(s.id)}" value="${esc(m.fecha || '')}" max="${hoyISO()}">
     ${m.fecha ? '' : '<span class="muted">sin fecha</span>'}</div>`;
 }
@@ -20,7 +20,7 @@ document.addEventListener('change', e => {
 // ---------- 📔 Diario ----------
 function diarioHTML() {
   const lista = misFuimos();
-  if (!lista.length) return '<div class="card muted">Aquí aparecerá cada sitio que marques con ✅ Fuimos, por fecha, con tus ⭐ y notas.</div>';
+  if (!lista.length) return '<div class="card muted">Aquí aparecerá cada sitio que marques con ✅ Visitado, por fecha, con tus ⭐ y notas.</div>';
   const grupos = {};
   lista.forEach(([s, m]) => { const k = m.fecha ? m.fecha.slice(0, 7) : 'zz'; (grupos[k] = grupos[k] || []).push([s, m]); });
   return Object.keys(grupos).sort().reverse().map(k => {

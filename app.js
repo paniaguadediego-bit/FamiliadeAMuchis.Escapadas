@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v20';
+const VERSION = 'v21';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -27,7 +27,7 @@ const TIPOS = {
 };
 const tipoIc = t => (TIPOS[t] || ['📍'])[0];
 const tipoNom = t => (TIPOS[t] || ['', 'Otro'])[1];
-const ESTADOS = { quiero: ['🔖', 'Quiero ir'], fuimos: ['✅', 'Fuimos'], no: ['✖️', 'No'] };
+const ESTADOS = { quiero: ['🔖', 'Quiero ir'], fuimos: ['✅', 'Visitado'], no: ['✖️', 'No'] };
 const MUNICIPIOS = ['Adeje', 'Arafo', 'Arico', 'Arona', 'Buenavista del Norte', 'Candelaria', 'El Rosario', 'El Sauzal',
   'El Tanque', 'Fasnia', 'Garachico', 'Granadilla de Abona', 'Guía de Isora', 'Güímar', 'Icod de los Vinos', 'La Guancha',
   'La Matanza de Acentejo', 'La Orotava', 'La Victoria de Acentejo', 'Los Realejos', 'Los Silos', 'Puerto de la Cruz',
@@ -45,6 +45,7 @@ fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d
 let FOTOS = {};
 fetch('data/fotos.json').then(r => r.json()).then(d => { FOTOS = d || {}; render(); }).catch(() => {});
 // Agenda de Turismo de Tenerife (eventos.js): eventos con fecha y su foto.
+fetch('data/festivos.json').then(r => r.json()).then(d => { FESTIVOS = d; render(); }).catch(() => {});
 fetch('data/agenda.json').then(r => r.json()).then(d => { cargarAgenda(d); mezclarSitios(); render(); }).catch(() => {});
 const fotoSrc = (id, mini) => { const f = FOTOS[id] || FOTOS_AG[id]; if (!f) return ''; return mini ? f.src.replace('/960px-', '/330px-') : f.src; };
 const fotoCredito = id => !FOTOS[id] && FOTOS_AG[id] ? `<a class="credito" href="${esc(FOTOS_AG[id].enlace)}" target="_blank" rel="noopener">📷 Turismo de Tenerife</a>` : FOTOS[id] && FOTOS[id].archivo ? `<a class="credito" href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(FOTOS[id].archivo)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a>` : '';
@@ -105,10 +106,10 @@ function applyLetra() { const l = load('esc.letra', 'compacta'); if (l === 'comp
 applyLetra();
 
 // ---------- pestañas ----------
-const TABS = [['finde', 'Este finde', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['eventos', 'Eventos', '🎟️'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const TABS = [['finde', 'Planes', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['eventos', 'Eventos', '🎟️'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
 let tab = load('esc.tab', 'finde');
 if (!TABS.some(t => t[0] === tab)) tab = 'finde';
-function ir(t) { tab = t; save('esc.tab', t); render(); window.scrollTo(0, 0); }
+function ir(t) { tab = t; save('esc.tab', t); window.scrollTo(0, 0); render(); }
 function pintarTabs() {
   $('#tabs').innerHTML = TABS.map(([k, n, ic]) => `<button class="${k === tab ? 'on' : ''}" data-tab="${k}"><span>${ic}</span>${n}</button>`).join('');
 }
@@ -122,7 +123,12 @@ function render() {
   v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
-  if ((tab === 'sitios' || tab === 'eventos') && irFicha) { const el = document.getElementById('f-' + irFicha); irFicha = null; if (el) el.scrollIntoView({ block: 'center' }); }
+  if ((tab === 'sitios' || tab === 'eventos') && irFicha) {
+    // Directo a la ficha (también si las fotos de encima tardan en cargar y la empujan).
+    const id = irFicha; irFicha = null; let y = null;
+    const ver = () => { const el = document.getElementById('f-' + id); if (!el || (y !== null && Math.abs(scrollY - y) > 4)) return; el.scrollIntoView({ block: 'start' }); y = scrollY; };
+    requestAnimationFrame(ver); setTimeout(ver, 350); setTimeout(ver, 900);
+  }
 }
 
 // ---------- fichas ----------
@@ -142,7 +148,7 @@ function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
   const datos = [s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
-    <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 🏠 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
+    <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 📍 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
       ${abiertas.has(s.id) && fotoSrc(s.id) ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : fotoSrc(s.id) ? '<div class="ficha-foto" data-pendiente></div>' : ''}
@@ -204,16 +210,16 @@ document.addEventListener('click', e => {
 // ---------- 🏠 Este finde ---------- (la pestaña está en finde.js)
 function cuentaHTML() {
   const vals = Object.values(marcas), n = k => vals.filter(m => m.estado === k).length;
-  return `<div class="cuenta" data-cuenta><div><b>${n('fuimos')}</b>✅ Fuimos</div><div><b>${n('quiero')}</b>🔖 Quiero ir</div><div><b>${SITIOS.length - Object.keys(marcas).filter(k => marcas[k].estado).length}</b>Sin marcar</div></div>`;
+  return `<div class="cuenta" data-cuenta><div><b>${n('fuimos')}</b>✅ Visitados</div><div><b>${n('quiero')}</b>🔖 Quiero ir</div><div><b>${SITIOS.length - Object.keys(marcas).filter(k => marcas[k].estado).length}</b>Sin marcar</div></div>`;
 }
 function viewFinde() { return viewFindeS5(); }
 
 // ---------- 📍 Sitios ----------
-let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', orden = load('esc.orden', 'municipio'), filtrosAbiertos = false;
+let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', orden = load('esc.orden', 'municipio');
 const muniAbiertos = new Set();
-const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['fuimos', '✅', 'Fuimos'], ['no', '✖️', 'No'], ['sin', '⬜', 'Sin marcar']];
-const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien fue']];
-const ORDENES = { municipio: '🏘️ Por municipio', zona: '🧭 Por zona', nombre: '🔤 Nombre (A-Z)', cerca: '🏠 Más cerca de casa', valorados: '⭐ Mejor valorados', deseados: '🔖 Más deseados' };
+const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['fuimos', '✅', 'Visitado'], ['no', '✖️', 'No'], ['sin', '⬜', 'Sin marcar']];
+const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien lo visitó']];
+const ORDENES = { municipio: '🏘️ Por municipio', zona: '🧭 Por zona', nombre: '🔤 Nombre (A-Z)', cerca: '📍 Más cerca de mí', valorados: '⭐ Mejor valorados', deseados: '🔖 Más deseados' };
 const zonaNom = s => typeof zonaDe === 'function' ? zonaDe(s) : '';
 // ⭐ media de tus estrellas y las del grupo; 🔖 cuántos quieren ir (tú incluido).
 function notaMedia(id) {
@@ -233,7 +239,7 @@ function ordenar(lista) {
   // Al buscar, primero lo que lo lleva en el nombre, luego en el municipio y luego en la descripción.
   if (a && (orden === 'municipio' || orden === 'zona')) { const r = x => sinTildes(x.nombre).includes(a) ? 0 : sinTildes(x.municipio).includes(a) ? 1 : 2; return l.sort((x, y) => r(x) - r(y) || nom(x, y)); }
   if (orden === 'nombre') return l.sort(nom);
-  if (orden === 'cerca') return casa() ? l.sort((x, y) => distCasa(x) - distCasa(y)) : l.sort(nom);
+  if (orden === 'cerca') { if (!casa()) pedirAqui(); return casa() ? l.sort((x, y) => (distCasa(x) ?? 1e9) - (distCasa(y) ?? 1e9)) : l.sort(nom); }
   if (orden === 'valorados') return l.sort((x, y) => notaMedia(y.id) - notaMedia(x.id) || nom(x, y));
   if (orden === 'deseados') return l.sort((x, y) => ganas(y.id) - ganas(x.id) || nom(x, y));
   return l;
@@ -251,25 +257,23 @@ function filtrosHTML(lista) {
     fZona && ['fZona', ZONAS[fZona].ic + ' ' + ZONAS[fZona].nom]
   ].filter(Boolean);
   const isla = ISLAS[islaSel];
+  // Siempre a la vista y en pequeño: una fila de botoncitos por grupo (tocar otra vez quita el filtro).
+  const pills = (clave, actual, ops) => `<div class="fm-ops">${ops.map(([k, ic, n]) => `<button class="fm ${actual === k ? 'on' : ''}" data-filtro="${clave}" data-v="${esc(k)}" aria-pressed="${actual === k}">${ic} ${esc(n)}</button>`).join('')}</div>`;
   return `<div class="buscador"><input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off"></div>
-    <div class="filtros-barra">
-      <button class="sec filtros-btn ${filtrosAbiertos ? 'abierto' : ''}" data-filtros>⚙️ Filtros${activos.length ? ` <b class="cuantos">${activos.length}</b>` : ''} <span class="flecha">▾</span></button>
-      <label class="orden-sel"><span class="vh">Ordenar</span><select id="orden">${Object.entries(ORDENES).map(([k, n]) => `<option value="${k}" ${orden === k ? 'selected' : ''}>↕️ ${n.slice(n.indexOf(' ') + 1)}</option>`).join('')}</select></label>
-    </div>
-    ${filtrosAbiertos ? `<div class="filtros-panel">
-      <h3>🏷️ Tipo</h3>${rejilla('fTipo', fTipo, [['', '🗂️', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t), tipoNom(t)])])}
-      <h3>📌 Tus marcas</h3>${rejilla('fEst', fEst, ESTADOS_F)}
-      ${enGrupo() ? `<h3>👥 El grupo</h3>${rejilla('fGrupo', fGrupo, GRUPO_F)}` : ''}
-      <h3>🧭 Zona</h3>${rejilla('fZona', fZona, [['', '🗺️', 'Toda la isla'], ...Object.entries(ZONAS).map(([k, z]) => [k, z.ic, z.nom])])}
-      ${Object.values(ISLAS).filter(i => i.activa).length > 1 ? `<h3>🏝️ Isla</h3>${rejilla('isla', islaSel, Object.entries(ISLAS).map(([k, i]) => [k, i.ic, i.nombre + (i.activa ? '' : ' · pronto'), !i.activa]))}` : ''}
-      <div class="row"><button class="sec" data-filtro="limpiar">Quitar filtros</button><button data-filtros>Ver ${lista.length} sitios</button></div>
-    </div>` : ''}
-    ${activos.length ? `<div class="activos">${activos.map(([k, n]) => `<button class="chip on" data-quitar="${k}">${esc(n)} ✕</button>`).join('')}</div>` : ''}`;
+    <div class="filtros-mini">
+      ${pills('fTipo', fTipo, tiposHay.map(t => [t, tipoIc(t), tipoNom(t).split(' ')[0]]))}
+      ${pills('fEst', fEst, ESTADOS_F.slice(1))}
+      ${enGrupo() ? pills('fGrupo', fGrupo, GRUPO_F.slice(1)) : ''}
+      ${pills('fZona', fZona, Object.entries(ZONAS).map(([k, z]) => [k, z.ic, z.nom]))}
+      ${Object.values(ISLAS).filter(i => i.activa).length > 1 ? pills('isla', islaSel, Object.entries(ISLAS).filter(([, i]) => i.activa).map(([k, i]) => [k, i.ic, i.nombre])) : ''}
+      <div class="fm-pie"><label class="orden-sel"><span class="vh">Ordenar</span><select id="orden">${Object.entries(ORDENES).map(([k, n]) => `<option value="${k}" ${orden === k ? 'selected' : ''}>↕️ ${n.slice(n.indexOf(' ') + 1)}</option>`).join('')}</select></label>
+        ${activos.length ? '<button class="fm quitar" data-filtro="limpiar">✕ Quitar filtros</button>' : ''}</div>
+    </div>`;
 }
 function viewSitios() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const lista = ordenar(filtrados()), filtro = !!(q || fTipo || fEst || fGrupo || fZona);
-  const cab = propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · guarda tu casa en ☰ Más para ordenar por distancia' : ''}</p>`;
+  const cab = propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · 📍 buscando dónde estás para ordenar por distancia…' : ''}</p>`;
   if (!lista.length) return cab + '<div class="card muted">Nada con esos filtros.</div>';
   // Agrupado: por municipio (banners) o por zona; si no, lista seguida en el orden elegido.
   // Buscando: lista seguida, primero lo que coincide en el nombre (ver ordenar).
@@ -287,16 +291,15 @@ function viewSitios() {
       <div class="fichas">${ss.map(fichaHTML).join('')}</div></details>`).join('')}</div>`;
 }
 document.addEventListener('click', e => {
-  if (e.target.closest('[data-filtros]')) { filtrosAbiertos = !filtrosAbiertos; render(); return; }
   const qq = e.target.closest('[data-quitar]'); if (qq) { if (qq.dataset.quitar === 'fTipo') fTipo = ''; else if (qq.dataset.quitar === 'fEst') fEst = ''; else if (qq.dataset.quitar === 'fGrupo') fGrupo = ''; else fZona = ''; render(); return; }
   const b = e.target.closest('[data-filtro]'); if (!b) return;
   const k = b.dataset.filtro, v = b.dataset.v;
   if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = ''; }
+  else if (b.classList.contains('fm') && b.classList.contains('on') && k !== 'isla') { if (k === 'fTipo') fTipo = ''; else if (k === 'fEst') fEst = ''; else if (k === 'fGrupo') fGrupo = ''; else if (k === 'fZona') fZona = ''; }
   else if (k === 'isla') { if (!ISLAS[v].activa) return; islaSel = v; save('esc.isla', v); }
   else if (k === 'fTipo') fTipo = v; else if (k === 'fEst') fEst = v; else if (k === 'fGrupo') fGrupo = v; else if (k === 'fZona') fZona = v;
   render();
 });
-document.addEventListener('change', e => { if (e.target.id === 'mptipo') { mpTipo = e.target.value; MP.sel = null; render(); } });
 document.addEventListener('change', e => { if (e.target.id === 'orden') { orden = e.target.value; save('esc.orden', orden); render(); } });
 let qT = 0;
 document.addEventListener('input', e => {
@@ -317,7 +320,9 @@ const ISLA = [[-16.923, 28.342], [-16.84, 28.37], [-16.765, 28.375], [-16.72, 28
   [-16.37, 28.35], [-16.37, 28.29], [-16.41, 28.22], [-16.43, 28.16], [-16.44, 28.14], [-16.53, 28.04], [-16.69, 28.0],
   [-16.72, 28.05], [-16.74, 28.08], [-16.82, 28.18], [-16.84, 28.245], [-16.9, 28.3]];
 const MP = { z: null, c: [28.29, -16.6], sel: null, yo: null };
-let mpTipo = '';
+// Tipos que se ven en el mapa: ninguno elegido = todos; se pueden elegir uno o varios.
+const mpTipos = new Set(load('esc.mptipos', []));
+const mpVe = t => !mpTipos.size || mpTipos.has(t);
 function viewMapa() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
@@ -325,14 +330,14 @@ function viewMapa() {
     <div class="mapa elegir" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>`;
-  return `<div class="filtros-barra"><label class="orden-sel ancho"><span class="vh">Qué se ve</span><select id="mptipo">${[['', '🗂️ Todos los sitios'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<option value="${k}" ${mpTipo === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
+  return `<div class="mp-tipos">${tiposHay.map(t => `<button class="mp-tipo ${mpTipos.has(t) ? 'on' : ''}" data-mptipo="${t}" aria-pressed="${mpTipos.has(t)}"><span>${tipoIc(t)}</span>${esc(tipoNom(t).split(' ')[0])}</button>`).join('')}${mpTipos.size ? '<button class="mp-tipo todos" data-mptipo="">✕<span class="vh"> Ver todos</span></button>' : ''}</div>
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
-    <p class="leyenda">Acerca el mapa (＋ o con dos dedos) para ver los iconos. Azul 🔖 quiero ir · verde ✅ fuimos · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
+    <p class="leyenda">Acerca bastante el mapa (＋ o con dos dedos) para ver los iconos; toca un punto para marcarlo. Azul 🔖 quiero ir · verde ✅ visitado · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
 // Los de la agenda solo salen si se elige «Evento» (van al centro de su municipio, aproximados).
-const puntos = () => SITIOS.filter(s => enIsla(s) && (!s.agenda || mpTipo === 'evento') && (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
+const puntos = () => SITIOS.filter(s => enIsla(s) && (!s.agenda || mpTipos.has('evento')) && mpVe(s.tipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
 // Zoom con la isla entera a la vista (con él se decide cuándo los puntitos pasan a iconos).
 function zEncaje(W, H) {
   const la = ISLA.map(c => c[1]), lo = ISLA.map(c => c[0]);
@@ -358,8 +363,9 @@ function mpDibujar(el) {
         if (ty < 0 || ty >= n) continue;
         h += `<img class="mp-t" alt="" draggable="false" src="https://tile.openstreetmap.org/${z}/${((tx % n) + n) % n}/${ty}.png" style="left:${tx * MPT - ox}px;top:${ty * MPT - oy}px" onerror="this.remove()">`;
       }
-  // Con la isla entera y un nivel más: puntitos minúsculos; desde 2 niveles de zoom, el icono de cada tipo.
-  const S = z >= 14 ? 1 : z >= 12 ? .85 : .7, peq = z < (MP.zFit ?? 10) + 2;
+  // Puntitos minúsculos hasta acercarse mucho; el icono de cada tipo solo en el zoom máximo y los 4 anteriores
+  // (así no se amontonan en Santa Cruz o La Laguna).
+  const peq = z < MPZ[1] - 4, S = z >= 16 ? 1 : .85;
   // Puntos que se pisan: se separan empujando cada pareja que choca, con un muelle suave hacia su sitio real
   // (como en viaje-corea). Un hilo marca dónde está de verdad el que se ha movido.
   const vis = puntos().map(s => { const [x, y] = P(s.lat, s.lon); return { s, x, y, x0: x, y0: y }; })
@@ -391,6 +397,7 @@ function mpFicha(s) {
   return `<div class="mp-f">${FOTOS[s.id] ? `<div class="mp-f-foto">${fotoImg(s.id, '', true)}</div>` : ''}<div class="row"><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><button class="sec mini" data-mpcerrar aria-label="Cerrar">✕</button></div>
     <div class="muted">${esc(s.municipio)}${m.estado ? ' · ' + ESTADOS[m.estado].join(' ') : ''}${m.estrellas ? ' · ' + '⭐'.repeat(m.estrellas) : ''}</div>
     ${grupoEnFicha(s.id)}
+    <div class="marcas mp-marcas">${Object.entries(ESTADOS).map(([k, [ic, n]]) => `<button class="${m.estado === k ? 'on' : ''}" data-est="${k}" data-id="${esc(s.id)}">${ic} ${n}</button>`).join('')}</div>
     ${s.verificar ? '<div class="ver">⚠️ VERIFICAR</div>' : ''}
     <div class="acciones"><button class="mini" data-irficha="${esc(s.id)}">📍 Ver ficha</button><a class="btn sec mini" href="${gmaps(s)}" target="_blank" rel="noopener">🌐 Google Maps</a></div></div>`;
 }
@@ -430,9 +437,9 @@ function mpGestos(el) {
 function mpZoom(el, dz) { MP.z = Math.min(MPZ[1], Math.max(MPZ[0], MP.z + dz)); mpDibujar(el); }
 document.addEventListener('click', e => {
   const el = $('#mapa');
-  const t = e.target.closest('[data-mptipo]'); if (t) { mpTipo = t.dataset.mptipo; MP.sel = null; render(); return; }
+  const t = e.target.closest('[data-mptipo]'); if (t) { const k = t.dataset.mptipo; if (!k) mpTipos.clear(); else if (mpTipos.has(k)) mpTipos.delete(k); else mpTipos.add(k); save('esc.mptipos', [...mpTipos]); MP.sel = null; render(); return; }
   const v = e.target.closest('[data-vermapa]');
-  if (v) { const s = sitio(v.dataset.vermapa); if (s) { MP.sel = s.id; MP.c = [s.lat, s.lon]; MP.z = 14; mpTipo = ''; ir('mapa'); } return; }
+  if (v) { const s = sitio(v.dataset.vermapa); if (s) { MP.sel = s.id; MP.c = [s.lat, s.lon]; MP.z = Math.max(MP.z || 0, 15); if (!mpVe(s.tipo) || s.agenda) { mpTipos.clear(); if (s.agenda) mpTipos.add('evento'); save('esc.mptipos', [...mpTipos]); } ir('mapa'); } return; }
   if (!el) return;
   if (e.target.closest('[data-mpz]')) mpZoom(el, +e.target.closest('[data-mpz]').dataset.mpz);
   else if (e.target.closest('[data-mpfit]')) { mpEncajar(el.clientWidth, el.clientHeight); mpDibujar(el); }
@@ -456,8 +463,8 @@ function viewMas() {
     <div class="chips">${Object.entries(TEMAS).map(([k, [ic, n]]) => `<button class="chip ${t === k ? 'on' : ''}" data-settema="${k}">${ic} ${n}</button>`).join('')}</div>
     <h2>🔠 Letra</h2>
     <div class="chips">${Object.entries(LETRAS).map(([k, n]) => `<button class="chip ${load('esc.letra', 'compacta') === k ? 'on' : ''}" data-setletra="${k}" style="font-size:${k === 'compacta' ? '.78rem' : k === 'normal' ? '.88rem' : '1rem'}">Aa ${n}</button>`).join('')}</div>
-    <h2>🏠 Mi casa</h2>
-    ${casaHTML()}
+    <h2>🎉 Festivos</h2>
+    ${festivosHTML()}
     <h2>📷 Fotos sin conexión</h2>
     <div class="card"><p class="muted">Las fotos que ves se quedan en el móvil. Para tenerlas todas antes de ir a una zona sin cobertura (unos 15 MB, mejor con wifi):</p>
       <button class="sec" data-fotosdl>⬇️ Descargar todas las fotos</button></div>

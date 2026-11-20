@@ -1,8 +1,8 @@
 'use strict';
-// 🏠 Este finde (S5): tiempo en 6 zonas (Open-Meteo), 🎲 Sorpréndeme y distancia desde casa.
-// La ubicación de casa se guarda SOLO en este móvil (localStorage), nunca en la nube ni en el repo.
+// 🏠 Planes (antes «Este finde»): tiempo en 6 zonas (Open-Meteo), 🎲 Sorpréndeme y «más cerca de mí».
+// La ubicación del móvil se pide solo al ordenar por cercanía y se queda en memoria: no se guarda en ningún sitio.
 
-const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo16h', K_SORP = 'esc.sorp'; // 6 zonas, 16 días
+const K_TIEMPO = 'esc.tiempo16h', K_SORP = 'esc.sorp'; // 6 zonas, 16 días
 
 // ---------- zonas ----------
 // Seis zonas con tiempo muy distinto (elegidas por el usuario). El orden es el de la tabla.
@@ -36,21 +36,18 @@ function zonaDe(s) {
   return 'norte';
 }
 
-// ---------- casa (solo en el móvil) ----------
-const casa = () => { const c = load(K_CASA, null); return Array.isArray(c) && c.length === 2 ? c : null; };
-// En coche, aproximado: la carretera da un 40 % de vuelta y ~55 km/h de media.
-const minCoche = km => Math.round(km * 1.4 / 55 * 60);
-function distCasa(s) { const c = casa(); return c && isFinite(s.lat) && s.lat !== null ? kmEntre(c, [s.lat, s.lon]) : null; }
+// ---------- dónde estoy (solo en memoria, para «📍 Más cerca de mí») ----------
+let aqui = null, aquiPidiendo = false;
+try { localStorage.removeItem('esc.casa'); } catch {} // «Mi casa» ya no existe: se borra lo que quedara guardado
+const casa = () => aqui;
+function distCasa(s) { return aqui && isFinite(s.lat) && s.lat !== null ? kmEntre(aqui, [s.lat, s.lon]) : null; }
 const fmtKm = km => km < 1 ? 'menos de 1 km' : Math.round(km) + ' km';
-const fmtMin = m => m < 60 ? `${Math.max(5, Math.round(m / 5) * 5)} min` : `${Math.floor(m / 60)} h ${String(Math.round(m % 60 / 5) * 5).padStart(2, '0')}`;
-const distTxt = s => { const k = distCasa(s); return k == null ? '' : `🏠 a ${fmtKm(k)} de casa · ≈ ${fmtMin(minCoche(k))} en coche`; };
-function guardarCasa() {
-  if (!navigator.geolocation) return alert('Este móvil no da la ubicación.');
-  navigator.geolocation.getCurrentPosition(p => {
-    const c = [+p.coords.latitude.toFixed(4), +p.coords.longitude.toFixed(4)];
-    if (kmEntre(c, TEIDE) > 80) return alert('Parece que no estás en Tenerife. Guárdala cuando estés en casa.');
-    save(K_CASA, c); render();
-  }, () => alert('No se pudo saber dónde estás (activa la ubicación).'), { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+const distTxt = s => { const k = distCasa(s); return k == null ? '' : `📍 a ${fmtKm(k)} de ti`; };
+function pedirAqui() {
+  if (aqui || aquiPidiendo) return; if (!navigator.geolocation) return alert('Este móvil no da la ubicación.');
+  aquiPidiendo = true;
+  navigator.geolocation.getCurrentPosition(p => { aquiPidiendo = false; aqui = [p.coords.latitude, p.coords.longitude]; render(); },
+    () => { aquiPidiendo = false; alert('No se pudo saber dónde estás (activa la ubicación).'); }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
 }
 
 // ---------- tiempo (Open-Meteo, sin clave) ----------
@@ -108,6 +105,18 @@ function diasFinde() {
   const dom = new Date(sab); dom.setDate(sab.getDate() + 1);
   const iso = x => new Date(x.getTime() - x.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
   return [[iso(sab), 'Sábado'], [iso(dom), 'Domingo']].filter(([f]) => f >= hoyISO());
+}
+// Días para 🎲 Sorpréndeme: viernes por la tarde (o el viernes entero si es festivo), sábado y domingo de este
+// finde, y los festivos de las próximas 4 semanas. [clave del tiempo, nombre corto]; la clave «AAAA-MM-DDT» es la tarde.
+function diasSorp() {
+  const sab = proximoSabado(), vie = masDias(sab, -1), hoy = hoyISO(), r = [];
+  const tardeYa = vie < hoy || (vie === hoy && new Date().getHours() >= 20);
+  if (festivo(vie) && vie >= hoy) r.push([vie, '🎉 Viernes']); else if (!tardeYa) r.push([vie + 'T', 'Viernes tarde']);
+  if (sab >= hoy) r.push([sab, 'Sábado']); r.push([masDias(sab, 1), 'Domingo']);
+  const ya = new Set(r.map(([f]) => f.slice(0, 10)));
+  festivosEntre(hoy, masDias(hoy, 28)).filter(([f]) => !ya.has(f) && ![0, 6].includes(diaSemana(f)))
+    .forEach(([f]) => r.push([f, '🎉 ' + new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })]));
+  return r;
 }
 // Findes con previsión (Open-Meteo da 16 días): este, el que viene y, a veces, el siguiente.
 let findeTiempo = 0; // cuál se ve en la tabla de Este finde
@@ -190,7 +199,7 @@ let sorp = null, sorpId = null, sorpVistos = [];
 const leerSorp = () => sorp || (sorp = load(K_SORP, { rato: 'media', quien: 'nadie', dia: 0 }));
 function candidatos() {
   leerSorp();
-  const dias = diasFinde(), f = (dias[sorp.dia] || dias[0] || [hoyISO()])[0], lim = RATOS[sorp.rato][2];
+  const dias = diasSorp(), f = (dias[sorp.dia] || dias[0] || [hoyISO()])[0];
   return SITIOS.filter(s => {
     if (s.tipo === 'evento') return false;
     const m = marca(s.id).estado;
@@ -198,7 +207,6 @@ function candidatos() {
     if (sorp.quien === 'nadie' && typeof enGrupo === 'function' && enGrupo() && !nadieFue(s.id)) return false;
     if (sorp.rato === 'rato' && s.tipo === 'sendero') return false;
     if (sorp.rato !== 'dia' && /alta/i.test(s.dificultad || '')) return false;
-    const k = distCasa(s); if (k != null && minCoche(k) > lim) return false;
     return tiempoVale(s, f).ok;
   }).map(s => {
     // Más papeletas si alguien quiere ir y si el tiempo acompaña.
@@ -217,7 +225,7 @@ function sortear() {
 }
 function sorpresaHTML() {
   leerSorp();
-  const dias = diasFinde();
+  const dias = diasSorp();
   const chips = (k, ops) => `<div class="chips">${ops.map(([v, n]) => `<button class="chip ${String(sorp[k]) === String(v) ? 'on' : ''}" data-sorp="${k}" data-v="${v}">${n}</button>`).join('')}</div>`;
   let res = '';
   if (sorpId) {
@@ -225,7 +233,6 @@ function sorpresaHTML() {
     if (s) {
       const f = (dias[sorp.dia] || dias[0] || [hoyISO()])[0], tv = tiempoVale(s, f), por = [];
       if (tv.nota) por.push(`${tv.nota} (${ZONAS[zonaDe(s)].nom})`);
-      if (distCasa(s) != null) por.push('≈ ' + fmtMin(minCoche(distCasa(s))) + ' en coche');
       if (typeof enGrupo === 'function' && enGrupo()) { const qq = otrosEn(s.id).quiero.length; por.push(nadieFue(s.id) ? 'nadie del grupo ha ido' : 'tú no has ido'); if (qq) por.push(`${qq} del grupo quiere${qq > 1 ? 'n' : ''} ir`); }
       if (marca(s.id).estado === 'quiero') por.push('lo tenías en 🔖');
       abiertas.add(s.id);
@@ -234,31 +241,22 @@ function sorpresaHTML() {
     }
   } else if (sorpId === '') res = '<div class="card muted">No encuentro nada que encaje. Prueba con más tiempo o «que yo no haya ido».</div>';
   return `<div class="card sorp">
-    ${dias.length > 1 ? chips('dia', dias.map(([, n], i) => [i, n])) : ''}
+    ${dias.length > 1 ? chips('dia', dias.map(([f, n], i) => [i, n + (festivo(f) && !n.startsWith('🎉') ? ' 🎉' : '')])) : ''}
+    ${festivo((dias[sorp.dia] || dias[0] || [''])[0]) ? `<div class="muted fest-nota">🎉 ${esc(festivo((dias[sorp.dia] || dias[0])[0]))}</div>` : ''}
     ${chips('rato', Object.entries(RATOS).map(([k, [ic, n]]) => [k, ic + ' ' + n]))}
     ${typeof enGrupo === 'function' && enGrupo() ? chips('quien', [['nadie', '🌱 Que nadie haya ido'], ['yo', '🙋 Que yo no haya ido']]) : ''}
     <button data-sortear>🎲 ${sorpId ? 'Otra idea' : 'Sorpréndeme'}</button>
-    ${!casa() ? '<p class="muted">Guarda tu casa en ☰ Más para tener en cuenta lo lejos que está.</p>' : ''}</div>${res}`;
+</div>${res}`;
 }
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-sorp]');
   if (c) { leerSorp(); sorp[c.dataset.sorp] = c.dataset.sorp === 'dia' ? +c.dataset.v : c.dataset.v; save(K_SORP, sorp); sorpVistos = []; if (sorpId) sortear(); render(); return; }
   if (e.target.closest('[data-sortear]')) { sortear(); render(); const r = document.querySelector('.sorp'); if (r) r.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
-  if (e.target.closest('[data-casa]')) { guardarCasa(); return; }
-  if (e.target.closest('[data-casaborrar]') && confirm('¿Olvidar la ubicación de casa en este móvil?')) { localStorage.removeItem(K_CASA); render(); }
 });
-// Casa en ☰ Más
-function casaHTML() {
-  const c = casa();
-  return `<div class="card"><p class="muted">Para saber lo lejos que queda cada sitio. Se guarda <b>solo en este móvil</b>: no se comparte con el grupo.</p>
-    ${c ? `<p>✅ Casa guardada.</p><div class="row"><button class="sec" data-casa>📍 Estoy en casa: actualizar</button><button class="danger" data-casaborrar>Olvidar</button></div>`
-      : '<button class="sec" data-casa>📍 Estoy en casa: guardar ubicación</button>'}</div>`;
-}
-
 // ---------- la pestaña ----------
 function viewFindeS5() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
-  pedirTiempo();
+  pedirTiempo(); // para el aviso de lluvia del calendario y Sorpréndeme
   const quiero = SITIOS.filter(s => marca(s.id).estado === 'quiero');
   const grupoQuiere = typeof enGrupo === 'function' && enGrupo()
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
@@ -266,10 +264,9 @@ function viewFindeS5() {
   const fechas = `Viernes ${d(v).getDate()} · Sábado ${d(sab).getDate()} · Domingo ${d(dom).getDate()} de ${d(dom).toLocaleDateString('es-ES', { month: 'long' })}`;
   return `<p class="finde-fechas">${esc(fechas)}</p>
     ${eventosDestacadosHTML(sab)}
-    ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '<div class="card muted">👥 Entra en el grupo para ver y proponer planes.</div>'}
-    <h2>🌤️ El tiempo</h2>${tiempoResumenHTML()}
-    <h2>🎭 ¿Qué hay?</h2>${typeof agendaHTML === 'function' ? agendaHTML() : ''}
+    ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '<div class="card muted centro">👥 Entra en el grupo (pestaña Grupo) para ver y proponer planes y decir qué días puedes.</div>'}
     <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
+    <h2>🎭 ¿Qué hay?</h2>${typeof agendaHTML === 'function' ? agendaHTML() : ''}
     <h2>🔖 Tus ganas de ir</h2>
     ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}
     ${grupoQuiere.length ? `<h2>👥 Al grupo le apetece</h2>${grupoQuiere.map(fichaHTML).join('')}` : ''}

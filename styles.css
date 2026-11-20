@@ -415,10 +415,10 @@ body { background-color: var(--papel);
   background-image: repeating-linear-gradient(135deg, rgba(120,90,40,.035) 0 2px, transparent 2px 9px); }
 header { background: var(--papel); }
 /* Franja con los colores de la bandera de Canarias (en Corea era la del dancheong) */
-header::after { content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 5px;
-  background: repeating-linear-gradient(90deg, var(--azul-ic) 0 22px, var(--amarillo-ic) 22px 36px, #fff 36px 46px, transparent 46px 52px);
-  box-shadow: 0 1px 0 rgba(0,0,0,.06); }
-header { position: sticky; margin-bottom: 8px; }
+header::after { content: ""; position: absolute; left: 0; right: 0; bottom: -8px; height: 8px;
+  background: repeating-linear-gradient(90deg, #fff 0 18px, var(--azul-ic) 18px 36px, var(--amarillo-ic) 36px 54px);
+  box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 -1px 0 rgba(0,0,0,.05); }
+header { position: sticky; margin-bottom: 11px; }
 header button { background: var(--card); box-shadow: var(--sombra); border: 1px solid var(--line); }
 /* Tarjetas blancas con sombra */
 .card, .ficha, .plan, .muni > summary.banner, .filtros-panel, .portada, .sorp-ban { box-shadow: var(--sombra); }
@@ -545,4 +545,71 @@ button.ev-enlace { display: block; width: 100%; text-align: left; color: var(--f
 .agenda-de { font-size: .8rem; }
 
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v20"; }
+
+
+/* ===== v21: Planes, carrusel de eventos, disponibilidad por día, filtros a la vista, mapa por tipos ===== */
+/* Menús centrados donde tiene sentido */
+.chips { flex-wrap: wrap; justify-content: center; overflow: visible; }
+.acciones, .dispo-atajos, .mp-tipos, .fm-ops, .fm-pie, .rejilla, .marcas { justify-content: center; }
+.estrellas { justify-content: center; }
+.centro { text-align: center; }
+.finde-fechas { text-align: center; }
+/* Carrusel de eventos (se desliza; asoma el siguiente) */
+.ev-carrusel { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -12px 2px; padding: 0 12px 4px; }
+.ev-carrusel::-webkit-scrollbar { display: none; }
+.ev-tarjeta { flex: 0 0 86%; scroll-snap-align: center; display: flex; flex-direction: column; gap: 4px; }
+.ev-carrusel .ev-tarjeta:only-child { flex-basis: 100%; }
+.ev-carrusel button.ev-ban, .ev-carrusel button.ev-ban:first-child { min-height: 9rem; }
+.ev-acc { display: flex; justify-content: center; }
+.ev-acc button { margin: 0; }
+.ev-pista { text-align: center; font-size: .72rem; color: var(--muted); margin: 0 0 4px; }
+/* Próximos findes y festivos: cada bloque, su tarjeta */
+.calendario { border-left: 0; margin-left: 0; padding-left: 0; }
+.finde, .finde.libre { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sombra); padding: 6px 10px 8px; margin: 0 0 12px; }
+.finde::before { display: none; }
+.finde.con-planes { border-top: 4px solid var(--quiero); }
+.finde.festivo { border-top: 4px solid var(--amarillo-ic); }
+.finde.libre .finde-c::after { content: none; }
+.finde-cab { border-bottom: 1px dashed var(--line); padding-bottom: 4px; margin-bottom: 4px; }
+.finde-cab button { width: auto; padding: 0 10px; font-size: .8rem; }
+.fest-l { font-size: .8rem; text-align: center; margin: 2px 0 4px; }
+.mini-nota { font-size: .75rem; text-align: center; margin: -2px 0 6px; }
+.dispo { margin: 4px 0 6px; }
+.dias { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.dia { flex: 1 1 0; max-width: 6.2rem; min-width: 4.4rem; margin: 0; padding: 4px 2px; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 0;
+  background: var(--bg); color: var(--fg); border: 1.5px solid var(--line); border-radius: 10px; line-height: 1.2; }
+.dia-n { font-size: .74rem; font-weight: 600; }
+.dia-yo { font-size: 1.15rem; }
+.dia small { font-size: .66rem; color: var(--muted); }
+.dia.d-si { border-color: #1d7a3a; background: color-mix(in srgb, #1d7a3a 12%, var(--card)); }
+.dia.d-no { border-color: var(--red); background: color-mix(in srgb, var(--red) 10%, var(--card)); }
+.dia.d-no .dia-n { text-decoration: line-through; }
+.dispo-atajos { display: flex; gap: 6px; margin-top: 5px; }
+.dispo-atajos button { margin: 0; font-size: .74rem; }
+.dispo-quien { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 10px; font-size: .74rem; color: var(--muted); margin-top: 5px; }
+.dispo-quien .carita { width: 1.35rem; height: 1.35rem; font-size: .75rem; }
+.fest-nota { font-size: .76rem; text-align: center; margin: -2px 0 4px; }
+/* Filtros de Sitios: siempre a la vista, pequeños */
+.filtros-mini { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sombra); padding: 6px 6px 4px; margin: 6px 0; }
+.fm-ops { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.fm-ops + .fm-ops { border-top: 1px dashed var(--line); padding-top: 4px; }
+button.fm { margin: 0; min-height: 0; padding: 3px 8px; font-size: .72rem; border-radius: 999px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); font-weight: 500; }
+button.fm.on { background: var(--pri); color: var(--pri-fg); border-color: transparent; font-weight: 700; }
+button.fm.quitar { color: var(--red); }
+.fm-pie { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; border-top: 1px dashed var(--line); padding-top: 4px; }
+.fm-pie .orden-sel select { font-size: .78rem; padding-top: 4px; padding-bottom: 4px; min-height: 0; }
+/* Mapa: tipos (ninguno = todos; uno o varios) */
+.mp-tipos { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 6px; }
+button.mp-tipo { margin: 0; min-height: 0; padding: 3px 8px; font-size: .72rem; border-radius: 999px; background: var(--card); color: var(--fg); border: 1px solid var(--line); display: inline-flex; gap: 3px; align-items: center; }
+button.mp-tipo span { font-size: .95rem; }
+button.mp-tipo.on { background: var(--pri); color: var(--pri-fg); border-color: transparent; }
+button.mp-tipo.todos { color: var(--red); }
+.mp-pt.peq { width: 6px; height: 6px; }
+.mp-marcas { margin-top: 6px; }
+.mp-marcas button { min-height: 2.2rem; font-size: .78rem; }
+/* Saltar a una ficha: que no quede debajo de la cabecera */
+.ficha { scroll-margin-top: 4.2rem; }
+button.fm, button.mp-tipo, .dispo-atajos button, .ev-acc button, .finde-cab button { width: auto; flex: none; }
+.mp-f-foto { max-height: 6.5rem; overflow: hidden; }
+.mp-f-foto img { width: 100%; height: 6.5rem; object-fit: cover; }
+:root { --css-ver: "v21"; }

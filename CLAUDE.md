@@ -54,11 +54,13 @@ se adapta, sin restos de Corea.
 - `propios.js`: 👥 sitios que añade el grupo (`BASE` = catálogo; `mezclarSitios()` → `SITIOS`).
 - `eventos.js`: 🎟️ fechas de eventos (regla `cuando`), portada de Este finde, pestaña Eventos y agenda automática.
 - `herramientas/agenda_webtenerife.py` → `data/agenda.json` (lo ejecuta `.github/workflows/eventos.yml`).
+- `festivos.js` + `data/festivos.json`: 🎉 festivos nacionales/Canarias/Tenerife (BOE) y los 2 locales de cada
+  municipio (BOC, con sus enlaces en `fuentes`). Los locales que se ven, los del municipio elegido en Más (`esc.mimuni`).
 - `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
   municipio (`MUNI`: tono `h`, emoji, lema, `portada` = sitio cuya foto va en el banner).
 - `data/fotos.json`: `{ sitioId: { src, archivo } }`, foto principal del artículo de
   Wikipedia (Wikimedia Commons). Sin banderas, escudos, logos ni mapas.
-- Orden de carga (index.html): firebase-config, islas, nube, eventos, planes, propios, finde, agenda, diario, app.
+- Orden de carga (index.html): firebase-config, islas, festivos, nube, eventos, planes, propios, finde, agenda, diario, app.
   Los archivos anteriores a app.js no usan load/save/SITIOS al cargar, solo dentro de funciones.
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
@@ -94,10 +96,11 @@ Rambla, San Miguel de Abona, Santa Cruz de Tenerife, Santa Úrsula,
 Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 
 ## Iconos (uno por significado)
-- Pestañas: 🏠 Este finde · 🌤️ Tiempo · 🎟️ Eventos · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
+- Pestañas: 🏠 Planes (antes «Este finde») · 🌤️ Tiempo · 🎟️ Eventos · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
-- Marcas: 🔖 Quiero ir · ✅ Fuimos · ✖️ No · ⭐ valoración · 📝 nota.
+- Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
+- Días: 👍 puedo ese día · 🙅 no puedo · 🎉 festivo.
 - Tema: 🌓 auto · ☀️ claro · 🌙 oscuro.
 
 ## Marcas
@@ -200,8 +203,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   (como mucho cada 3 h; sin red se ve la última). En Este finde, la tabla cambia entre los
   findes con previsión (este, el que viene, en 2 semanas; aviso si es a más de una semana);
   en el calendario, cada finde con previsión lleva una línea con el tiempo por zona.
-- Casa: `esc.casa` = [lat, lon], SOLO en el móvil (nunca a Firestore ni al repo).
-  Tiempo en coche aproximado: km en línea recta × 1,4 a 55 km/h.
+- (v21) «Mi casa» se quitó. «📍 Más cerca de mí» pide la ubicación solo al elegir ese orden y la deja en memoria.
 - Sorpréndeme: sin ✅ ni ✖️ tuyos; «que nadie haya ido» mira al grupo; descarta por
   tiempo (playa: sol y ≥ 21°; cumbre: nieve o viento ≥ 60; lluvia: solo museos) y por
   rato (☕ ≤ 25 min sin senderos, 🌤️ ≤ 50 min, 🎒 todo). Más papeletas a lo que
@@ -317,3 +319,19 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   a Este finde. «➕ Añadir un evento» del grupo (sitios del grupo con `desde`/`hasta`).
 - Orden de importancia (portada y listas): lo que empieza en esas fechas, lo corto, destacados, con foto.
 - Calendario de findes: el tiempo solo si se prevé lluvia (zonas y días, incluido el viernes tarde).
+
+## Planes, disponibilidad y festivos (v21, pedido del usuario)
+- La pestaña 🏠 «Este finde» pasa a ser **Planes**: fechas → carrusel con todos los eventos de este finde (deslizable,
+  primero los especiales; cada uno con «🙋 Me apunto» o «📅 Proponer al grupo») → 📅 Próximos findes y festivos →
+  🎲 ¿Qué hacemos? (Sorpréndeme) → 🎭 ¿Qué hay? → ganas. Sin bloque del tiempo (está en su pestaña).
+- Próximos findes y festivos: cada finde en su tarjeta (viernes tarde —o el viernes entero si es festivo—, sábado,
+  domingo, y jueves/lunes festivos como puente); los festivos de entre semana, en su propia tarjeta. Sin chips de
+  eventos: es para ver planes y quién va. Solo la línea de lluvia si se prevé.
+- Disponibilidad por día: `grupos/{gid}/disponibilidad/{uid}`: { uid, no: [claves], si: [claves], actualizado }, clave
+  'AAAA-MM-DD' o 'AAAA-MM-DDT' (viernes tarde). Cada día se toca: · → 👍 → 🙅 → ·; atajos «👍 Todo libre» / «🙅 No puedo».
+  El antiguo `nopuedo: [sábados]` se lee como todo el finde.
+- Sorpréndeme: días = viernes tarde, sábado, domingo y festivos de las próximas 4 semanas.
+- Saltar a una ficha (`data-irficha`) va directo a ella: los eventos en la pestaña Eventos, el resto en Sitios.
+- Sitios: filtros siempre a la vista en botoncitos (tocar otra vez quita). Mapa: tipos como botones (ninguno =
+  todos, uno o varios); iconos solo en el zoom máximo y los 4 anteriores (z ≥ 14), puntitos antes; al tocar un punto
+  se marca 🔖/✅/✖️ desde ahí. Menús centrados. Franja de Canarias blanco-azul-amarillo, 8 px.

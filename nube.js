@@ -204,7 +204,7 @@ function dejarMarcas() {
   if (NUBE.offPlanes) { NUBE.offPlanes(); NUBE.offPlanes = null; }
   if (NUBE.offDispo) { NUBE.offDispo(); NUBE.offDispo = null; }
   dejarPropios();
-  NUBE.nopuedo = {};
+  NUBE.dispo = {};
   NUBE.planes = [];
   NUBE.marcasGrupo = {}; NUBE.recientes = []; NUBE.sincronizado = false;
 }
@@ -256,14 +256,14 @@ function grupoEnFicha(id) {
   const o = otrosEn(id), linea = (ic, txt, l) => l.length ? `<div class="gl"><span class="gl-t">${ic} ${txt}</span>${l.map(([u, m]) =>
     `<span class="gm" title="${esc(perfilDe(u).nombre)}">${carita(perfilDe(u))}<span>${esc(perfilDe(u).nombre)}${m.estrellas ? ` <small>${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></span>`).join('')}</div>` : '';
   const notas = [...o.fuimos, ...o.quiero].filter(([, m]) => m.nota).map(([u, m]) => `<div class="gnota">${esc(perfilDe(u).emoji)} «${esc(m.nota)}»</div>`).join('');
-  const h = linea('✅', 'Fueron', o.fuimos) + linea('🔖', 'Quieren ir', o.quiero) + notas;
+  const h = linea('✅', 'Visitado por', o.fuimos) + linea('🔖', 'Quieren ir', o.quiero) + notas;
   return h ? `<div class="grupo-ficha">${h}</div>` : `<div class="grupo-ficha muted">👥 Nadie más del grupo lo ha marcado.</div>`;
 }
 // En la ficha cerrada y en el mapa: las caritas de quien fue (hasta 3).
 function caritasMini(id) {
   if (!enGrupo()) return '';
   const f = otrosEn(id).fuimos; if (!f.length) return '';
-  return `<span class="cmini" title="Fueron: ${esc(f.map(([u]) => perfilDe(u).nombre).join(', '))}">${f.slice(0, 3).map(([u]) => esc(perfilDe(u).emoji)).join('')}${f.length > 3 ? `<small>+${f.length - 3}</small>` : ''}</span>`;
+  return `<span class="cmini" title="Visitado por: ${esc(f.map(([u]) => perfilDe(u).nombre).join(', '))}">${f.slice(0, 3).map(([u]) => esc(perfilDe(u).emoji)).join('')}${f.length > 3 ? `<small>+${f.length - 3}</small>` : ''}</span>`;
 }
 // Pestaña Grupo: quién lleva más, últimas marcas y lo que nadie ha hecho.
 function resumenGrupoHTML() {

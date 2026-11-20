@@ -111,7 +111,7 @@ function planHTML(p, { conSitio = true, compacto = false } = {}) {
     <div class="plan-cuerpo">
       <div class="muted">Propone ${esc(perfilDe(p.propone).emoji)} ${esc(perfilDe(p.propone).nombre)}${p.nota ? ` · «${esc(p.nota)}»` : ''}</div>
       <div class="gl"><span class="gl-t">🙋 Van (${(p.apuntados || []).length})</span>${caras(p.apuntados || [])}</div>
-      ${s ? (fueron.length ? `<div class="gl"><span class="gl-t">✅ Ya fueron</span>${caras(fueron)}</div>` : '<div class="muted">🌱 Nadie del grupo ha ido todavía.</div>') : ''}
+      ${s ? (fueron.length ? `<div class="gl"><span class="gl-t">✅ Ya lo visitaron</span>${caras(fueron)}</div>` : '<div class="muted">🌱 Nadie del grupo ha ido todavía.</div>') : ''}
       ${planBHTML(p)}
       <div class="acciones">${yoVoy ? `<button class="sec mini" data-plan="no" data-id="${esc(p.id)}">Ya no voy</button>` : `<button class="mini" data-plan="si" data-id="${esc(p.id)}">🙋 Me apunto</button>`}
         ${!p.planB && planBForm !== p.id ? `<button class="sec mini" data-plan="b-abrir" data-id="${esc(p.id)}">🅱️ Plan B</button>` : ''}
@@ -142,61 +142,110 @@ function planesEnFicha(id) {
     + (planForm && planForm.sitioId === id ? formPlanHTML(planForm) : `<div class="acciones"><button class="sec mini" data-plan="abrir" data-sitio="${esc(id)}">📅 Proponer plan</button></div>`);
 }
 
-// ---------- 📅 Próximos findes (en Este finde) ----------
+// ---------- 📅 Próximos findes y festivos (en Planes) ----------
+// Cada finde es un bloque: viernes por la tarde (el viernes entero si es festivo), sábado, domingo y el lunes si es
+// festivo. Los festivos de entre semana van en su propio bloque. Claves de día: 'AAAA-MM-DD', y 'AAAA-MM-DDT' para la
+// tarde del viernes (las mismas que el tiempo).
+const nomDia = k => { const f = k.slice(0, 10), w = diaSemana(f); return k.endsWith('T') ? 'Vie tarde' : ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'][w] + ' ' + +f.slice(8); };
+function bloquesCalendario() {
+  const sab0 = proximoSabado(), hoy = hoyISO(), ahora = new Date(), r = [];
+  const fin = masDias(sab0, 7 * (SEMANAS_CAL - 1) + 1);
+  const enFinde = new Set();
+  for (let i = 0; i < SEMANAS_CAL; i++) {
+    const sab = masDias(sab0, 7 * i), vie = masDias(sab, -1), dom = masDias(sab, 1), lun = masDias(sab, 2);
+    const dias = [];
+    if (festivo(vie)) dias.push(vie); else if (vie > hoy || (vie === hoy && ahora.getHours() < 20)) dias.push(vie + 'T');
+    if (festivo(masDias(vie, -1))) dias.unshift(masDias(vie, -1)); // jueves festivo: puente
+    dias.push(sab, dom); if (festivo(lun)) dias.push(lun);
+    const ds = dias.filter(k => k.slice(0, 10) >= hoy); ds.forEach(k => enFinde.add(k.slice(0, 10)));
+    r.push({ tipo: 'finde', i, sab, dias: ds, desde: masDias(sab, -5), hasta: ds[ds.length - 1].slice(0, 10) > dom ? ds[ds.length - 1].slice(0, 10) : dom });
+  }
+  festivosEntre(hoy, fin).filter(([f]) => !enFinde.has(f)).forEach(([f]) => r.push({ tipo: 'festivo', sab: f, dias: [f], desde: f, hasta: f }));
+  return r.sort((a, b) => a.dias[0].slice(0, 10).localeCompare(b.dias[0].slice(0, 10)));
+}
 function calendarioHTML() {
   if (!enGrupo()) return '';
-  const ps = proximosPlanes(), sab0 = proximoSabado();
-  const filas = [];
-  for (let i = 0; i < SEMANAS_CAL; i++) {
-    const sab = masDias(sab0, 7 * i), lun = masDias(sab, -5), dom = masDias(sab, 1);
-    // Planes que tocan esa semana (lunes a domingo), también los de varios días.
-    const deEsa = ps.filter(p => p.fecha <= dom && finPlan(p) >= lun);
-    const cuando = i === 0 ? 'Este finde' : i === 1 ? 'El que viene' : `En ${i} semanas`;
-    const noPueden = quienNoPuede(sab), yoNo = noPueden.includes(NUBE.user.uid);
-    filas.push(`<div class="finde ${deEsa.length ? 'con-planes' : 'libre'} ${yoNo ? 'yo-no' : ''}">
-      <div class="finde-cab"><span class="finde-f"><b>${esc(diaCorto(sab))} – ${esc(diaCorto(dom))}</b> <small>${esc(new Date(sab + 'T12:00').toLocaleDateString('es-ES', { month: 'short' }))}</small></span>
-        <span class="finde-c">${cuando}</span>
-        <button class="sec mini nopuedo ${yoNo ? 'on' : ''}" data-nopuedo="${sab}" title="${yoNo ? 'Toca si al final sí puedes' : 'Marca que ese finde no puedes'}" aria-label="${yoNo ? 'No puedo ese finde (toca si al final sí puedes)' : 'Marcar que no puedo ese finde'}">${yoNo ? '🙅 No puedo' : '🙅'}</button>
-        ${planForm && planForm.sabado === sab ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${sab}" aria-label="Proponer plan este finde">＋</button>`}</div>
-      ${typeof tiempoFindeMini === 'function' ? tiempoFindeMini(sab) : ''}
-      ${noPueden.length ? `<div class="nopueden">🙅 No ${noPueden.length > 1 ? 'pueden' : 'puede'}: ${noPueden.map(u => `<span class="gm">${carita(perfilDe(u))}<span>${esc(u === NUBE.user.uid ? 'tú' : perfilDe(u).nombre)}</span></span>`).join('')}</div>` : ''}
-      ${eventosSemanaHTML(masDias(sab, -1), dom)}
-      ${deEsa.map(p => planHTML(p, { compacto: true })).join('')}
-      ${!deEsa.length && !(planForm && planForm.sabado === sab) ? '<div class="muted finde-libre">Libre</div>' : ''}
-      ${planForm && planForm.sabado === sab ? formPlanHTML(planForm) : ''}</div>`);
-  }
-  const luego = ps.filter(p => p.fecha > masDias(sab0, 7 * SEMANAS_CAL - 6));
-  return `<h2>📅 Próximos findes</h2><div class="calendario">${filas.join('')}</div>
+  const ps = proximosPlanes(), bloques = bloquesCalendario(), usados = new Set();
+  // Primero los festivos sueltos se quedan sus planes; luego cada finde, los de su semana.
+  bloques.filter(b => b.tipo === 'festivo').forEach(b => { b.planes = ps.filter(p => p.fecha === b.sab); b.planes.forEach(p => usados.add(p.id)); });
+  bloques.filter(b => b.tipo === 'finde').forEach(b => { b.planes = ps.filter(p => !usados.has(p.id) && p.fecha <= b.hasta && finPlan(p) >= b.desde); b.planes.forEach(p => usados.add(p.id)); });
+  const filas = bloques.map(b => {
+    const abierto = planForm && !planForm.sitioId && planForm.sabado === b.sab;
+    const fests = b.dias.map(k => [k, festivo(k)]).filter(([, n]) => n);
+    const cuando = b.tipo === 'festivo' ? '🎉 Festivo' : b.i === 0 ? 'Este finde' : b.i === 1 ? 'El que viene' : `En ${b.i} semanas`;
+    const f0 = b.dias[0].slice(0, 10), fN = b.dias[b.dias.length - 1].slice(0, 10);
+    const rango = f0 === fN ? new Date(f0 + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }) : `${diaCorto(f0)} – ${diaCorto(fN)} ${new Date(fN + 'T12:00').toLocaleDateString('es-ES', { month: 'short' })}`;
+    return `<section class="finde ${b.tipo} ${b.planes.length ? 'con-planes' : 'libre'}">
+      <div class="finde-cab"><span class="finde-f"><b>${esc(rango)}</b></span><span class="finde-c">${cuando}</span>
+        ${abierto ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${b.sab}" aria-label="Proponer plan">＋ Plan</button>`}</div>
+      ${fests.length ? `<div class="fest-l">🎉 ${fests.map(([k, n]) => `<b>${esc(nomDia(k))}</b> ${esc(n)}`).join(' · ')}</div>` : ''}
+      ${b.tipo === 'finde' && typeof tiempoFindeMini === 'function' ? tiempoFindeMini(b.sab) : ''}
+      ${dispoHTML(b.dias)}
+      ${b.planes.map(p => planHTML(p, { compacto: true })).join('')}
+      ${abierto ? formPlanHTML(planForm) : ''}</section>`;
+  });
+  const ultimo = bloques.length ? bloques[bloques.length - 1].hasta : hoyISO();
+  const luego = ps.filter(p => !usados.has(p.id) && p.fecha > ultimo);
+  return `<h2>📅 Próximos findes y festivos</h2>${miMuni() ? '' : '<p class="muted mini-nota">🎉 Para ver los festivos locales de tu municipio, elígelo en ☰ Más.</p>'}
+    <div class="calendario">${filas.join('')}</div>
     ${luego.length ? `<h2>🔭 Más adelante</h2>${luego.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;
 }
-// ---------- 🙅 «No puedo ese finde» ----------
-// grupos/{gid}/disponibilidad/{uid}: { uid, nopuedo: ['AAAA-MM-DD' (sábados)], actualizado }. Cada uno solo el suyo.
+// ---------- 👍 / 🙅 ¿Puedes ese día? ----------
+// grupos/{gid}/disponibilidad/{uid}: { uid, no: [claves de día], si: [claves de día], actualizado }. Cada uno el suyo.
+// (Antes era `nopuedo: [sábados]` = todo el finde: se sigue leyendo así.)
 function seguirDisponibilidad(gid) {
   if (NUBE.offDispo) NUBE.offDispo();
   NUBE.offDispo = NUBE.db.collection('grupos').doc(gid).collection('disponibilidad').onSnapshot(q => {
-    const d = {}; q.forEach(x => { const v = x.data(); if (v && v.uid) d[v.uid] = Array.isArray(v.nopuedo) ? v.nopuedo : []; });
-    NUBE.nopuedo = d; refrescarVista();
+    const d = {};
+    q.forEach(x => { const v = x.data(); if (!v || !v.uid) return;
+      const no = Array.isArray(v.no) ? v.no.slice() : [];
+      (Array.isArray(v.nopuedo) ? v.nopuedo : []).forEach(sab => no.push(masDias(sab, -1) + 'T', masDias(sab, -1), sab, masDias(sab, 1)));
+      d[v.uid] = { no, si: Array.isArray(v.si) ? v.si : [] }; });
+    NUBE.dispo = d; refrescarVista();
   }, () => {});
 }
-const quienNoPuede = sab => (NUBE.grupo && NUBE.grupo.miembros || []).filter(u => ((NUBE.nopuedo || {})[u] || []).includes(sab));
-function toggleNoPuedo(sab) {
-  const uid = NUBE.user.uid, hoySab = proximoSabado();
-  const mia = new Set(((NUBE.nopuedo || {})[uid] || []).filter(f => f >= hoySab)); // las pasadas se van solas
-  if (mia.has(sab)) mia.delete(sab); else mia.add(sab);
-  const lista = [...mia].sort().slice(0, 60);
-  NUBE.nopuedo = { ...(NUBE.nopuedo || {}), [uid]: lista }; refrescarVista(); // se ve al momento, también sin red
+const dispoDe = (u, k) => { const d = (NUBE.dispo || {})[u]; return !d ? '' : d.no.includes(k) ? 'no' : d.si.includes(k) ? 'si' : ''; };
+const quienNoPuede = sab => (NUBE.grupo && NUBE.grupo.miembros || []).filter(u => dispoDe(u, sab) === 'no');
+function ponerDias(claves, val) {
+  const uid = NUBE.user.uid, hoy = hoyISO(), d = (NUBE.dispo || {})[uid] || { no: [], si: [] };
+  const no = new Set(d.no.filter(k => k.slice(0, 10) >= hoy)), si = new Set(d.si.filter(k => k.slice(0, 10) >= hoy)); // las pasadas se van solas
+  claves.forEach(k => { no.delete(k); si.delete(k); if (val === 'no') no.add(k); else if (val === 'si') si.add(k); });
+  const nueva = { no: [...no].sort().slice(0, 150), si: [...si].sort().slice(0, 150) };
+  NUBE.dispo = { ...(NUBE.dispo || {}), [uid]: nueva }; refrescarVista(); // se ve al momento, también sin red
   NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('disponibilidad').doc(uid)
-    .set({ uid, nopuedo: lista, actualizado: Date.now() }).catch(e => alert('No se pudo guardar (' + (e.code || e.message) + ').'));
+    .set({ uid, ...nueva, actualizado: Date.now() }).catch(e => alert('No se pudo guardar (' + (e.code || e.message) + ').'));
 }
-document.addEventListener('click', e => { const b = e.target.closest('[data-nopuedo]'); if (b && enGrupo()) toggleNoPuedo(b.dataset.nopuedo); });
+const SIG_DISPO = { '': 'si', si: 'no', no: '' }, IC_DISPO = { '': '·', si: '👍', no: '🙅' };
+function dispoHTML(dias) {
+  const yo = NUBE.user.uid, otros = (NUBE.grupo.miembros || []).filter(u => u !== yo);
+  const botones = dias.map(k => {
+    const mio = dispoDe(yo, k), si = otros.filter(u => dispoDe(u, k) === 'si').length, no = otros.filter(u => dispoDe(u, k) === 'no').length;
+    return `<button class="dia d-${mio || 'nada'}" data-dia="${k}" aria-label="${esc(nomDia(k))}: ${mio === 'si' ? 'puedes' : mio === 'no' ? 'no puedes' : 'sin decir'} (toca para cambiar)">
+      <span class="dia-n">${esc(nomDia(k))}</span><span class="dia-yo">${IC_DISPO[mio]}</span><small>${si ? `👍${si}` : ''}${si && no ? ' ' : ''}${no ? `🙅${no}` : ''}${!si && !no ? '&nbsp;' : ''}</small></button>`;
+  }).join('');
+  const quien = (NUBE.grupo.miembros || []).map(u => {
+    const s = dias.filter(k => dispoDe(u, k) === 'si'), n = dias.filter(k => dispoDe(u, k) === 'no'); if (!s.length && !n.length) return '';
+    const nom = u === yo ? 'Tú' : perfilDe(u).nombre;
+    return `<span class="gm">${carita(perfilDe(u))}<span>${esc(nom)}${s.length ? ` 👍 ${s.length === dias.length ? 'todo' : esc(s.map(nomDia).join(', '))}` : ''}${n.length ? ` 🙅 ${n.length === dias.length ? 'nada' : esc(n.map(nomDia).join(', '))}` : ''}</span></span>`;
+  }).filter(Boolean).join('');
+  const k = dias.join(',');
+  return `<div class="dispo"><div class="dias">${botones}</div>
+    <div class="dispo-atajos"><button class="sec mini" data-dias="${k}" data-v="si">👍 Todo libre</button><button class="sec mini" data-dias="${k}" data-v="no">🙅 No puedo</button></div>
+    ${quien ? `<div class="dispo-quien">${quien}</div>` : ''}</div>`;
+}
+document.addEventListener('click', e => {
+  if (!enGrupo()) return;
+  const d = e.target.closest('[data-dia]'); if (d) { ponerDias([d.dataset.dia], SIG_DISPO[dispoDe(NUBE.user.uid, d.dataset.dia)]); return; }
+  const t = e.target.closest('[data-dias]'); if (t) { const ks = t.dataset.dias.split(','), v = t.dataset.v; ponerDias(ks, ks.every(k => dispoDe(NUBE.user.uid, k) === v) ? '' : v); }
+});
 
 // Grupo: aviso de planes a la vista.
-const avisoPlanesHTML = () => { const n = proximosPlanes().length; return n ? `<div class="card row"><span style="flex:1">📅 ${n} plan${n > 1 ? 'es' : ''} a la vista</span><button class="sec mini" data-tab="finde">Ver</button></div>` : ''; };
+const avisoPlanesHTML = () => { const n = proximosPlanes().length; return n ? `<div class="card row"><span style="flex:1">📅 ${n} plan${n > 1 ? 'es' : ''} a la vista</span><button class="sec mini" data-tab="finde">Ver en Planes</button></div>` : ''; };
 
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-plan]'); if (!b) return;
   const a = b.dataset.plan, id = b.dataset.id, val = k => (document.getElementById(k) || {}).value || '';
-  if (a === 'abrir') { planForm = b.dataset.sitio ? { sitioId: b.dataset.sitio } : { sabado: b.dataset.sabado }; render(); const f = document.querySelector('.plan-form'); if (f) f.scrollIntoView({ block: 'center' }); }
+  if (a === 'abrir') { planForm = b.dataset.sitio ? { sitioId: b.dataset.sitio, sabado: b.dataset.sabado, carrusel: !!b.dataset.carrusel } : { sabado: b.dataset.sabado }; render(); const f = document.querySelector('.plan-form'); if (f) f.scrollIntoView({ block: 'center' }); }
   else if (a === 'cerrar') { planForm = null; render(); }
   else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), hasta: val('pl-hasta'), nota: val('pl-nota'), planB: val('pl-b') });
   else if (a === 'si' || a === 'no') apuntarse(id, a === 'si');

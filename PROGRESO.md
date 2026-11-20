@@ -1,5 +1,16 @@
 # PROGRESO
 
+## v21 · Planes, días que puedes, festivos y mapa por tipos (2026-11-20)
+- «Este finde» pasa a ser **Planes**: carrusel con todos los eventos del finde (apuntarse o proponerlo desde ahí),
+  «Próximos findes y festivos» con cada finde en su tarjeta y quién va a cada plan. Fuera el bloque del tiempo.
+- Disponibilidad por día: viernes tarde, sábado y domingo (y festivos), cada uno 👍 / 🙅, o todo el finde de un toque.
+- Festivos oficiales 2026-2027 (BOE y BOC, incluido el cambio del Martes de Carnaval del 20-11-2026): nacionales,
+  Canarias, Tenerife y los locales del municipio elegido en Más. También en Sorpréndeme.
+- Enlaces a eventos y sitios llevan directo a su ficha (antes volvía arriba y había que bajar).
+- Mapa: varios tipos a la vez, iconos solo muy de cerca, marcar desde el punto. Sitios: filtros pequeños a la vista.
+- «Fuimos» pasa a «Visitado». Fuera «Mi casa» (ahora «📍 Más cerca de mí» con el GPS del momento). Menús centrados
+  y franja de Canarias más alta.
+
 ## v20 · Simulación con tres usuarios y arreglos (2026-11-20)
 - Simulación como recién llegado, local con grupo y organizador de eventos: informe en `SIMULACION.md`
   (problemas, arreglos y prioridades).

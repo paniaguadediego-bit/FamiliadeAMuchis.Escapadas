@@ -1,0 +1,238 @@
+{
+"fuentes": [
+[
+"BOE-A-2025-21667 · fiestas laborales 2026",
+"https://www.boe.es/diario_boe/txt.php?id=BOE-A-2025-21667"
+],
+[
+"BOE-A-2026-21254 · fiestas laborales 2027",
+"https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-21254"
+],
+[
+"BOC 2025/165 · fiestas locales 2026",
+"https://www.gobiernodecanarias.org/boc/2025/165/3029.html"
+],
+[
+"BOC 2026/168 · fiestas locales 2027",
+"https://www.gobiernodecanarias.org/boc/2026/168/3035.html"
+],
+[
+"BOC 2026/234 · cambio del Martes de Carnaval 2027 (Arona, Arico, Tacoronte, La Laguna)",
+"https://www.gobiernodecanarias.org/boc/2026/234/4068.html"
+]
+],
+"comunes": {
+"2026-01-01": "Año Nuevo",
+"2026-01-06": "Epifanía del Señor",
+"2026-02-02": "Virgen de la Candelaria (Tenerife)",
+"2026-04-02": "Jueves Santo",
+"2026-04-03": "Viernes Santo",
+"2026-05-01": "Fiesta del Trabajo",
+"2026-05-30": "Día de Canarias",
+"2026-08-15": "Asunción de la Virgen",
+"2026-10-12": "Fiesta Nacional de España",
+"2026-11-02": "Día siguiente a Todos los Santos",
+"2026-12-08": "Inmaculada Concepción",
+"2026-12-25": "Navidad",
+"2027-01-01": "Año Nuevo",
+"2027-01-06": "Epifanía del Señor",
+"2027-02-02": "Virgen de la Candelaria (Tenerife)",
+"2027-03-25": "Jueves Santo",
+"2027-03-26": "Viernes Santo",
+"2027-05-01": "Fiesta del Trabajo",
+"2027-08-16": "Lunes siguiente a la Asunción",
+"2027-10-12": "Fiesta Nacional de España",
+"2027-11-01": "Todos los Santos",
+"2027-12-06": "Día de la Constitución",
+"2027-12-08": "Inmaculada Concepción",
+"2027-12-25": "Navidad"
+},
+"locales": {
+"Adeje": {
+"2026-01-20": "Festividad de San Sebastián",
+"2026-02-17": "Martes de Carnaval",
+"2027-01-20": "Festividad de San Sebastián",
+"2027-10-11": "Festividad de Santa Úrsula"
+},
+"Arafo": {
+"2026-02-17": "Martes de Carnaval",
+"2026-08-31": "Festividad de San Bernardo",
+"2027-02-23": "Martes de Carnaval",
+"2027-08-30": "Festividad de San Bernardo"
+},
+"Arico": {
+"2026-02-17": "Martes de Carnaval",
+"2026-09-08": "Festividad de Nuestra Señora de Abona",
+"2027-02-23": "Martes de Carnaval",
+"2027-09-08": "Festividad de Nuestra Señora de Abona"
+},
+"Arona": {
+"2026-02-17": "Martes de Carnaval",
+"2026-10-05": "Festividad del Santísimo Cristo de la Salud",
+"2027-02-23": "Martes de Carnaval",
+"2027-10-04": "Festividad del Santísimo Cristo de la Salud"
+},
+"Buenavista del Norte": {
+"2026-08-24": "Festividad de San Bartolomé",
+"2026-10-26": "Festividad de Nuestra Señora de los Remedios",
+"2027-08-24": "Festividad de San Bartolomé",
+"2027-10-25": "Festividad de Nuestra Señora de los Remedios"
+},
+"Candelaria": {
+"2026-02-17": "Martes de Carnaval",
+"2026-07-27": "Festividad de Santa Ana",
+"2027-02-23": "Martes de Carnaval",
+"2027-07-26": "Festividad de Santa Ana"
+},
+"El Rosario": {
+"2026-02-17": "Martes de Carnaval",
+"2026-10-07": "Festividad de Nuestra Señora del Rosario",
+"2027-02-16": "Martes de Carnaval",
+"2027-10-07": "Festividad de Nuestra Señora del Rosario"
+},
+"El Sauzal": {
+"2026-02-17": "Martes de Carnaval",
+"2026-06-29": "Festividad de San Pedro Apóstol",
+"2027-02-23": "Martes de Carnaval",
+"2027-06-29": "Festividad de San Pedro Apóstol"
+},
+"El Tanque": {
+"2026-08-31": "Festividad Nuestra Señora de Buen Viaje",
+"2026-10-19": "Festividad del Santísimo Cristo del Calvario",
+"2027-08-31": "Festividad Nuestra Señora de Buen Viaje",
+"2027-10-18": "Festividad del Santísimo Cristo del Calvario"
+},
+"Fasnia": {
+"2026-02-17": "Martes de Carnaval",
+"2026-08-17": "Fiestas Patronales",
+"2027-02-09": "Martes de Carnaval",
+"2027-08-23": "Fiestas Patronales"
+},
+"Garachico": {
+"2026-02-17": "Martes de Carnaval",
+"2026-06-24": "Festividad de San Juan",
+"2027-06-24": "Festividad de San Juan",
+"2027-07-26": "Festividad de Santa Ana"
+},
+"Granadilla de Abona": {
+"2026-02-17": "Martes de Carnaval",
+"2026-06-13": "Festividad de San Antonio de Padua",
+"2027-02-09": "Martes de Carnaval",
+"2027-06-14": "Festividad de San Antonio de Padua"
+},
+"Guía de Isora": {
+"2026-06-24": "Festividad de San Juan Bautista",
+"2026-09-21": "Festividad del Santísimo Cristo de la Dulce Muerte",
+"2027-06-24": "Festividad de San Juan Bautista",
+"2027-09-20": "Festividad del Santísimo Cristo de la Dulce Muerte"
+},
+"Güímar": {
+"2026-06-29": "Festividad de San Pedro Apóstol",
+"2026-09-07": "Festividad de Nuestra Señora del Socorro",
+"2027-06-29": "Festividad de San Pedro Apóstol",
+"2027-09-07": "Festividad de Nuestra Señora del Socorro"
+},
+"Icod de los Vinos": {
+"2026-02-17": "Martes de Carnaval",
+"2026-04-25": "Festividad de San Marcos Evangelista",
+"2027-02-23": "Martes de Carnaval",
+"2027-04-26": "Lunes posterior a la Festividad de San Marcos Evangelista"
+},
+"La Guancha": {
+"2026-02-17": "Martes de Carnaval",
+"2026-08-17": "Fiestas Patronales",
+"2027-01-18": "Festividad del XVIII de enero en honor a la Virgen de la Esperanza",
+"2027-08-16": "Fiestas Patronales en honor de la Virgen de la Esperanza"
+},
+"La Matanza de Acentejo": {
+"2026-02-17": "Martes de Carnaval",
+"2026-08-06": "Festividad de El Salvador",
+"2027-02-09": "Martes de Carnaval",
+"2027-08-06": "Festividad de El Salvador"
+},
+"La Orotava": {
+"2026-02-17": "Martes de Carnaval",
+"2026-06-11": "Infraoctava del Corpus Christi",
+"2027-02-09": "Martes de Carnaval",
+"2027-06-03": "Infraoctava del Corpus Christi"
+},
+"La Victoria de Acentejo": {
+"2026-02-17": "Martes de Carnaval",
+"2026-08-31": "Festividad de Nuestra Señora de la Encarnación",
+"2027-02-23": "Martes de Carnaval",
+"2027-08-30": "día posterior a la Festividad de Nuestra Señora de la Encarnación"
+},
+"Los Realejos": {
+"2026-01-22": "Festividad de San Vicente",
+"2026-06-01": "Lunes de Remedios",
+"2027-01-22": "Festividad de San Vicente",
+"2027-05-03": "Exaltación de la Santa Cruz"
+},
+"Los Silos": {
+"2026-06-24": "Festividad de San Juan",
+"2026-09-08": "Festividad de Nuestra Señora de la Luz",
+"2027-06-24": "Festividad de San Juan",
+"2027-09-08": "Festividad de Nuestra Señora de la Luz"
+},
+"Puerto de la Cruz": {
+"2026-07-13": "Festividad del Gran Poder de Dios",
+"2026-07-14": "Festividad de la Virgen del Carmen",
+"2027-05-03": "Festividad de la Exaltación de la Santa Cruz",
+"2027-07-13": "Festividad de la Virgen del Carmen"
+},
+"San Cristóbal de La Laguna": {
+"2026-02-17": "Martes de Carnaval",
+"2026-09-14": "Festividad del Santísimo Cristo de La Laguna",
+"2027-02-23": "Martes de Carnaval",
+"2027-09-14": "Festividad del Santísimo Cristo de La Laguna"
+},
+"San Juan de la Rambla": {
+"2026-06-24": "Festividad de San Juan Bautista",
+"2026-09-14": "Festividad de San José",
+"2027-06-24": "Festividad de San Juan Bautista",
+"2027-09-13": "Festividad de San José"
+},
+"San Miguel de Abona": {
+"2026-02-17": "Martes de Carnaval",
+"2026-09-29": "Festividad de San Miguel Arcángel",
+"2027-02-09": "Martes de Carnaval",
+"2027-09-29": "Festividad de San Miguel Arcángel"
+},
+"Santa Cruz de Tenerife": {
+"2026-02-17": "Martes de Carnaval",
+"2026-05-04": "Festividad del Día de la Cruz",
+"2027-02-23": "Martes de Carnaval",
+"2027-05-03": "Festividad del Día de la Cruz"
+},
+"Santa Úrsula": {
+"2026-02-17": "Martes de Carnaval",
+"2026-10-21": "Festividad de Santa Úrsula",
+"2027-02-23": "Martes de Carnaval",
+"2027-10-21": "Festividad de Santa Úrsula"
+},
+"Santiago del Teide": {
+"2026-07-16": "Festividad de Nuestra Señora de la Virgen del Carmen",
+"2026-05-15": "Festividad de San Isidro Labrador",
+"2027-07-16": "Festividad de Nuestra Señora de la Virgen del Carmen",
+"2027-07-26": "Festividad de Santa Ana"
+},
+"Tacoronte": {
+"2026-02-17": "Martes de Carnaval",
+"2026-11-25": "Festividad de Santa Catalina",
+"2027-02-23": "Martes de Carnaval",
+"2027-11-25": "Festividad de Santa Catalina"
+},
+"Tegueste": {
+"2026-04-25": "Festividad de San Marcos Evangelista",
+"2026-09-08": "Festividad de Nuestra Señora de los Remedios",
+"2027-04-26": "Festividad de San Marcos Evangelista",
+"2027-09-08": "Festividad de Nuestra Señora de los Remedios"
+},
+"Vilaflor de Chasna": {
+"2026-04-24": "Festividad del Santo Hermano Pedro",
+"2026-08-31": "Festividad de San Roque y San Agustín",
+"2027-04-23": "Festividad del Santo Hermano Pedro",
+"2027-08-30": "Festividad de San Roque y San Agustín"
+}
+}
+}
