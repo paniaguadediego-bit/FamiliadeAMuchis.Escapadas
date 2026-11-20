@@ -14,4 +14,5 @@ Pedidas por el usuario (2026-11-20). Se van tachando al hacerlas; cada una se an
 - [x] **Planes alternativos** (v13: plan B y aviso del tiempo): un plan B para cada plan (por si llueve o cambia algo).
 - [x] **Buscador de planes culturales** (v17: 🎭 ¿Qué hay?, búsquedas con fechas; sin agenda propia): obras de teatro, cine, fiestas de pueblo… (agenda con
       fuente: ayuntamientos, Cabildo, teatros; sin inventar fechas).
-- [ ] Otras islas: activar su catálogo (el esqueleto ya está en islas.js).
+- [ ] Otras islas: activar su catálogo (el esqueleto ya está en islas.js). APLAZADO por el usuario:
+      primero afinar Tenerife.

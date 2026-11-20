@@ -2,7 +2,7 @@
 // 🏠 Este finde (S5): tiempo en 6 zonas (Open-Meteo), 🎲 Sorpréndeme y distancia desde casa.
 // La ubicación de casa se guarda SOLO en este móvil (localStorage), nunca en la nube ni en el repo.
 
-const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo16', K_SORP = 'esc.sorp'; // 6 zonas, 16 días
+const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo16h', K_SORP = 'esc.sorp'; // 6 zonas, 16 días
 
 // ---------- zonas ----------
 // Seis zonas con tiempo muy distinto (elegidas por el usuario). El orden es el de la tabla.
@@ -67,14 +67,22 @@ async function pedirTiempo() {
   tiempoPidiendo = true;
   try {
     const zs = Object.keys(ZONAS), la = zs.map(z => ZONAS[z].punto[0]).join(','), lo = zs.map(z => ZONAS[z].punto[1]).join(',');
-    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Atlantic%2FCanary&forecast_days=16`, { cache: 'no-store' });
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&hourly=weather_code,temperature_2m,precipitation_probability,wind_speed_10m&timezone=Atlantic%2FCanary&forecast_days=16`, { cache: 'no-store' });
     const d = await r.json(), arr = Array.isArray(d) ? d : [d];
     const porZona = {};
     zs.forEach((z, i) => {
       const x = arr[i] && arr[i].daily; if (!x) return;
       porZona[z] = {}; x.time.forEach((f, j) => { porZona[z][f] = { c: x.weather_code[j], max: x.temperature_2m_max[j], min: x.temperature_2m_min[j], p: x.precipitation_probability_max[j], v: x.wind_speed_10m_max[j] }; });
+      // Viernes por la tarde (14 a 20 h), con la previsión por horas: se guarda como «AAAA-MM-DDT».
+      const h = arr[i].hourly; if (!h) return;
+      const tardes = {};
+      h.time.forEach((t, j) => { const f = t.slice(0, 10), hora = +t.slice(11, 13); if (hora < 14 || hora > 20 || new Date(f + 'T12:00').getDay() !== 5) return;
+        const a = tardes[f] = tardes[f] || { c: 0, max: -99, min: 99, p: 0, v: 0 };
+        a.c = Math.max(a.c, h.weather_code[j] ?? 0); a.max = Math.max(a.max, h.temperature_2m[j]); a.min = Math.min(a.min, h.temperature_2m[j]);
+        a.p = Math.max(a.p, h.precipitation_probability[j] ?? 0); a.v = Math.max(a.v, h.wind_speed_10m[j] ?? 0); });
+      for (const [f, a] of Object.entries(tardes)) porZona[z][f + 'T'] = a;
     });
-    if (Object.keys(porZona).length) { tiempo = { t: Date.now(), z: porZona }; save(K_TIEMPO, tiempo); if (tab === 'finde') render(); }
+    if (Object.keys(porZona).length) { tiempo = { t: Date.now(), z: porZona }; save(K_TIEMPO, tiempo); if (tab === 'finde' || tab === 'tiempo') render(); }
   } catch {}
   tiempoPidiendo = false;
 }
@@ -106,8 +114,9 @@ function findesConTiempo() {
   const sab0 = (diasFinde()[0] || [hoyISO()])[0], dSab = new Date(sab0 + 'T12:00'); if (dSab.getDay() === 0) dSab.setDate(dSab.getDate() - 1);
   const iso = x => new Date(x.getTime() - x.getTimezoneOffset() * 6e4).toISOString().slice(0, 10), r = [];
   for (let i = 0; i < 3; i++) {
-    const a = new Date(dSab); a.setDate(dSab.getDate() + 7 * i); const b = new Date(a); b.setDate(a.getDate() + 1);
-    const dias = [[iso(a), 'Sábado'], [iso(b), 'Domingo']].filter(([f]) => f >= hoyISO() && tiempoDe('norte', f));
+    const a = new Date(dSab); a.setDate(dSab.getDate() + 7 * i); const b = new Date(a); b.setDate(a.getDate() + 1); const v = new Date(a); v.setDate(a.getDate() - 1);
+    const ahora = new Date(), tardeYa = iso(v) < hoyISO() || (iso(v) === hoyISO() && ahora.getHours() >= 20);
+    const dias = [[iso(v) + 'T', 'Viernes tarde'], [iso(a), 'Sábado'], [iso(b), 'Domingo']].filter(([f]) => (f.endsWith('T') ? !tardeYa : f >= hoyISO()) && tiempoDe('norte', f));
     if (dias.length) r.push({ sab: iso(a), dias, nom: i === 0 ? 'Este finde' : i === 1 ? 'El que viene' : 'En 2 semanas' });
   }
   return r;
@@ -123,7 +132,7 @@ function tiempoHTML() {
     return `<td title="${esc(txt)}"><span class="t-ic">${ic}</span> <b>${Math.round(t.max)}°</b><span class="muted">/${Math.round(t.min)}°</span>${t.p >= 20 ? `<div class="t-p">💧 ${t.p}%</div>` : ''}${t.v >= 40 ? `<div class="t-p">💨 ${Math.round(t.v)} km/h</div>` : ''}</td>`; }).join('')}</tr>`).join('');
   const hace = Math.round((Date.now() - tiempo.t) / 3600e3), lejos = findeTiempo > 0;
   return `<div class="card tiempo">${fs.length > 1 ? `<div class="chips t-findes">${fs.map((x, i) => `<button class="chip ${i === findeTiempo ? 'on' : ''}" data-findetiempo="${i}">${esc(x.nom)} <small>${+x.sab.slice(8)}</small></button>`).join('')}</div>` : ''}
-    <table><thead><tr><th></th>${dias.map(([f, n]) => `<th>${n} ${+f.slice(8)}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table>
+    <table><thead><tr><th></th>${dias.map(([f, n]) => `<th>${n.replace(' tarde', '<br><small>tarde</small>')} ${+f.slice(8, 10)}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table>
     <div class="muted t-pie">${lejos ? '⚠️ Previsión a más de una semana: puede cambiar · ' : ''}Open-Meteo · ${hace < 1 ? 'actualizado hace poco' : `de hace ${hace} h`}</div></div>`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-findetiempo]'); if (b) { findeTiempo = +b.dataset.findetiempo; render(); } });
@@ -135,8 +144,42 @@ function tiempoFindeMini(sab) {
   return `<div class="t-mini" title="Tiempo por zonas (${dias.length > 1 ? 'sábado / domingo' : dias[0] === sab ? 'sábado' : 'domingo'})">${Object.entries(ZONAS).map(([z, Z]) => `<span class="t-z"><small>${Z.ic}</small>${dias.map(f => { const t = tiempoDe(z, f); return t ? `${cielo(t.c)[0]}<b>${Math.round(t.max)}°</b>` : ''; }).join('<i>/</i>')}</span>`).join('')}</div>`;
 }
 
+// ---------- 🌤️ pestaña Tiempo ----------
+function proximosDiasHTML() {
+  const t = leerTiempo(); if (!t) return '';
+  const dias = []; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() + i); dias.push(new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10)); }
+  const ds = dias.filter(f => tiempoDe('norte', f)); if (!ds.length) return '';
+  const cab = ds.map(f => { const d = new Date(f + 'T12:00'); return `<th class="${[0, 6].includes(d.getDay()) ? 'finde-dia' : ''}">${d.toLocaleDateString('es-ES', { weekday: 'narrow' }).toUpperCase()}<br><small>${d.getDate()}</small></th>`; }).join('');
+  return `<div class="card tiempo semana"><table><thead><tr><th></th>${cab}</tr></thead><tbody>${Object.entries(ZONAS).map(([z, Z]) => `<tr><th title="${esc(Z.nom)}">${Z.ic}</th>${ds.map(f => { const x = tiempoDe(z, f); if (!x) return '<td>—</td>'; const [ic, txt] = cielo(x.c);
+    return `<td title="${esc(txt)} · ${x.p}% lluvia"><span class="t-ic">${ic}</span><br><b>${Math.round(x.max)}°</b>${x.p >= 40 ? `<div class="t-p">💧${x.p}</div>` : ''}</td>`; }).join('')}</tr>`).join('')}</tbody></table>
+    <div class="leyenda">${Object.values(ZONAS).map(Z => `${Z.ic} ${Z.nom}`).join(' · ')}</div></div>`;
+}
+function viewTiempo() {
+  pedirTiempo();
+  return `<h2>🌤️ El fin de semana</h2>${tiempoHTML()}
+    <h2>📆 Los próximos días</h2>${proximosDiasHTML() || '<div class="card muted">Sin previsión todavía.</div>'}
+    <p class="muted">Previsión de Open-Meteo para seis zonas de la isla (un punto de referencia por zona). En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
+}
+// Resumen para Este finde: qué zonas tienen buen tiempo y cuáles no (viernes tarde a domingo).
+function tiempoResumenHTML() {
+  if (!leerTiempo()) { pedirTiempo(); return `<div class="card muted">⏳ Buscando el tiempo… <button class="sec mini" data-tab="tiempo">Ver el tiempo ›</button></div>`; }
+  const F = findesConTiempo()[0]; if (!F) return '';
+  const grupos = { bueno: [], regular: [], malo: [] };
+  for (const [z, Z] of Object.entries(ZONAS)) {
+    const ts = F.dias.map(([f]) => tiempoDe(z, f)).filter(Boolean); if (!ts.length) continue;
+    const malo = ts.some(x => x.p >= 50 || (x.c >= 51 && x.c !== 45 && x.c !== 48)) || (z === 'teide' && ts.some(x => x.v >= 60));
+    const bueno = ts.every(x => x.c <= 2 && x.p < 30 && x.v < 40);
+    grupos[malo ? 'malo' : bueno ? 'bueno' : 'regular'].push(Z.nom);
+  }
+  const max = Math.max(...Object.keys(ZONAS).flatMap(z => F.dias.map(([f]) => (tiempoDe(z, f) || {}).max || -99)));
+  const linea = (ic, txt, l) => l.length ? `<div class="tr-l">${ic} <b>${txt}:</b> ${esc(l.join(', '))}</div>` : '';
+  return `<div class="card tiempo-res" data-tab="tiempo" role="button">
+    ${linea('☀️', 'Buen tiempo', grupos.bueno)}${linea('⛅', 'Regular', grupos.regular)}${linea('🌧️', 'Mal tiempo', grupos.malo)}
+    <div class="tr-pie">${max > -99 ? `Hasta ${Math.round(max)}° · ` : ''}${esc(F.dias.map(([, n]) => n.toLowerCase()).join(', '))} <span class="tr-ver">Ver el tiempo ›</span></div></div>`;
+}
+
 // ---------- 🎲 Sorpréndeme ----------
-const RATOS = { rato: ['☕', 'Un rato', 25], media: ['🌤️', 'Media jornada', 50], dia: ['🎒', 'Día entero', 999] };
+const RATOS = { rato: ['☕', 'Un rato', 25], media: ['🕐', 'Media jornada', 50], dia: ['🎒', 'Día entero', 999] };
 let sorp = null, sorpId = null, sorpVistos = [];
 const leerSorp = () => sorp || (sorp = load(K_SORP, { rato: 'media', quien: 'nadie', dia: 0 }));
 function candidatos() {
@@ -210,27 +253,21 @@ function casaHTML() {
 function viewFindeS5() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   pedirTiempo();
-  const dias = diasFinde(), quiero = SITIOS.filter(s => marca(s.id).estado === 'quiero');
+  const quiero = SITIOS.filter(s => marca(s.id).estado === 'quiero');
   const grupoQuiere = typeof enGrupo === 'function' && enGrupo()
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
-  const txtDias = dias.map(([f, n]) => `${n} ${new Date(f + 'T12:00').getDate()}`).join(' y ');
-  // Portada: la foto del próximo plan con foto; si no hay, el Teide.
-  const prox = typeof proximosPlanes === 'function' && enGrupo() ? proximosPlanes().find(p => p.sitioId && FOTOS[p.sitioId]) : null;
-  const fotoPortada = prox ? prox.sitioId : 'teide';
-  return `<div class="portada banner-plano" style="--h:${prox ? muniTema(sitio(prox.sitioId).municipio).h : 8}">${fotoImg(fotoPortada, 'banner-foto')}
-    <div class="banner-tx"><span class="banner-n"><small>${typeof NUBE !== 'undefined' && NUBE.grupo ? esc(NUBE.grupo.nombre) : 'Escapadas por Tenerife'}</small>
-      <b>${esc(txtDias || 'Fin de semana')} de ${esc(new Date().toLocaleDateString('es-ES', { month: 'long' }))}</b>
-      ${prox ? `<small>📅 Próximo plan: ${esc(sitio(prox.sitioId).nombre)}</small>` : ''}</span></div></div>
-    ${eventosFindeHTML(proximoSabado())}
-    <h2>🌤️ El tiempo</h2>${tiempoHTML()}
-    ${typeof calendarioHTML === 'function' ? calendarioHTML() : ''}
-    <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
+  const sab = proximoSabado(), v = masDias(sab, -1), dom = masDias(sab, 1), d = x => new Date(x + 'T12:00');
+  const fechas = `Viernes ${d(v).getDate()} · Sábado ${d(sab).getDate()} · Domingo ${d(dom).getDate()} de ${d(dom).toLocaleDateString('es-ES', { month: 'long' })}`;
+  return `<p class="finde-fechas">${esc(fechas)}</p>
+    ${eventosDestacadosHTML(sab)}
+    ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '<div class="card muted">👥 Entra en el grupo para ver y proponer planes.</div>'}
+    <h2>🌤️ El tiempo</h2>${tiempoResumenHTML()}
     <h2>🎭 ¿Qué hay?</h2>${typeof agendaHTML === 'function' ? agendaHTML() : ''}
-    ${proximosEventosHTML(proximoSabado())}
+    <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
     <h2>🔖 Tus ganas de ir</h2>
     ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}
     ${grupoQuiere.length ? `<h2>👥 Al grupo le apetece</h2>${grupoQuiere.map(fichaHTML).join('')}` : ''}
     ${cuentaHTML()}
     <button class="sec" data-tab="sitios">📍 Ver todos los sitios</button>`;
 }
-addEventListener('online', () => { if (typeof tab !== 'undefined' && tab === 'finde') { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });
+addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde' || tab === 'tiempo')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });

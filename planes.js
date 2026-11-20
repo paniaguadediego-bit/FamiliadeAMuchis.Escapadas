@@ -120,8 +120,8 @@ function planHTML(p, { conSitio = true, compacto = false } = {}) {
 function formPlanHTML(f) {
   const sab = f.sabado || proximoSabado(), s = f.sitioId && sitio(f.sitioId);
   return `<div class="card plan-form">
-    ${s ? `<b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b>` : `<label class="muted" for="pl-isla">Isla</label>
-      <select id="pl-isla">${Object.entries(ISLAS).map(([k, i]) => `<option value="${k}">${i.ic} ${esc(i.nombre)}</option>`).join('')}</select>
+    ${s ? `<b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b>` : `${Object.values(ISLAS).filter(i => i.activa).length > 1 ? `<label class="muted" for="pl-isla">Isla</label>
+      <select id="pl-isla">${Object.entries(ISLAS).filter(([, i]) => i.activa).map(([k, i]) => `<option value="${k}">${i.ic} ${esc(i.nombre)}</option>`).join('')}</select>` : ''}
       <label class="muted" for="pl-destino">¿A dónde?</label>
       <input id="pl-destino" list="pl-sitios" maxlength="80" placeholder="Un sitio de la app o lo que queráis («Finde en La Palma»)">
       <datalist id="pl-sitios">${SITIOS.map(x => `<option value="${esc(x.nombre)}">`).join('')}</datalist>`}

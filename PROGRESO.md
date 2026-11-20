@@ -1,5 +1,15 @@
 # PROGRESO
 
+## v18 · Este finde con eventos arriba, pestaña Tiempo, viernes tarde y mapa por niveles (2026-11-20)
+- Este finde empieza por los eventos en grande (este finde, las 2 semanas siguientes y los destacados
+  de la isla, con cuenta atrás), y siguen los planes. El tiempo, resumido por zonas y enlazado.
+- Pestaña nueva 🌤️ Tiempo: el finde (con viernes por la tarde, 14-20 h, de la previsión por horas)
+  para los 3 próximos findes y los próximos 7 días por zona.
+- Mapa: puntitos minúsculos con la isla entera; al ampliar 2 veces, el icono de cada tipo. Solo se
+  dibujan los sitios de la isla elegida.
+- Solo Tenerife por ahora: las demás islas no se enseñan (el esqueleto queda en islas.js).
+- 8 eventos marcados como destacados. «Media jornada» pasa a 🕐 (🌤️ queda para el tiempo).
+
 ## v17 · 🎭 ¿Qué hay? Buscador cultural (2026-11-20)
 - En Este finde: teatro, cine, conciertos, fiestas de pueblo, con niños, exposiciones y mercadillos;
   dónde (toda la isla o municipio) y qué finde (este, el que viene, en 2 semanas).

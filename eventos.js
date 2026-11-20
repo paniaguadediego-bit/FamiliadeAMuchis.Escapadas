@@ -59,6 +59,26 @@ function proximosEventosHTML(sab, n = 4) {
   return ev.length ? `<h2>🎟️ Lo próximo</h2><div class="card">${ev.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${+f[0].slice(8)}</span>
     <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></button>`).join('')}</div>` : '';
 }
+// Arriba de Este finde: lo que pasa este finde (todo) y lo grande que viene (destacados, 120 días), en grande.
+function eventosDestacadosHTML(sab) {
+  const v = isoMas(sab, -1), dom = isoMas(sab, 1), hoy = hoyISO();
+  const esteFinde = eventosEntre(v, dom), ids = new Set(esteFinde.map(([s]) => s.id));
+  // Además de este finde: lo de las 2 semanas siguientes (sea lo que sea) y lo grande de los próximos 4 meses.
+  const pronto = eventosEntre(isoMas(dom, 1), isoMas(dom, 14)).filter(([s]) => !ids.has(s.id));
+  const grandes = eventosEntre(isoMas(dom, 15), isoMas(hoy, 120)).filter(([s]) => s.destacado);
+  const lista = [...esteFinde, ...pronto, ...grandes].slice(0, 4);
+  const resto = eventosEntre(isoMas(dom, 1), isoMas(hoy, 120)).filter(([s]) => !lista.some(([x]) => x.id === s.id));
+  if (!lista.length && !resto.length) return '';
+  const banner = ([s, f]) => {
+    const dias = Math.round((new Date(f[0] + 'T12:00') - new Date(hoy + 'T12:00')) / 864e5), ya = f[0] <= hoy && f[1] >= hoy;
+    const cuenta = ya ? '¡Ahora!' : ids.has(s.id) ? '¡Este finde!' : dias === 1 ? 'Mañana' : dias <= 9 ? `En ${dias} días · el finde que viene`.replace(/ · el finde que viene$/, f[0] <= isoMas(dom, 7) ? ' · el finde que viene' : '') : `En ${dias} días`;
+    return `<button class="ev-ban banner-plano ${ids.has(s.id) ? 'ya' : ''}" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">🎟️ ${esc(cuenta)}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></span></button>`;
+  };
+  return `<div class="eventos-top">${lista.map(banner).join('')}</div>
+    ${resto.length ? `<details class="ev-mas"><summary>🎟️ Más eventos en los próximos meses (${resto.length})</summary><div class="card">${resto.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${+f[0].slice(8)}</span>
+      <span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(fechaEventoTxt(f))} · ${esc(s.municipio)}</small></span></button>`).join('')}</div></details>` : ''}`;
+}
 // Este finde: lo que hay (viernes a domingo).
 function eventosFindeHTML(sab) {
   const ev = eventosEntre(isoMas(sab, -1), isoMas(sab, 1));

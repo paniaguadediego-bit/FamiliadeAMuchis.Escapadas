@@ -93,7 +93,8 @@ Rambla, San Miguel de Abona, Santa Cruz de Tenerife, Santa Úrsula,
 Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 
 ## Iconos (uno por significado)
-- Pestañas: 🏠 Este finde · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
+- Pestañas: 🏠 Este finde · 🌤️ Tiempo · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
+- 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
 - Marcas: 🔖 Quiero ir · ✅ Fuimos · ✖️ No · ⭐ valoración · 📝 nota.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
 - Tema: 🌓 auto · ☀️ claro · 🌙 oscuro.
@@ -222,8 +223,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Sitios sin foto en data/fotos.json: banner o icono de color, sin inventar fotos.
 
 ## Otras islas (esqueleto)
-- Hoy solo Tenerife tiene catálogo. Las demás salen «pronto» en los chips de isla
-  (Sitios y Mapa). Los planes ya pueden ser en cualquier isla (destino libre).
+- DECISIÓN DEL USUARIO (v18): por ahora SOLO Tenerife, para afinarlo todo antes. Las islas con
+  `activa: false` no se enseñan en ningún sitio (filtros, formulario de planes). El esqueleto queda.
+- El mapa solo dibuja los sitios de la isla elegida (`enIsla`), para no cargar puntos de todas.
 - Para activar una isla: sitios con `"isla": "<id>"`, `activa: true` y datos en
   islas.js, municipios y portadas, zonas del tiempo en finde.js y silueta del mapa.
 
@@ -283,3 +285,17 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   la búsqueda con las fechas exactas (Google y Google Noticias), se listan los sitios del catálogo
   que encajan con «🔎 Programación» y, en fiestas, los eventos con fecha de ese finde.
 - «📅 Proponer al grupo lo que encuentres» abre el formulario de plan de ese finde.
+
+## Este finde, Tiempo y mapa (v18, pedido del usuario)
+- Este finde, en este orden: fechas (viernes · sábado · domingo) → 🎟️ eventos en grande (los de
+  este finde, los de las 2 semanas siguientes y los `destacado: true` de los próximos 4 meses; hasta
+  4, con cuenta atrás) → planes y calendario → 🌤️ resumen del tiempo (buen/regular/mal tiempo por
+  zonas; al tocarlo, pestaña Tiempo) → 🎭 ¿Qué hay? → 🎲 Sorpréndeme → ganas.
+- Eventos destacados (`destacado: true` en sitios.json): Carnaval, alfombras del Corpus de La Orotava,
+  Romería del Socorro, Peregrinación a Candelaria, Fiestas de la Cruz de Los Realejos, Semana Santa
+  de La Laguna, San Benito, Gran Poder y Carmen del Puerto.
+- 🌤️ Tiempo (pestaña): el finde (viernes tarde, sábado, domingo) con los 3 findes con previsión, y
+  los próximos 7 días por zona. Viernes tarde = horas 14-20 de la previsión por horas, guardado como
+  «AAAA-MM-DDT» (lo peor de esas horas). Caché `esc.tiempo16h`.
+- Mapa: puntitos de 7 px hasta 1 nivel de zoom por encima del de la isla entera (`MP.zFit`); desde
+  2 niveles, el icono de cada tipo (separados si se pisan).

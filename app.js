@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v17';
+const VERSION = 'v18';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -64,7 +64,7 @@ function islasHTML() {
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-isla]'); if (!b) return;
   const i = ISLAS[b.dataset.isla];
-  if (!i.activa) return alert(`${i.ic} ${i.nombre}: próximamente. De momento ya podéis proponer planes allí desde 🏠 Este finde → Próximos findes.`);
+  if (!i.activa) return;
   islaSel = b.dataset.isla; save('esc.isla', islaSel); render();
 });
 
@@ -103,7 +103,7 @@ function applyLetra() { const l = load('esc.letra', 'compacta'); if (l === 'comp
 applyLetra();
 
 // ---------- pestañas ----------
-const TABS = [['finde', 'Este finde', '🏠'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const TABS = [['finde', 'Este finde', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
 let tab = load('esc.tab', 'finde');
 if (!TABS.some(t => t[0] === tab)) tab = 'finde';
 function ir(t) { tab = t; save('esc.tab', t); render(); window.scrollTo(0, 0); }
@@ -117,7 +117,7 @@ function render() {
   pintarTabs();
   $('#title').textContent = tab === 'finde' ? 'Escapadas' : (TABS.find(t => t[0] === tab) || [])[1] || 'Escapadas';
   const v = $('#view');
-  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
+  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
   if (tab === 'sitios' && irFicha) { const el = document.getElementById('f-' + irFicha); irFicha = null; if (el) el.scrollIntoView({ block: 'center' }); }
@@ -245,7 +245,7 @@ function filtrosHTML(lista) {
       <h3>📌 Tus marcas</h3>${rejilla('fEst', fEst, ESTADOS_F)}
       ${enGrupo() ? `<h3>👥 El grupo</h3>${rejilla('fGrupo', fGrupo, GRUPO_F)}` : ''}
       <h3>🧭 Zona</h3>${rejilla('fZona', fZona, [['', '🗺️', 'Toda la isla'], ...Object.entries(ZONAS).map(([k, z]) => [k, z.ic, z.nom])])}
-      <h3>🏝️ Isla</h3>${rejilla('isla', islaSel, Object.entries(ISLAS).map(([k, i]) => [k, i.ic, i.nombre + (i.activa ? '' : ' · pronto'), !i.activa]))}
+      ${Object.values(ISLAS).filter(i => i.activa).length > 1 ? `<h3>🏝️ Isla</h3>${rejilla('isla', islaSel, Object.entries(ISLAS).map(([k, i]) => [k, i.ic, i.nombre + (i.activa ? '' : ' · pronto'), !i.activa]))}` : ''}
       <div class="row"><button class="sec" data-filtro="limpiar">Quitar filtros</button><button data-filtros>Ver ${lista.length} sitios</button></div>
     </div>` : ''}
     ${activos.length ? `<div class="activos">${activos.map(([k, n]) => `<button class="chip on" data-quitar="${k}">${esc(n)} ✕</button>`).join('')}</div>` : ''}`;
@@ -274,7 +274,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-filtro]'); if (!b) return;
   const k = b.dataset.filtro, v = b.dataset.v;
   if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = ''; }
-  else if (k === 'isla') { if (!ISLAS[v].activa) return alert(`${ISLAS[v].ic} ${ISLAS[v].nombre}: próximamente. Ya podéis proponer planes allí desde 🏠 Este finde → Próximos findes.`); islaSel = v; save('esc.isla', v); }
+  else if (k === 'isla') { if (!ISLAS[v].activa) return; islaSel = v; save('esc.isla', v); }
   else if (k === 'fTipo') fTipo = v; else if (k === 'fEst') fEst = v; else if (k === 'fGrupo') fGrupo = v; else if (k === 'fZona') fZona = v;
   render();
 });
@@ -314,15 +314,18 @@ function viewMapa() {
     <p class="leyenda">Acerca el mapa (＋ o con dos dedos) para ver los iconos. Azul 🔖 quiero ir · verde ✅ fuimos · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
 const puntos = () => SITIOS.filter(s => enIsla(s) && (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && isFinite(s.lon));
-function mpEncajar(W, H) {
+// Zoom con la isla entera a la vista (con él se decide cuándo los puntitos pasan a iconos).
+function zEncaje(W, H) {
   const la = ISLA.map(c => c[1]), lo = ISLA.map(c => c[0]);
   const [a, b, c, d] = [Math.min(...la), Math.max(...la), Math.min(...lo), Math.max(...lo)];
-  MP.c = [(a + b) / 2, (c + d) / 2]; MP.z = 14;
-  while (MP.z > MPZ[0] && (mpX(d, MP.z) - mpX(c, MP.z) > W - 20 || mpY(a, MP.z) - mpY(b, MP.z) > H - 20)) MP.z--;
+  let z = 14; while (z > MPZ[0] && (mpX(d, z) - mpX(c, z) > W - 20 || mpY(a, z) - mpY(b, z) > H - 20)) z--;
+  return { z, c: [(a + b) / 2, (c + d) / 2] };
 }
+function mpEncajar(W, H) { const e = zEncaje(W, H); MP.c = e.c; MP.z = MP.zFit = e.z; }
 function pintarMapa() {
   const el = $('#mapa'); if (!el) return;
   if (MP.z == null) mpEncajar(el.clientWidth, el.clientHeight);
+  if (MP.zFit == null) MP.zFit = zEncaje(el.clientWidth, el.clientHeight).z;
   mpDibujar(el);
   if (!el._mp) { el._mp = 1; mpGestos(el); }
 }
@@ -336,11 +339,12 @@ function mpDibujar(el) {
         if (ty < 0 || ty >= n) continue;
         h += `<img class="mp-t" alt="" draggable="false" src="https://tile.openstreetmap.org/${z}/${((tx % n) + n) % n}/${ty}.png" style="left:${tx * MPT - ox}px;top:${ty * MPT - oy}px" onerror="this.remove()">`;
       }
-  const S = z >= 14 ? 1 : z >= 12 ? .85 : .7, peq = z <= 10; // con la isla entera: puntitos; al acercar, iconos
+  // Con la isla entera y un nivel más: puntitos minúsculos; desde 2 niveles de zoom, el icono de cada tipo.
+  const S = z >= 14 ? 1 : z >= 12 ? .85 : .7, peq = z < (MP.zFit ?? 10) + 2;
   // Puntos que se pisan: se separan empujando cada pareja que choca, con un muelle suave hacia su sitio real
   // (como en viaje-corea). Un hilo marca dónde está de verdad el que se ha movido.
   const vis = puntos().map(s => { const [x, y] = P(s.lat, s.lon); return { s, x, y, x0: x, y0: y }; })
-    .filter(o => o.x > -40 && o.y > -40 && o.x < W + 40 && o.y < H + 40), D = peq ? 11 : 30 * S;
+    .filter(o => o.x > -40 && o.y > -40 && o.x < W + 40 && o.y < H + 40), D = peq ? 0 : 30 * S;
   for (let it = 0; it < 60; it++) {
     let mov = false;
     for (let a = 0; a < vis.length; a++) for (let c = a + 1; c < vis.length; c++) {

@@ -506,5 +506,29 @@ button.plan-b-s { background: none; color: var(--fg); padding: 0; margin: 0; min
 .ag-sitio small { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ag-nota { font-size: .76rem; margin: 6px 2px 0; }
 
+/* v18: puntitos del mapa, pestaña Tiempo, eventos arriba */
+.mp-pt.peq { width: 7px; height: 7px; border-width: 1px; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+.mp-pt.peq.sel { width: 12px; height: 12px; }
+.mp-pt.peq.g-fue::after { display: none; }
+nav#tabs button { font-size: .6rem; }
+.finde-fechas { margin: 2px 2px 6px; font-size: .82rem; color: var(--muted); text-transform: none; }
+.eventos-top { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+button.ev-ban { display: flex; align-items: flex-end; width: 100%; min-height: 7.2rem; padding: 0; margin: 0; text-align: left; border: 0; }
+button.ev-ban:first-child { min-height: 9.5rem; }
+.ev-ban .banner-tx { padding: 10px 12px; }
+.ev-ban .banner-n b { font-size: 1.2rem; }
+.ev-cuenta { align-self: flex-start; background: #fff; color: hsl(330 70% 42%); font-weight: 800; font-size: .78rem; border-radius: 999px; padding: 2px 9px; margin-bottom: 4px; text-shadow: none; }
+.ev-ban.ya .ev-cuenta { background: #ffd400; color: #1a1a1a; }
+.ev-mas > summary { padding: 6px 4px; font-size: .86rem; color: var(--muted); }
+.tiempo-res { cursor: pointer; }
+.tr-l { font-size: .9rem; margin: 2px 0; }
+.tr-pie { font-size: .78rem; color: var(--muted); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; }
+.tr-ver { margin-left: auto; color: var(--pri); font-weight: 700; }
+.tiempo th small { font-weight: 400; color: var(--muted); }
+.tiempo.semana table { table-layout: fixed; }
+.tiempo.semana th, .tiempo.semana td { padding: 4px 1px; font-size: .8rem; }
+.tiempo.semana th:first-child { width: 2rem; }
+.tiempo.semana .finde-dia { color: var(--pri); }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v17"; }
+:root { --css-ver: "v18"; }

@@ -1,4 +1,5 @@
 'use strict';
+// Por decisión del usuario, de momento SOLO Tenerife: las islas con activa:false no se enseñan en ningún sitio.
 // 🏝️ Islas y municipios: identidad visual (color, emoji, lema, foto de portada) y esqueleto para otras islas.
 // Hoy solo Tenerife tiene catálogo; el resto sale «próximamente». Para activar una isla en el futuro:
 // 1) sus sitios en data/sitios.json con "isla": "<id>"; 2) aquí, activa: true, centro, zoom, municipios y silueta;
