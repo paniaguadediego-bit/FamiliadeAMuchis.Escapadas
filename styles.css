@@ -173,4 +173,4 @@ ol.pasos { padding-left: 1.3em; } ol.pasos li { margin: 6px 0; }
 button[disabled] { opacity: .5; }
 
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v3"; }
+:root { --css-ver: "v4"; }

@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v4 · S3 · Configuración de Firebase (2026-11-20)
+- `firebase-config.js` con la app web del proyecto `familiadeamuchis-escapadas`.
+- Pendiente de comprobar en el móvil: entrar con Google (navegador y app instalada),
+  crear el grupo y unirse con el código desde otro móvil.
+
 ## v3 · S3 · Firebase: entrada, perfil y grupo (2026-11-20)
 Hecho:
 - SDK de Firebase 10.14.1 (compat: app, auth, firestore) copiado en `vendor/` y precacheado.
