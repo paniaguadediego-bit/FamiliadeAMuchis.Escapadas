@@ -49,6 +49,13 @@ se adapta, sin restos de Corea.
 - `nube.js`: Firebase (entrada con Google, perfil, grupo; desde S4, marcas).
 - `finde.js`: 🏠 Este finde (tiempo por zona de Open-Meteo, 🎲 Sorpréndeme, casa).
 - `diario.js`: 📔 diario (tus ✅ por fecha) y 🖨️ Resumen del año (hoja + Imprimir → PDF).
+- `planes.js`: 📅 planes del grupo y calendario de los próximos 10 findes.
+- `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
+  municipio (`MUNI`: tono `h`, emoji, lema, `portada` = sitio cuya foto va en el banner).
+- `data/fotos.json`: `{ sitioId: { src, archivo } }`, foto principal del artículo de
+  Wikipedia (Wikimedia Commons). Sin banderas, escudos, logos ni mapas.
+- Orden de carga (index.html): firebase-config, islas, nube, planes, finde, diario, app.
+  Los archivos anteriores a app.js no usan load/save/SITIOS al cargar, solo dentro de funciones.
   Se carga antes que `app.js`: nada de `load`/`save` al cargar, solo dentro de funciones.
 - `firebase-config.js`: `window.FIREBASE_CONFIG` (null = sin nube).
 - `vendor/firebase-10.14.1/`: SDK compat (app, auth, firestore), precacheado.
@@ -118,8 +125,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
     listar ni adivinar; con él uno se añade a sí mismo (arrayUnion).
   - `grupos/{gid}/marcas/{uid}_{sitioId}`: uid, sitioId, estado
     (quiero|fuimos|no), estrellas, nota, fecha, actualizado
-  - `grupos/{gid}/planes/{id}`: sitioId, fecha (AAAA-MM-DD), nota, propone,
-    apuntados [uid], creado. Cada uno se apunta/borra a sí mismo; quien propone
+  - `grupos/{gid}/planes/{id}`: sitioId ('' si es destino libre), destino, isla,
+    fecha (AAAA-MM-DD), hasta (opcional), nota, propone, apuntados [uid], creado. Cada uno se apunta/borra a sí mismo; quien propone
     edita fecha y nota o lo cancela.
 - Reglas de seguridad en `firebase/firestore.rules` (en el repo; el usuario
   las pega en la consola): cada uno escribe solo sus marcas y su perfil;
@@ -191,3 +198,19 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   cambiar en la ficha («📅 Fuimos el») o dejar vacía (no sale en el resumen).
 - Resumen del año: `#resumen` encima de la app; `@media print` oculta todo lo demás.
   El móvil lo guarda en PDF con Imprimir → Guardar como PDF (sin librerías).
+
+## Aspecto (v9, inspirado en viaje-corea)
+- Banner por municipio (31): degradado `hsl(h 55% 28%) → hsl(h+35 62% 42%)` con su foto
+  de portada encima y un velo del mismo color para que se lea el texto blanco.
+- Fotos: miniatura (330 px, si no existe se usa la de 960) en la ficha cerrada; foto
+  grande con crédito «📷 Wikimedia Commons» al abrirla; en el mapa, los planes,
+  Sorpréndeme y la portada de Este finde (foto del próximo plan o el Teide).
+- El service worker guarda las fotos vistas en `escapadas-fotos` (no se borra al
+  actualizar); en Más, «Descargar todas las fotos» (~15 MB) para ir sin cobertura.
+- Sitios sin foto en data/fotos.json: banner o icono de color, sin inventar fotos.
+
+## Otras islas (esqueleto)
+- Hoy solo Tenerife tiene catálogo. Las demás salen «pronto» en los chips de isla
+  (Sitios y Mapa). Los planes ya pueden ser en cualquier isla (destino libre).
+- Para activar una isla: sitios con `"isla": "<id>"`, `activa: true` y datos en
+  islas.js, municipios y portadas, zonas del tiempo en finde.js y silueta del mapa.

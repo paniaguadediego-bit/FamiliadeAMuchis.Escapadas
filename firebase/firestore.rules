@@ -65,21 +65,27 @@ service cloud.firestore {
       // Planes: cualquiera del grupo propone (y queda apuntado); cada uno se apunta o se borra a sí mismo;
       // quien propone puede cambiar fecha y nota, o cancelarlo.
       match /planes/{planId} {
+        // Un plan es un sitio del catálogo (sitioId) o un destino libre (destino), en una isla; fecha y, si dura
+        // varios días, hasta.
         function planValido(d) {
           return d.sitioId is string && d.sitioId.size() <= 60
+            && d.get('destino', '') is string && d.get('destino', '').size() <= 80
+            && (d.sitioId.size() > 0 || d.get('destino', '').size() > 0)
+            && d.get('isla', 'tenerife') is string && d.get('isla', 'tenerife').size() <= 20
             && d.fecha is string && d.fecha.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+            && (d.get('hasta', '') == '' || (d.get('hasta', '') is string && d.get('hasta', '').matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
             && d.nota is string && d.nota.size() <= 300;
         }
         allow read: if esMiembro(gid);
         allow create: if esMiembro(gid)
-          && request.resource.data.keys().hasOnly(['sitioId', 'fecha', 'nota', 'propone', 'apuntados', 'creado'])
+          && request.resource.data.keys().hasOnly(['sitioId', 'destino', 'isla', 'fecha', 'hasta', 'nota', 'propone', 'apuntados', 'creado'])
           && request.resource.data.propone == yo() && request.resource.data.apuntados == [yo()]
           && planValido(request.resource.data);
         allow update: if esMiembro(gid) && (
           (soloCambia(['apuntados']) && (
             request.resource.data.apuntados.toSet() == resource.data.apuntados.toSet().union([yo()].toSet())
             || request.resource.data.apuntados.toSet() == resource.data.apuntados.toSet().difference([yo()].toSet())))
-          || (resource.data.propone == yo() && soloCambia(['fecha', 'nota']) && planValido(request.resource.data))
+          || (resource.data.propone == yo() && soloCambia(['fecha', 'hasta', 'nota']) && planValido(request.resource.data))
         );
         allow delete: if esMiembro(gid) && resource.data.propone == yo();
       }

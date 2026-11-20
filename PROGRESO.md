@@ -1,5 +1,22 @@
 # PROGRESO
 
+## v9 · Aspecto, fotos, calendario de findes y esqueleto de islas (2026-11-20)
+Hecho (a petición del usuario, con el estilo de viaje-corea):
+- Banners por municipio (31): color propio, emoji, lema (sacado del catálogo) y foto de portada.
+- Fotos de Wikimedia Commons (130 de 148 sitios; las del artículo de Wikipedia de cada sitio):
+  miniatura en la lista, foto grande al abrir la ficha (con crédito), en el mapa, en los planes,
+  en Sorpréndeme y en la portada de Este finde. Se guardan en el móvil; en Más se pueden
+  descargar todas.
+- 📅 Próximos findes: calendario de 10 fines de semana con los planes de cada uno, «Libre» y ＋
+  para proponer en cualquiera. Un plan puede ser un sitio, un destino libre o otra isla, y
+  durar varios días (ida y vuelta). «Más adelante» para lo que queda más lejos.
+- 🏝️ Islas: chips con Tenerife y el resto «pronto»; datos y pasos para activarlas en islas.js.
+- Reglas de Firestore ampliadas (destino, isla, hasta): hay que volver a publicarlas.
+
+Probado con fotos simuladas (la sesión no llega a Wikimedia) y nube simulada: calendario,
+proponer un finde en La Gomera, banners, fichas, mapa y tema oscuro. Sin errores.
+Pendiente: ver las fotos reales en el móvil; publicar reglas; probar con otra persona.
+
 ## v8 · S6 · Planes, diario y resumen del año (2026-11-20)
 Hecho:
 - Tiempo en 6 zonas (pedido del usuario): Oeste, Sur, Este, La Laguna, Norte y

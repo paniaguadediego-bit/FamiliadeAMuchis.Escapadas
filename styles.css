@@ -251,5 +251,72 @@ body.con-resumen { overflow: hidden; }
   @page { margin: 14mm; }
 }
 
+/* ===== v9: banners, fotos e islas (inspirado en viaje-corea) ===== */
+/* Banner: degradado con los dos tonos del municipio (--h) y, si hay, su foto debajo */
+.banner, .banner-plano { position: relative; overflow: hidden; color: #fff; border-radius: 14px;
+  background: linear-gradient(135deg, hsl(var(--h, 200) 55% 28%), hsl(calc(var(--h, 200) + 35) 62% 42%)); }
+.banner-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.banner::before, .banner-plano::before { content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(100deg, hsl(var(--h, 200) 60% 18% / .88) 0%, hsl(var(--h, 200) 60% 22% / .55) 55%, hsl(var(--h, 200) 60% 25% / .15) 100%); }
+.banner-tx { position: relative; z-index: 2; display: flex; align-items: center; gap: 10px; width: 100%; padding: 14px; }
+.banner-ic { font-size: 1.9rem; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+.banner-n { flex: 1; min-width: 0; display: flex; flex-direction: column; text-shadow: 0 1px 3px rgba(0,0,0,.55); }
+.banner-n b { font-size: 1.12rem; line-height: 1.2; }
+.banner-n small { font-size: .82rem; opacity: .95; }
+.muni > summary.banner { display: block; padding: 0; min-height: 96px; margin: 8px 0; background-color: transparent; }
+.muni > summary.banner .banner-tx { min-height: 96px; }
+.muni > summary.banner .n { color: #fff; background: rgba(0,0,0,.35); padding: 3px 9px; border-radius: 999px; font-size: .8rem; white-space: nowrap; }
+.muni > summary.banner::after { position: absolute; right: 12px; top: 8px; z-index: 2; color: #fff; }
+.muni > .fichas { border-left-color: hsl(var(--h, 200) 50% 45%); }
+
+/* Ficha: miniatura cerrada y foto grande al abrir */
+.mini-foto { position: relative; flex: none; width: 52px; height: 52px; border-radius: 10px; overflow: hidden; background: var(--line); }
+.mini-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mini-ic { position: absolute; right: 1px; bottom: 0; font-size: .95rem; filter: drop-shadow(0 0 2px #fff); }
+.ficha > summary { min-height: 64px; }
+.ficha-foto { position: relative; margin: 0 -12px 8px; aspect-ratio: 16 / 9; overflow: hidden; background: var(--line); }
+.ficha-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.credito { position: absolute; right: 6px; bottom: 4px; font-size: .68rem; color: #fff; background: rgba(0,0,0,.45); padding: 1px 6px; border-radius: 6px; text-decoration: none; }
+.mp-f-foto { margin: -10px -12px 8px; height: 110px; overflow: hidden; border-radius: 12px 12px 0 0; }
+.mp-f-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Este finde: portada y Sorpréndeme */
+.portada { min-height: 150px; display: flex; align-items: flex-end; margin: 4px 0 6px; }
+.portada .banner-tx { align-items: flex-end; padding: 16px 14px; }
+.portada .banner-n b { font-size: 1.35rem; }
+.sorp-ban { min-height: 120px; display: flex; align-items: flex-end; margin: 10px 0 0; }
+
+/* Islas: Tenerife activa, el resto «pronto» */
+.islas .chip.pronto { opacity: .55; border-style: dashed; }
+.islas .chip small { font-size: .7rem; }
+
+/* Planes con foto y calendario de findes */
+.plan { background: var(--card); border-radius: 12px; margin: 6px 0; overflow: hidden; border: 1px solid var(--line); }
+.plan-cab { position: relative; min-height: 70px; display: flex; align-items: flex-end; color: #fff;
+  background: linear-gradient(135deg, hsl(var(--h, 200) 55% 28%), hsl(calc(var(--h, 200) + 35) 62% 42%)); }
+.plan-cab::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(transparent 10%, rgba(0,0,0,.65)); }
+.plan-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.plan.con-foto .plan-cab { min-height: 120px; }
+.plan.compacto.con-foto .plan-cab { min-height: 92px; }
+.plan-cab-tx { position: relative; z-index: 2; padding: 10px 12px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.plan-cab .plan-f { color: #fff; font-size: .85rem; font-weight: 600; }
+.plan-cab button.plan-s, .plan-cab .plan-s { color: #fff; font-size: 1.05rem; font-weight: 700; background: none; padding: 0; margin: 0; min-height: 0; text-align: left; }
+.plan-cab .plan-s small { font-weight: 400; opacity: .9; }
+.plan-f.solo { padding: 8px 12px 0; font-weight: 700; color: var(--quiero); }
+.plan-cuerpo { padding: 8px 12px 10px; }
+.ficha .plan { background: var(--bg); }
+.calendario { border-left: 3px solid var(--line); margin-left: 6px; padding-left: 10px; }
+.finde { position: relative; margin: 4px 0 12px; }
+.finde::before { content: ""; position: absolute; left: -17px; top: 10px; width: 11px; height: 11px; border-radius: 50%; background: var(--line); border: 2px solid var(--bg); }
+.finde.con-planes::before { background: var(--quiero); }
+.finde-cab { display: flex; align-items: center; gap: 8px; min-height: 40px; }
+.finde-f { flex: 1; }
+.finde-f small { color: var(--muted); }
+.finde-c { font-size: .78rem; color: var(--muted); }
+.finde-cab button { width: 38px; min-height: 36px; padding: 0; font-size: 1.2rem; }
+.finde-libre { font-size: .85rem; margin: -4px 0 0; }
+.plan-form select { margin: 4px 0 8px; }
+.plan-form label { display: block; margin-top: 4px; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v8"; }
+:root { --css-ver: "v9"; }

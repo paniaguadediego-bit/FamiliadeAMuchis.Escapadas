@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v8';
+const VERSION = 'v9';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -38,6 +38,34 @@ let SITIOS = [];
 const sitio = id => SITIOS.find(s => s.id === id);
 fetch('data/sitios.json').then(r => r.json()).then(d => { SITIOS = Array.isArray(d) ? d : []; render(); })
   .catch(() => { SITIOS = []; render(); });
+
+// ---------- fotos (Wikimedia Commons, del artículo de Wikipedia de cada sitio) ----------
+// data/fotos.json = { sitioId: { src (960 px), archivo } }. El service worker guarda cada foto vista (sin conexión).
+let FOTOS = {};
+fetch('data/fotos.json').then(r => r.json()).then(d => { FOTOS = d || {}; render(); }).catch(() => {});
+const fotoSrc = (id, mini) => { const f = FOTOS[id]; if (!f) return ''; return mini ? f.src.replace('/960px-', '/330px-') : f.src; };
+const fotoCredito = id => FOTOS[id] && FOTOS[id].archivo ? `<a class="credito" href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(FOTOS[id].archivo)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a>` : '';
+// <img> perezosa; la miniatura, si no existe en ese tamaño, prueba la grande; si tampoco, desaparece.
+function fotoImg(id, cls = '', mini = false) {
+  const src = fotoSrc(id, mini); if (!src) return '';
+  const grande = mini ? fotoSrc(id) : '';
+  return `<img class="${cls}" src="${esc(src)}" alt="" loading="lazy" decoding="async"${grande && grande !== src ? ` data-f="${esc(grande)}"` : ''} onerror="if(this.dataset.f){this.src=this.dataset.f;this.dataset.f=''}else{this.remove()}">`;
+}
+// Banner de municipio: foto de su portada (o del primer sitio con foto) con el degradado de su color.
+const portadaDe = m => { const t = muniTema(m); return (t.portada && FOTOS[t.portada]) ? t.portada : ((SITIOS.find(s => s.municipio === m && FOTOS[s.id]) || {}).id || ''); };
+
+// ---------- isla elegida (esqueleto: hoy solo Tenerife tiene catálogo) ----------
+let islaSel = load('esc.isla', 'tenerife'); if (!ISLAS[islaSel] || !ISLAS[islaSel].activa) islaSel = 'tenerife';
+const enIsla = s => islaDe(s) === islaSel;
+function islasHTML() {
+  return `<div class="chips islas">${Object.entries(ISLAS).map(([k, i]) => `<button class="chip ${k === islaSel ? 'on' : ''} ${i.activa ? '' : 'pronto'}" data-isla="${k}">${i.ic} ${esc(i.nombre)}${i.activa ? '' : ' <small>pronto</small>'}</button>`).join('')}</div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-isla]'); if (!b) return;
+  const i = ISLAS[b.dataset.isla];
+  if (!i.activa) return alert(`${i.ic} ${i.nombre}: próximamente. De momento ya podéis proponer planes allí desde 🏠 Este finde → Próximos findes.`);
+  islaSel = b.dataset.isla; save('esc.isla', islaSel); render();
+});
 
 // ---------- marcas (solo en este móvil hasta S4) ----------
 // { [sitioId]: { estado: 'quiero'|'fuimos'|'no', estrellas: 0-5, nota, fecha, actualizado } }
@@ -96,9 +124,10 @@ function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
   const datos = [distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
-    <summary><span class="ic">${tipoIc(s.tipo)}</span><span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}</small></span>
+    <summary>${FOTOS[s.id] ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${tipoIc(s.tipo)}</span></span>` : `<span class="ic">${tipoIc(s.tipo)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(tipoNom(s.tipo))} · ${esc(s.municipio)}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
+      ${abiertas.has(s.id) && FOTOS[s.id] ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : FOTOS[s.id] ? '<div class="ficha-foto" data-pendiente></div>' : ''}
       <p>${esc(s.desc)}</p>
       ${datos.length ? `<div class="datos">${datos.map(d => `<span>${d}</span>`).join('')}</div>` : ''}
       ${s.verificar ? `<div class="ver">⚠️ VERIFICAR${typeof s.verificar === 'string' ? ': ' + esc(s.verificar) : ''}</div>` : ''}
@@ -122,7 +151,10 @@ const repintarFicha = id => {
 };
 document.addEventListener('toggle', e => {
   const d = e.target; if (!d.dataset) return;
-  if (d.dataset.ficha) { if (d.open) abiertas.add(d.dataset.ficha); else abiertas.delete(d.dataset.ficha); }
+  if (d.dataset.ficha) {
+    if (d.open) { abiertas.add(d.dataset.ficha); const ff = d.querySelector('.ficha-foto[data-pendiente]'); if (ff) { ff.removeAttribute('data-pendiente'); ff.innerHTML = fotoImg(d.dataset.ficha) + fotoCredito(d.dataset.ficha); } }
+    else abiertas.delete(d.dataset.ficha);
+  }
   if (d.dataset.muni) { if (d.open) muniAbiertos.add(d.dataset.muni); else muniAbiertos.delete(d.dataset.muni); }
 }, true);
 document.addEventListener('click', e => {
@@ -158,7 +190,7 @@ let q = '', fTipo = '', fEst = '';
 const muniAbiertos = new Set();
 function filtrados() {
   const a = sinTildes(q).trim();
-  return SITIOS.filter(s => (!fTipo || s.tipo === fTipo)
+  return SITIOS.filter(s => enIsla(s) && (!fTipo || s.tipo === fTipo)
     && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : fEst === 'nadie' ? nadieFue(s.id) : marca(s.id).estado === fEst))
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
 }
@@ -170,12 +202,14 @@ function viewSitios() {
   const huerf = lista.filter(s => !MUNICIPIOS.includes(s.municipio));
   if (huerf.length) grupos.push(['Otros', huerf]);
   const conSitios = grupos.filter(g => g[1].length);
-  return `<input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off">
+  return `${islasHTML()}<input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off">
     <div class="chips">${[['', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<button class="chip ${fTipo === k ? 'on' : ''}" data-ftipo="${k}">${n}</button>`).join('')}</div>
     <div class="chips">${[['', 'Todas'], ['quiero', '🔖 Quiero ir'], ['fuimos', '✅ Fuimos'], ['no', '✖️ No'], ['sin', 'Sin marcar'], ...(enGrupo() ? [['nadie', '🌱 Nadie del grupo']] : [])].map(([k, n]) => `<button class="chip ${fEst === k ? 'on' : ''}" data-fest="${k}">${n}</button>`).join('')}</div>
     <p class="muted">${lista.length} de ${SITIOS.length} sitios · ${conSitios.length} municipios</p>
     <div id="lista">${conSitios.map(([m, ss]) => `<details class="muni" data-muni="${esc(m)}" ${filtro || muniAbiertos.has(m) ? 'open' : ''}>
-      <summary>🏘️ ${esc(m)}<span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length}✅ · ${ss.length}</span></summary>
+      <summary class="banner" style="${varsMuni(m)}">${portadaDe(m) ? fotoImg(portadaDe(m), 'banner-foto') : ''}<span class="banner-tx"><span class="banner-ic">${muniTema(m).ic}</span>
+        <span class="banner-n"><b>${esc(m)}</b><small>${esc(muniTema(m).lema)}</small></span>
+        <span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length} ✅ · ${ss.length}</span></span></summary>
       <div class="fichas">${ss.map(fichaHTML).join('')}</div></details>`).join('') || '<div class="card muted">Nada con ese filtro.</div>'}</div>
     ${!filtro && grupos.some(g => !g[1].length) ? `<p class="muted">Municipios sin sitios todavía: ${grupos.filter(g => !g[1].length).length} de 31.</p>` : ''}`;
 }
@@ -206,13 +240,13 @@ let mpTipo = '';
 function viewMapa() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
-  return `<div class="chips">${[['', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<button class="chip ${mpTipo === k ? 'on' : ''}" data-mptipo="${k}">${n}</button>`).join('')}</div>
+  return `${islasHTML()}<div class="chips">${[['', 'Todos'], ...tiposHay.map(t => [t, tipoIc(t) + ' ' + tipoNom(t)])].map(([k, n]) => `<button class="chip ${mpTipo === k ? 'on' : ''}" data-mptipo="${k}">${n}</button>`).join('')}</div>
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
     <p class="leyenda">Acerca el mapa (＋ o con dos dedos) para ver los iconos. Azul 🔖 quiero ir · verde ✅ fuimos · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
-const puntos = () => SITIOS.filter(s => (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && isFinite(s.lon));
+const puntos = () => SITIOS.filter(s => enIsla(s) && (!mpTipo || s.tipo === mpTipo) && isFinite(s.lat) && isFinite(s.lon));
 function mpEncajar(W, H) {
   const la = ISLA.map(c => c[1]), lo = ISLA.map(c => c[0]);
   const [a, b, c, d] = [Math.min(...la), Math.max(...la), Math.min(...lo), Math.max(...lo)];
@@ -264,7 +298,7 @@ function mpDibujar(el) {
 }
 function mpFicha(s) {
   const m = marca(s.id);
-  return `<div class="mp-f"><div class="row"><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><button class="sec mini" data-mpcerrar aria-label="Cerrar">✕</button></div>
+  return `<div class="mp-f">${FOTOS[s.id] ? `<div class="mp-f-foto">${fotoImg(s.id, '', true)}</div>` : ''}<div class="row"><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><button class="sec mini" data-mpcerrar aria-label="Cerrar">✕</button></div>
     <div class="muted">${esc(s.municipio)}${m.estado ? ' · ' + ESTADOS[m.estado].join(' ') : ''}${m.estrellas ? ' · ' + '⭐'.repeat(m.estrellas) : ''}</div>
     ${grupoEnFicha(s.id)}
     ${s.verificar ? '<div class="ver">⚠️ VERIFICAR</div>' : ''}
@@ -329,6 +363,9 @@ function viewMas() {
     <div class="chips">${Object.entries(TEMAS).map(([k, [ic, n]]) => `<button class="chip ${t === k ? 'on' : ''}" data-settema="${k}">${ic} ${n}</button>`).join('')}</div>
     <h2>🏠 Mi casa</h2>
     ${casaHTML()}
+    <h2>📷 Fotos sin conexión</h2>
+    <div class="card"><p class="muted">Las fotos que ves se quedan en el móvil. Para tenerlas todas antes de ir a una zona sin cobertura (unos 15 MB, mejor con wifi):</p>
+      <button class="sec" data-fotosdl>⬇️ Descargar todas las fotos</button></div>
     <h2>💾 Copia de mis marcas</h2>
     <div class="card"><p class="muted">Tus marcas viven en este móvil. Guarda una copia por si cambias de móvil o borras datos del navegador.</p>
       <div class="row"><button class="sec" data-exportar>⬇️ Exportar</button><button class="sec" data-importar>⬆️ Importar</button></div></div>
@@ -358,6 +395,18 @@ document.addEventListener('click', async e => {
   }
   if (e.target.closest('[data-importar]')) { $('#file').click(); return; }
   if (e.target.closest('[data-borrar]') && confirm('¿Borrar todas tus marcas de este móvil? No se puede deshacer (salvo con una copia).')) { marcas = {}; save(K_MARCAS, marcas); render(); }
+});
+// Descarga todas las fotos (grande y miniatura) para que el service worker las guarde.
+let fotosBajando = false;
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-fotosdl]'); if (!b || fotosBajando) return;
+  if (!navigator.onLine) return alert('Sin conexión: prueba con wifi.');
+  fotosBajando = true; const ids = Object.keys(FOTOS); let n = 0, ok = 0;
+  for (const id of ids) {
+    for (const src of new Set([fotoSrc(id), fotoSrc(id, true)])) { try { await fetch(src, { mode: 'no-cors' }); ok++; } catch {} }
+    n++; const bb = document.querySelector('[data-fotosdl]'); if (bb) bb.textContent = `⬇️ Descargando… ${n} de ${ids.length}`;
+  }
+  fotosBajando = false; const bb = document.querySelector('[data-fotosdl]'); if (bb) bb.textContent = `✅ Fotos guardadas (${n})`;
 });
 // Importar: se juntan con las que hay; si un sitio está en los dos, gana la marca más reciente.
 $('#file').addEventListener('change', async e => {

@@ -156,7 +156,8 @@ function sorpresaHTML() {
       if (typeof enGrupo === 'function' && enGrupo()) { const qq = otrosEn(s.id).quiero.length; por.push(nadieFue(s.id) ? 'nadie del grupo ha ido' : 'tú no has ido'); if (qq) por.push(`${qq} del grupo quiere${qq > 1 ? 'n' : ''} ir`); }
       if (marca(s.id).estado === 'quiero') por.push('lo tenías en 🔖');
       abiertas.add(s.id);
-      res = `<div class="sorp-por">${esc(por.join(' · '))}</div>${fichaHTML(s)}`;
+      res = `<div class="sorp-ban banner-plano" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}<div class="banner-tx"><span class="banner-ic">${tipoIc(s.tipo)}</span>
+        <span class="banner-n"><b>${esc(s.nombre)}</b><small>${esc(s.municipio)} · ${esc(por.join(' · '))}</small></span></div></div>${fichaHTML(s)}`;
     }
   } else if (sorpId === '') res = '<div class="card muted">No encuentro nada que encaje. Prueba con más tiempo o «que yo no haya ido».</div>';
   return `<div class="card sorp">
@@ -189,9 +190,15 @@ function viewFindeS5() {
   const grupoQuiere = typeof enGrupo === 'function' && enGrupo()
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
   const txtDias = dias.map(([f, n]) => `${n} ${new Date(f + 'T12:00').getDate()}`).join(' y ');
-  return `<p class="muted">${esc(txtDias || 'Fin de semana')} · ${esc(new Date().toLocaleDateString('es-ES', { month: 'long' }))}</p>
+  // Portada: la foto del próximo plan con foto; si no hay, el Teide.
+  const prox = typeof proximosPlanes === 'function' && enGrupo() ? proximosPlanes().find(p => p.sitioId && FOTOS[p.sitioId]) : null;
+  const fotoPortada = prox ? prox.sitioId : 'teide';
+  return `<div class="portada banner-plano" style="--h:${prox ? muniTema(sitio(prox.sitioId).municipio).h : 8}">${fotoImg(fotoPortada, 'banner-foto')}
+    <div class="banner-tx"><span class="banner-n"><small>${typeof NUBE !== 'undefined' && NUBE.grupo ? esc(NUBE.grupo.nombre) : 'Escapadas por Tenerife'}</small>
+      <b>${esc(txtDias || 'Fin de semana')} de ${esc(new Date().toLocaleDateString('es-ES', { month: 'long' }))}</b>
+      ${prox ? `<small>📅 Próximo plan: ${esc(sitio(prox.sitioId).nombre)}</small>` : ''}</span></div></div>
     <h2>🌤️ El tiempo</h2>${tiempoHTML()}
-    ${typeof planesHTML === 'function' ? planesHTML() : ''}
+    ${typeof calendarioHTML === 'function' ? calendarioHTML() : ''}
     <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
     <h2>🔖 Tus ganas de ir</h2>
     ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}
