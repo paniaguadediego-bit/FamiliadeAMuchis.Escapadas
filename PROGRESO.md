@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v14 · Tiempo de los próximos findes (2026-11-20)
+- Previsión de 16 días (antes 10). En Este finde, la tabla del tiempo se cambia entre «Este finde»,
+  «El que viene» y «En 2 semanas» (con aviso: a más de una semana puede cambiar).
+- Calendario de findes: los que tienen previsión llevan una línea con el tiempo de las 6 zonas
+  (sábado / domingo). El aviso del plan B también llega ya a esos findes.
+
 ## v13 · Planes alternativos: plan B y aviso del tiempo (2026-11-20)
 - Cada plan puede llevar un 🅱️ plan B (sitio de la app o texto libre): al proponer o luego en la
   tarjeta; cualquiera del grupo lo pone, lo cambia (✏️) o lo quita.

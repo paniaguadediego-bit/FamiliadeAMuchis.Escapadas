@@ -2,7 +2,7 @@
 // 🏠 Este finde (S5): tiempo en 6 zonas (Open-Meteo), 🎲 Sorpréndeme y distancia desde casa.
 // La ubicación de casa se guarda SOLO en este móvil (localStorage), nunca en la nube ni en el repo.
 
-const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo6', K_SORP = 'esc.sorp'; // tiempo6: 6 zonas
+const K_CASA = 'esc.casa', K_TIEMPO = 'esc.tiempo16', K_SORP = 'esc.sorp'; // 6 zonas, 16 días
 
 // ---------- zonas ----------
 // Seis zonas con tiempo muy distinto (elegidas por el usuario). El orden es el de la tabla.
@@ -67,7 +67,7 @@ async function pedirTiempo() {
   tiempoPidiendo = true;
   try {
     const zs = Object.keys(ZONAS), la = zs.map(z => ZONAS[z].punto[0]).join(','), lo = zs.map(z => ZONAS[z].punto[1]).join(',');
-    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Atlantic%2FCanary&forecast_days=10`, { cache: 'no-store' });
+    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Atlantic%2FCanary&forecast_days=16`, { cache: 'no-store' });
     const d = await r.json(), arr = Array.isArray(d) ? d : [d];
     const porZona = {};
     zs.forEach((z, i) => {
@@ -99,16 +99,40 @@ function diasFinde() {
   const iso = x => new Date(x.getTime() - x.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
   return [[iso(sab), 'Sábado'], [iso(dom), 'Domingo']].filter(([f]) => f >= hoyISO());
 }
+// Findes con previsión (Open-Meteo da 16 días): este, el que viene y, a veces, el siguiente.
+let findeTiempo = 0; // cuál se ve en la tabla de Este finde
+function findesConTiempo() {
+  const t = leerTiempo(); if (!t) return [];
+  const sab0 = (diasFinde()[0] || [hoyISO()])[0], dSab = new Date(sab0 + 'T12:00'); if (dSab.getDay() === 0) dSab.setDate(dSab.getDate() - 1);
+  const iso = x => new Date(x.getTime() - x.getTimezoneOffset() * 6e4).toISOString().slice(0, 10), r = [];
+  for (let i = 0; i < 3; i++) {
+    const a = new Date(dSab); a.setDate(dSab.getDate() + 7 * i); const b = new Date(a); b.setDate(a.getDate() + 1);
+    const dias = [[iso(a), 'Sábado'], [iso(b), 'Domingo']].filter(([f]) => f >= hoyISO() && tiempoDe('norte', f));
+    if (dias.length) r.push({ sab: iso(a), dias, nom: i === 0 ? 'Este finde' : i === 1 ? 'El que viene' : 'En 2 semanas' });
+  }
+  return r;
+}
 function tiempoHTML() {
-  const dias = diasFinde();
   if (!leerTiempo()) return `<div class="card muted">${navigator.onLine ? '⏳ Buscando el tiempo…' : 'Sin conexión: el tiempo saldrá cuando vuelva internet.'}</div>`;
+  const fs = findesConTiempo(); if (!fs.length) return '<div class="card muted">Sin previsión para el finde todavía.</div>';
+  if (findeTiempo >= fs.length) findeTiempo = 0;
+  const F = fs[findeTiempo], dias = F.dias;
   const filas = Object.entries(ZONAS).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.nom}</th>${dias.map(([f]) => {
     const t = tiempoDe(z, f); if (!t) return '<td class="muted">—</td>';
     const [ic, txt] = cielo(t.c);
     return `<td title="${esc(txt)}"><span class="t-ic">${ic}</span> <b>${Math.round(t.max)}°</b><span class="muted">/${Math.round(t.min)}°</span>${t.p >= 20 ? `<div class="t-p">💧 ${t.p}%</div>` : ''}${t.v >= 40 ? `<div class="t-p">💨 ${Math.round(t.v)} km/h</div>` : ''}</td>`; }).join('')}</tr>`).join('');
-  const hace = Math.round((Date.now() - tiempo.t) / 3600e3);
-  return `<div class="card tiempo"><table><thead><tr><th></th>${dias.map(([, n]) => `<th>${n}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table>
-    <div class="muted t-pie">Open-Meteo · ${hace < 1 ? 'actualizado hace poco' : `de hace ${hace} h`}</div></div>`;
+  const hace = Math.round((Date.now() - tiempo.t) / 3600e3), lejos = findeTiempo > 0;
+  return `<div class="card tiempo">${fs.length > 1 ? `<div class="chips t-findes">${fs.map((x, i) => `<button class="chip ${i === findeTiempo ? 'on' : ''}" data-findetiempo="${i}">${esc(x.nom)} <small>${+x.sab.slice(8)}</small></button>`).join('')}</div>` : ''}
+    <table><thead><tr><th></th>${dias.map(([f, n]) => `<th>${n} ${+f.slice(8)}</th>`).join('')}</tr></thead><tbody>${filas}</tbody></table>
+    <div class="muted t-pie">${lejos ? '⚠️ Previsión a más de una semana: puede cambiar · ' : ''}Open-Meteo · ${hace < 1 ? 'actualizado hace poco' : `de hace ${hace} h`}</div></div>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-findetiempo]'); if (b) { findeTiempo = +b.dataset.findetiempo; render(); } });
+// Una línea con el tiempo del sábado (y domingo) en cada zona, para el calendario de findes.
+function tiempoFindeMini(sab) {
+  if (!leerTiempo()) return '';
+  const dom = (() => { const d = new Date(sab + 'T12:00'); d.setDate(d.getDate() + 1); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); })();
+  const dias = [sab, dom].filter(f => f >= hoyISO() && tiempoDe('norte', f)); if (!dias.length) return '';
+  return `<div class="t-mini" title="Tiempo por zonas (${dias.length > 1 ? 'sábado / domingo' : dias[0] === sab ? 'sábado' : 'domingo'})">${Object.entries(ZONAS).map(([z, Z]) => `<span class="t-z"><small>${Z.ic}</small>${dias.map(f => { const t = tiempoDe(z, f); return t ? `${cielo(t.c)[0]}<b>${Math.round(t.max)}°</b>` : ''; }).join('<i>/</i>')}</span>`).join('')}</div>`;
 }
 
 // ---------- 🎲 Sorpréndeme ----------

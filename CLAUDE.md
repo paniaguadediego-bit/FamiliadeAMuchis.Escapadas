@@ -192,8 +192,10 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   Güímar, Arafo), 🏛️ La Laguna (+ Tegueste, La Esperanza), 🌿 Norte (resto + costa
   norte y cumbres de Anaga, lat > 28.53), 🌋 Teide y alrededores (< 11 km del pico al
   sur de lat 28.33, y La Orotava por encima de lat 28.35).
-- Tiempo: Open-Meteo, una petición para las 3 zonas, guardada en `esc.tiempo6`
-  (como mucho cada 3 h; sin red se ve la última).
+- Tiempo: Open-Meteo, una petición para las 6 zonas y 16 días, guardada en `esc.tiempo16`
+  (como mucho cada 3 h; sin red se ve la última). En Este finde, la tabla cambia entre los
+  findes con previsión (este, el que viene, en 2 semanas; aviso si es a más de una semana);
+  en el calendario, cada finde con previsión lleva una línea con el tiempo por zona.
 - Casa: `esc.casa` = [lat, lon], SOLO en el móvil (nunca a Firestore ni al repo).
   Tiempo en coche aproximado: km en línea recta × 1,4 a 55 km/h.
 - Sorpréndeme: sin ✅ ni ✖️ tuyos; «que nadie haya ido» mira al grupo; descarta por

@@ -474,5 +474,14 @@ button.plan-b-s { background: none; color: var(--fg); padding: 0; margin: 0; min
 .plan-b-form { margin: 6px 0; }
 .plan-b-form .row { gap: 6px; }
 
+/* Tiempo de los próximos findes (v14) */
+.t-findes { margin: -2px 0 4px; }
+.t-findes .chip { font-size: .78rem; min-height: 1.8rem; }
+.t-mini { display: flex; flex-wrap: wrap; gap: 2px 8px; font-size: .74rem; color: var(--muted); margin: -2px 0 4px; }
+.t-z { white-space: nowrap; }
+.t-z small { margin-right: 2px; opacity: .85; }
+.t-z b { font-weight: 600; color: var(--fg); margin-left: 1px; }
+.t-z i { font-style: normal; opacity: .5; margin: 0 1px; }
+
 /* Debe coincidir con VERSION en app.js y CACHE en sw.js */
-:root { --css-ver: "v13"; }
+:root { --css-ver: "v14"; }

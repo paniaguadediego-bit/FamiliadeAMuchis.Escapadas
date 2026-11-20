@@ -156,6 +156,7 @@ function calendarioHTML() {
         <span class="finde-c">${cuando}</span>
         <button class="sec mini nopuedo ${yoNo ? 'on' : ''}" data-nopuedo="${sab}" title="${yoNo ? 'Toca si al final sí puedes' : 'Marca que ese finde no puedes'}" aria-label="${yoNo ? 'No puedo ese finde (toca si al final sí puedes)' : 'Marcar que no puedo ese finde'}">${yoNo ? '🙅 No puedo' : '🙅'}</button>
         ${planForm && planForm.sabado === sab ? '' : `<button class="sec mini" data-plan="abrir" data-sabado="${sab}" aria-label="Proponer plan este finde">＋</button>`}</div>
+      ${typeof tiempoFindeMini === 'function' ? tiempoFindeMini(sab) : ''}
       ${noPueden.length ? `<div class="nopueden">🙅 No ${noPueden.length > 1 ? 'pueden' : 'puede'}: ${noPueden.map(u => `<span class="gm">${carita(perfilDe(u))}<span>${esc(u === NUBE.user.uid ? 'tú' : perfilDe(u).nombre)}</span></span>`).join('')}</div>` : ''}
       ${eventosSemanaHTML(lun, dom)}
       ${deEsa.map(p => planHTML(p, { compacto: true })).join('')}
