@@ -395,3 +395,11 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   opciones y votos). Mientras, el plan sale en todos los días de la votación con «🗳️ Día por decidir».
 - 📤 Compartir (fichas y planes): `navigator.share` o WhatsApp (wa.me). Enlaces `#f=<sitioId>` (abre la ficha) y
   `#d=AAAA-MM-DD` (abre ese día del calendario), atendidos por `abrirEnlace()`.
+
+## Portada de Planes (v30, pedido del usuario: «lavado de cara»)
+- Orden: tarjeta de bienvenida (foto del Teide; saludo y nombre; planes del finde y a cuántos vas; eventos; tiempo del
+  sábado en una línea `tiempoCorto` → Tiempo; 💫 mejor día → su día en el calendario) → 4 botones redondos (➕ Plan,
+  🎲 Sorpréndeme, 🎭 ¿Qué hay?, 🌤️ Tiempo; los 3 primeros despliegan su panel debajo, `panelPlanes`) → 🎠 carruseles
+  (el primero con «Todos los eventos ›») → 📅 Calendario en franja de 2 semanas («▾ Ver el mes entero», `esc.calvista`)
+  y el detalle del día → 🔖 Con ganas de ir (carrusel: tuyas y del grupo) → contador.
+- El formulario de «➕ Plan» rápido lleva `planForm.rapido` para no repetirse en el detalle del día.

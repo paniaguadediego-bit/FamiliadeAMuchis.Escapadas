@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v30 · Portada nueva de Planes (2026-11-21)
+- Arriba, tarjeta de bienvenida con lo esencial del finde (planes, eventos, tiempo y mejor día) y 4 botones rápidos:
+  ➕ Plan, 🎲 Sorpréndeme, 🎭 ¿Qué hay? y 🌤️ Tiempo (se despliegan ahí mismo).
+- Carruseles más limpios, calendario como franja de 2 semanas que se despliega al mes y «Con ganas de ir» en carrusel.
+- Arreglada la tarjeta «Mejor día» que salía vacía. Página un 20 % más corta. Prueba nueva: `node pruebas/portada.js`.
+
 ## v29 · 5 pestañas, mejor día, votar fechas y compartir (2026-11-21)
 - Ideas de apps muy valoradas (AllTrails, Howbout, Fever). Navegación de 5 pestañas: Planes · Explorar (Lista ⇄ Mapa)
   · Eventos · Grupo · Más; el Tiempo, desde Planes.

@@ -255,24 +255,63 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-sortear]')) { sortear(); render(); const r = document.querySelector('.sorp'); if (r) r.scrollIntoView({ block: 'start', behavior: 'smooth' }); return; }
 });
 // ---------- la pestaña ----------
+// ---------- 🏠 Portada de Planes (v30): bienvenida, botones rápidos, carruseles y calendario ----------
+// Resumen del tiempo del sábado en una línea: dónde hace mejor y si llueve en algún sitio.
+function tiempoCorto(sab) {
+  if (!leerTiempo()) return '';
+  const zs = Object.entries(ZONAS).map(([z, Z]) => [Z, tiempoDe(z, sab)]).filter(([, t]) => t);
+  if (!zs.length) return '';
+  const mejor = zs.slice().sort((a, b) => a[1].c - b[1].c || b[1].max - a[1].max)[0];
+  const lluvia = zs.filter(([, t]) => t.p >= 50 || (t.c >= 51 && t.c !== 45 && t.c !== 48)).map(([Z]) => Z.nom);
+  return `${cielo(mejor[1].c)[0]} ${Math.round(mejor[1].max)}° en ${mejor[0].nom}${lluvia.length ? ` · 🌧️ lluvia en ${lluvia.slice(0, 2).join(' y ')}` : ''}`;
+}
+let panelPlanes = ''; // '' | 'plan' | 'sorp' | 'agenda': lo que se despliega bajo los botones rápidos
+function portadaHTML() {
+  const sab = proximoSabado(), v = masDias(sab, -1), dom = masDias(sab, 1), g = typeof enGrupo === 'function' && enGrupo();
+  const d = x => new Date(x + 'T12:00'), hora = new Date().getHours();
+  const saludo = hora < 13 ? 'Buenos días' : hora < 21 ? 'Buenas tardes' : 'Buenas noches';
+  const nombre = g && NUBE.perfil && NUBE.perfil.nombre ? ', ' + NUBE.perfil.nombre.split(' ')[0] : '';
+  const rango = `${d(v).getDate()}-${d(dom).getDate()} ${d(dom).toLocaleDateString('es-ES', { month: 'short' })}`;
+  const ps = g ? proximosPlanes().filter(p => p.fecha <= dom && finPlan(p) >= v) : [];
+  const voy = ps.filter(p => (p.apuntados || []).includes(NUBE.user.uid)).length;
+  const evs = typeof eventosEntre === 'function' ? eventosEntre(v, dom).length : 0;
+  const mej = g && typeof mejorDia === 'function' ? mejorDia() : null, t = tiempoCorto(sab);
+  const lineas = [
+    g ? (ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} este finde${voy ? ` · vas a ${voy}` : ''}` : '🙋 Aún no hay planes este finde') : '👥 Entra en el grupo para ver los planes',
+    evs ? `🎟️ ${evs} evento${evs > 1 ? 's' : ''} en la isla` : '',
+    t ? `<button class="enlace claro" data-tab="tiempo">${esc(t)} ›</button>` : '',
+    mej ? `<button class="enlace claro" data-cal="${mej.f}" data-calmesir="${mej.f.slice(0, 7)}" data-irCal="1">💫 Mejor día: ${esc(nomDia(mej.k))}${mej.k.endsWith('T') ? ' ' + +mej.f.slice(8) : ''} (${mej.si}/${(NUBE.grupo.miembros || []).length}) ›</button>` : ''
+  ].filter(Boolean);
+  const foto = fotoSrc('teide') ? `<img class="portada-foto" src="${esc(fotoSrc('teide'))}" alt="" loading="lazy" onerror="this.remove()">` : '';
+  const boton = (k, ic, n) => `<button class="rapido ${panelPlanes === k ? 'on' : ''}" ${k === 'tiempo' ? 'data-tab="tiempo"' : `data-panel="${k}"`}><span>${ic}</span>${n}</button>`;
+  let panel = '';
+  if (panelPlanes === 'plan') panel = g ? formPlanHTML(planForm && planForm.rapido ? planForm : (planForm = { sabado: sab, rapido: true })) : '<div class="card muted centro">👥 Para proponer planes, entra en el grupo (pestaña Grupo).</div>';
+  else if (panelPlanes === 'sorp') panel = sorpresaHTML();
+  else if (panelPlanes === 'agenda' && typeof agendaHTML === 'function') panel = agendaHTML();
+  return `<div class="portada-h">${foto}<div class="portada-tx"><div class="portada-hola">${esc(saludo + nombre)} 👋</div>
+      <div class="portada-f">Este finde · ${esc(rango)}</div>${lineas.map(l => `<div class="portada-l">${l}</div>`).join('')}</div></div>
+    <div class="rapidos">${boton('plan', '➕', 'Plan')}${boton('sorp', '🎲', 'Sorpréndeme')}${boton('agenda', '🎭', '¿Qué hay?')}${boton('tiempo', '🌤️', 'Tiempo')}</div>
+    ${panel ? `<div class="panel-rapido">${panel}</div>` : ''}`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-panel]'); if (b) { panelPlanes = panelPlanes === b.dataset.panel ? '' : b.dataset.panel; if (panelPlanes === 'plan') planForm = { sabado: proximoSabado(), rapido: true }; else if (planForm && planForm.rapido) planForm = null; render(); return; }
+  const c = e.target.closest('[data-ircal]'); if (c) setTimeout(() => { const x = document.querySelector('.dia-sel'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60);
+});
 function viewFindeS5() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
-  pedirTiempo(); // para el aviso de lluvia del calendario y Sorpréndeme
+  pedirTiempo(); // para el resumen del tiempo, el aviso de lluvia del calendario y Sorpréndeme
+  if (panelPlanes === 'plan' && !(planForm && planForm.rapido)) panelPlanes = ''; // el plan ya se creó o se cerró
   const quiero = SITIOS.filter(s => marca(s.id).estado === 'quiero');
   const grupoQuiere = typeof enGrupo === 'function' && enGrupo()
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
-  const sab = proximoSabado(), v = masDias(sab, -1), dom = masDias(sab, 1), d = x => new Date(x + 'T12:00');
-  const fechas = `Viernes ${d(v).getDate()} · Sábado ${d(sab).getDate()} · Domingo ${d(dom).getDate()} de ${d(dom).toLocaleDateString('es-ES', { month: 'long' })}`;
-  return `<p class="finde-fechas">${esc(fechas)} · <button class="enlace" data-tab="tiempo">🌤️ Ver el tiempo ›</button></p>
+  const ganas = [...quiero, ...grupoQuiere];
+  return `<div class="planes">${portadaHTML()}
     ${carruselFindeHTML(0)}${carruselFindeHTML(1)}
-    <button class="sec ver-eventos" data-tab="eventos">🎟️ Ver todos los eventos ›</button>
-    ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '<div class="card muted centro">👥 Entra en el grupo (pestaña Grupo) para ver y proponer planes y decir qué días puedes.</div>'}
-    <h2>🎲 ¿Qué hacemos?</h2>${sorpresaHTML()}
-    <h2>🎭 ¿Qué hay?</h2>${typeof agendaHTML === 'function' ? agendaHTML() : ''}
-    <h2>🔖 Tus ganas de ir</h2>
-    ${quiero.length ? quiero.map(fichaHTML).join('') : '<div class="card muted">Todavía nada. En 📍 Sitios, abre una ficha y toca «🔖 Quiero ir».</div>'}
-    ${grupoQuiere.length ? `<h2>👥 Al grupo le apetece</h2>${grupoQuiere.map(fichaHTML).join('')}` : ''}
-    ${cuentaHTML()}
-    <button class="sec" data-tab="sitios">📍 Ver todos los sitios</button>`;
+    ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : ''}
+    <h2>🔖 Con ganas de ir</h2>
+    ${ganas.length ? `<div class="ev-carrusel ganas">${ganas.map(s => `<div class="ev-tarjeta"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">${marca(s.id).estado === 'quiero' ? '🔖 Tú' : `🔖 ${otrosEn(s.id).quiero.map(([u]) => esc(perfilDe(u).emoji)).join('')}`}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}</small></span></span></button></div>`).join('')}</div>`
+      : '<div class="card muted centro">Todavía nada. En 🧭 Explorar, abre una ficha y toca «🔖 Quiero ir».</div>'}
+    ${cuentaHTML()}</div>`;
 }
 addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde' || tab === 'tiempo')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });

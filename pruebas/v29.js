@@ -8,12 +8,12 @@ const P = require('./comun');
   await p.click('.conmutador [data-tab="mapa"]'); await p.waitForTimeout(300);
   await p.click('#tabs [data-tab="finde"]'); await p.click('#tabs [data-tab="explorar"]'); await p.waitForTimeout(200);
   console.log('Recuerda el mapa:', await p.evaluate(() => tab), '| pestaña resaltada:', await p.$eval('#tabs .on', e => e.dataset.tab));
-  await p.click('#tabs [data-tab="finde"]'); await p.click('.finde-fechas [data-tab="tiempo"]'); await p.waitForTimeout(200);
+  await p.click('#tabs [data-tab="finde"]'); await p.click('.rapidos [data-tab="tiempo"]'); await p.waitForTimeout(200);
   console.log('Tiempo desde Planes:', await p.evaluate(() => tab), '| resaltada:', await p.$eval('#tabs .on', e => e.dataset.tab));
   await P.conGrupo(p);
   await p.evaluate(() => { const s = proximoSabado(); __store.disponibilidad = { u2: { uid: 'u2', si: [masDias(s, 7)], no: [] }, u3: { uid: 'u3', si: [masDias(s, 7)], no: [] } }; seguirDisponibilidad('PRUEBA23'); });
   await P.tab(p, 'finde'); await p.waitForTimeout(300);
-  console.log('Mejor día:', (await p.textContent('.mejor-dia').catch(() => 'no sale')).replace(/\s+/g, ' ').trim());
+  console.log('Mejor día:', (await p.textContent('[data-ircal]').catch(() => 'no sale')).replace(/\s+/g, ' ').trim());
   // Proponer con 3 fechas para votar
   await p.$eval('.dia-sel [data-plan="abrir"]', x => x.click()); await p.waitForTimeout(200);
   await p.fill('#pl-destino', 'Cena de Navidad'); await p.click('.pl-votar summary');
