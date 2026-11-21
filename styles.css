@@ -716,4 +716,6 @@ button.rapido.on { color: var(--pri); }
 .peli-mas { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-top: 5px; font-size: .78rem; }
 .peli-mas details { flex: 1 1 100%; } .peli-mas summary { cursor: pointer; color: var(--pri); font-weight: 600; }
 .peli-mas p { margin: 4px 0 0; color: var(--fg); }
-:root { --css-ver: "v31"; }
+.chips .orden-sel { width: auto; }
+.chips .orden-sel select { min-height: 0; padding-top: 4px; padding-bottom: 4px; font-size: .8rem; }
+:root { --css-ver: "v32"; }

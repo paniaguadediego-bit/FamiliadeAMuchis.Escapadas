@@ -1,5 +1,8 @@
 # PROGRESO
 
+## v32 · Ordenar películas (2026-11-21)
+- Cartelera: ordenar por estrenos, ⭐ público, ⭐ prensa o título (se recuerda en el móvil).
+
 ## v31 · Cine con notas y sinopsis (2026-11-21)
 - Cada película de la cartelera lleva la nota media del público y de la prensa (sobre 5, de SensaCine), su sinopsis
   plegable y un enlace «Ver en FilmAffinity ›». FilmAffinity no permite lectura automática, así que no se copian sus notas.
