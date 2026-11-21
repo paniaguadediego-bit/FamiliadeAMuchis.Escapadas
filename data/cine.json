@@ -1,7 +1,7 @@
 {
 "fuente": "SensaCine · sensacine.com",
 "fecha": "2026-11-21",
-"actualizado": "2026-11-21T20:21Z",
+"actualizado": "2026-11-21T20:22Z",
 "cines": [
 {
 "id": "E0627",
@@ -56,7 +56,7 @@
 "v": "Doblada"
 },
 {
-"h": "16:05",
+"h": "15:55",
 "v": "Doblada"
 },
 {
@@ -165,6 +165,21 @@
 "notas": {
 "usuarios": 4.1
 }
+},
+{
+"titulo": "BTS WORLD TOUR 'ARIRANG' IN KAOHSIUNG: LIVE VIEWING",
+"generos": [
+"Concierto"
+],
+"sesiones": [
+{
+"h": "14:00",
+"v": "VO"
+}
+],
+"edad": "Todos los publicos",
+"cartel": "https://es.web.img3.acsta.net/c_160_213/img/60/2c/602c0eb9b62aa5f19ea256c92824b740.png",
+"sinopsis": "La histórica gira asiática ARIRANG de BTS llega a los cines de todo el mundo con dos retransmisiones en directo desde Kaohsiung y Yakarta. La propuesta lleva a la gran pantalla la energía de sus conciertos en estadios para despedir el año con un espectacular cierre final."
 },
 {
 "titulo": "Clayface",
@@ -293,6 +308,10 @@
 {
 "h": "13:15",
 "v": "VOSE"
+},
+{
+"h": "14:35",
+"v": "VOSE"
 }
 ],
 "edad": "Película no recomendada a menores de 12",
@@ -336,15 +355,11 @@
 "v": "Doblada"
 },
 {
-"h": "16:30",
+"h": "16:00",
 "v": "Doblada"
 },
 {
 "h": "19:15",
-"v": "Doblada"
-},
-{
-"h": "19:40",
 "v": "Doblada"
 }
 ],
@@ -372,7 +387,7 @@
 "cartel": "https://es.web.img2.acsta.net/c_160_213/img/52/31/5231f1507e0a6fb9b6b2c0e4f49f9c41.jpg",
 "sinopsis": "La pequeña Bela es acechada en su propio hogar por una entidad malévola que se muestra cada vez más impaciente. La única salvación para la pequeña reside en el fuerte lazo de su familia, pero la relación entre sus padres empieza a desmoronarse en una profunda crisis.",
 "notas": {
-"usuarios": 2.5
+"usuarios": 2.6
 }
 },
 {
@@ -430,7 +445,7 @@
 "v": "Doblada"
 },
 {
-"h": "16:10",
+"h": "15:50",
 "v": "Doblada"
 }
 ],
@@ -449,10 +464,6 @@
 "Drama"
 ],
 "sesiones": [
-{
-"h": "16:00",
-"v": "Doblada"
-},
 {
 "h": "18:45",
 "v": "Doblada"
@@ -483,15 +494,11 @@
 "v": "Doblada"
 },
 {
-"h": "16:25",
+"h": "16:10",
 "v": "Doblada"
 },
 {
 "h": "18:15",
-"v": "Doblada"
-},
-{
-"h": "18:55",
 "v": "Doblada"
 },
 {
@@ -556,7 +563,7 @@
 ],
 "sesiones": [
 {
-"h": "16:00",
+"h": "16:05",
 "v": "Doblada"
 }
 ],
@@ -1510,6 +1517,10 @@
 },
 {
 "h": "19:35",
+"v": "Doblada"
+},
+{
+"h": "21:30",
 "v": "Doblada"
 },
 {
