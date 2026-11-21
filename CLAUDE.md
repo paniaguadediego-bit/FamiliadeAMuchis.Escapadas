@@ -349,3 +349,18 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   cuenta como el viernes tarde: se marca 👍/🙅, se propone plan y Sorpréndeme la ofrece (🌆). Jueves/viernes festivos
   forman puente con el finde (y la tarde de su víspera).
 - Mapa: etiqueta «🔎 Zoom N de 16 · iconos desde 12» arriba a la izquierda, para hablar de zoom con números.
+
+## Agentes de OpenCode (pedido del usuario, para ahorrar tokens)
+- El director (Claude Code) planifica y revisa; el trabajo mecánico lo hacen agentes de OpenCode 2 con modelos gratuitos.
+- `AGENTS.md`: resumen corto de reglas para ellos (con él, OpenCode no carga este CLAUDE.md).
+- `.opencode/agents/`: explorador (solo lectura), editor (cambios mecánicos; no toca data, firebase ni .github),
+  versionador (versión en 3 sitios + PROGRESO + commit), probador (Playwright con `pruebas/`), investigador (datos
+  con fuente en data/), vigia (GitHub Actions con `gh api`). Permisos con `deny` explícito porque se lanzan con `--auto`;
+  ninguno puede hacer `git push` ni tocar `vendor/`.
+- Lanzar: escribir `tareas/<agente>_<tema>.md` y `herramientas/lanzar_agente.sh <agente> <tema> [modelo]` → `logs/`.
+  Leer solo las últimas líneas del log y comprobar la entrega uno mismo (`git diff --stat`, `node --check`, pruebas).
+- Modelos: `opencode/deepseek-v4.1-flash-free` (ve imágenes); si se agota la cuota gratuita, `opencode/big-pickle`
+  (no ve imágenes) o `opencode/nemotron-3.5-super-vl-free` (sí ve). `tareas/`, `logs/`, `ESTADO_AGENTES.md` y
+  `pruebas/capturas/` no se suben.
+- Pruebas: `node pruebas/humo.js` (todas las pestañas, sin grupo y con grupo falso); `pruebas/comun.js` para guiones nuevos.
+- OpenCode no viene instalado en las sesiones en la nube: instalarlo al empezar (o con el script de arranque del entorno).

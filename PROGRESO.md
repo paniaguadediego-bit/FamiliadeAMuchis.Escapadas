@@ -1,5 +1,10 @@
 # PROGRESO
 
+## Herramientas · Agentes de OpenCode (2026-11-21, sin cambios en la app)
+- 6 agentes de OpenCode con modelos gratuitos (`.opencode/agents/`), `AGENTS.md` corto, lanzador
+  `herramientas/lanzar_agente.sh` y pruebas automáticas en `pruebas/` (`node pruebas/humo.js`).
+- Probados: explorador, vigía y probador. La cuota gratuita del modelo principal se agotó en unas 6 llamadas.
+
 ## v24 · Cine, planes cualquier día y víspera más clara (2026-11-20)
 - 🎬 Cine, categoría nueva de Eventos (también en el lector de la agenda).
 - Calendario: un día entre semana se abría encogido y a la izquierda (choque de estilos); ahora se ve bien y se
