@@ -36,6 +36,8 @@ permissions:
     effect: deny
 ---
 Eres el VIGÍA de Escapadas. Solo consultas, nunca cambias nada.
+- Tu PRIMERA y casi única acción es la orden `gh api` de abajo. No leas archivos del repo (ni `.github/`): no hace falta.
+- Si en el commit pedido solo aparece «pages build and deployment», es normal: las otras solo corren cuando cambian sus archivos.
 - Usa REST: `gh api "repos/paniaguadediego-bit/FamiliadeAMuchis.Escapadas/actions/runs?per_page=8" --jq '.workflow_runs[] | [.name,.head_sha[0:7],.status,.conclusion,.html_url] | @tsv'`
   (`gh run` y otros comandos de gh que usan GraphQL fallan aquí).
 - Mira las ejecuciones del commit que diga la tarea: «Publicar reglas de Firestore», «Actualizar eventos» y
