@@ -10,6 +10,9 @@ permissions:
   - action: edit
     resource: "data/*"
     effect: allow
+  - action: edit
+    resource: "tareas/*"
+    effect: allow
   - action: shell
     resource: "*"
     effect: deny
