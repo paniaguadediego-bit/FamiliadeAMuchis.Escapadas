@@ -1,0 +1,43 @@
+# Actualiza data/cine.json con la cartelera de HOY de los cines principales de Tenerife (SensaCine) y lo sube a main.
+# Cada mañana (≈ 7:41 hora de Canarias en invierno), a mano desde Actions, o al cambiar el lector.
+name: Actualizar cartelera de cine
+
+on:
+  schedule:
+    - cron: '41 6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'herramientas/cartelera_sensacine.py'
+      - '.github/workflows/cine.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datos-main
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Leer la cartelera
+        run: python3 herramientas/cartelera_sensacine.py
+
+      - name: Subir si cambia la cartelera
+        run: |
+          if git diff --quiet -I '"actualizado"' data/cine.json; then echo "Sin cambios en la cartelera"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cine.json
+          git commit -m "Cine: cartelera de hoy desde sensacine.com"
+          git pull --rebase origin main
+          git push origin HEAD:main

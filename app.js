@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v26';
+const VERSION = 'v27';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -35,6 +35,9 @@ const MUNICIPIOS = ['Adeje', 'Arafo', 'Arico', 'Arona', 'Buenavista del Norte', 
   'Santiago del Teide', 'Tacoronte', 'Tegueste', 'Vilaflor de Chasna'];
 
 let SITIOS = [];
+// 🧸 Con niños: del catálogo (s.ninos = qué dice la fuente) o porque alguien (tú o el grupo) lo marcó en su ficha.
+const quienNinos = id => Object.entries((typeof NUBE !== 'undefined' && NUBE.marcasGrupo && NUBE.marcasGrupo[id]) || {}).filter(([u, m]) => m.ninos && u !== (NUBE.user && NUBE.user.uid)).map(([u]) => u);
+const conNinos = id => { const s = sitio(id); return !!((s && s.ninos) || marca(id).ninos || (enGrupo() && quienNinos(id).length)); };
 const sitio = id => SITIOS.find(s => s.id === id);
 // SITIOS = catálogo (BASE) + los que añade el grupo (propios.js).
 fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d) ? d : []; mezclarSitios(); render(); })
@@ -45,6 +48,7 @@ fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d
 let FOTOS = {};
 fetch('data/fotos.json').then(r => r.json()).then(d => { FOTOS = d || {}; render(); }).catch(() => {});
 // Agenda de Turismo de Tenerife (eventos.js): eventos con fecha y su foto.
+fetch('data/cine.json').then(r => r.json()).then(d => { CINE = d; if (tab === 'eventos' || tab === 'finde') render(); }).catch(() => {});
 fetch('data/festivos.json').then(r => r.json()).then(d => { FESTIVOS = d; render(); }).catch(() => {});
 fetch('data/agenda.json').then(r => r.json()).then(d => { cargarAgenda(d); mezclarSitios(); render(); }).catch(() => {});
 const fotoSrc = (id, mini) => { const f = FOTOS[id] || FOTOS_AG[id]; if (!f) return ''; return mini ? f.src.replace('/960px-', '/330px-') : f.src; };
@@ -81,7 +85,8 @@ function setMarca(id, cambios) {
   if (!m.estado) delete m.estado;
   if (!m.estrellas) delete m.estrellas;
   if (!m.nota) delete m.nota;
-  if (!m.estado && !m.estrellas && !m.nota) delete marcas[id]; else marcas[id] = m;
+  if (!m.ninos) delete m.ninos;
+  if (!m.estado && !m.estrellas && !m.nota && !m.ninos) delete marcas[id]; else marcas[id] = m;
   save(K_MARCAS, marcas);
   if (typeof subirMarca === 'function') subirMarca(id); // al grupo (nube.js), o en cola si no hay red
 }
@@ -146,7 +151,7 @@ function subFicha(s) {
 }
 function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
-  const datos = [s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
+  const datos = [s.ninos && `🧸 Con niños: ${esc(s.ninos)}`, s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
     <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 📍 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
@@ -166,6 +171,7 @@ function fichaHTML(s) {
       ${grupoEnFicha(s.id)}
       <div class="marcas">${Object.entries(ESTADOS).map(([k, [ic, n]]) => `<button class="${e === k ? 'on' : ''}" data-est="${k}" data-id="${esc(s.id)}">${ic} ${n}</button>`).join('')}</div>
       <div class="estrellas" aria-label="Valoración">${[1, 2, 3, 4, 5].map(n => `<button class="${(m.estrellas || 0) >= n ? 'on' : ''}" data-estr="${n}" data-id="${esc(s.id)}" aria-label="${n} estrellas">★</button>`).join('')}</div>
+      ${s.tipo !== 'evento' ? `<div class="ninos-f"><button class="sec mini ${m.ninos ? 'on' : ''}" data-ninos="${esc(s.id)}" aria-pressed="${!!m.ninos}">🧸 ${m.ninos ? 'Bien con niños ✓' : 'Bien para ir con niños'}</button>${enGrupo() && quienNinos(s.id).length ? `<span class="muted"> también: ${quienNinos(s.id).map(u => esc(perfilDe(u).emoji + ' ' + perfilDe(u).nombre)).join(', ')}</span>` : ''}</div>` : ''}
       <textarea class="nota" maxlength="1000" data-nota="${esc(s.id)}" placeholder="📝 Nota (${enGrupo() ? 'la verá el grupo' : 'solo en este móvil'})">${esc(m.nota || '')}</textarea>
       ${e === 'fuimos' ? fechaFuimosHTML(s) : m.fecha ? `<div class="muted">Marcado el ${esc(new Date(m.fecha + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }))}</div>` : ''}
       ${planesEnFicha(s.id)}
@@ -185,6 +191,7 @@ document.addEventListener('toggle', e => {
   if (d.dataset.muni) { if (d.open) muniAbiertos.add(d.dataset.muni); else muniAbiertos.delete(d.dataset.muni); }
 }, true);
 document.addEventListener('click', e => {
+  const k = e.target.closest('[data-ninos]'); if (k) { const id = k.dataset.ninos; setMarca(id, { ninos: !marca(id).ninos }); abiertas.add(id); if (tab === 'mapa') pintarMapa(); else repintarFicha(id); return; }
   const b = e.target.closest('[data-est],[data-estr]'); if (!b) return;
   const id = b.dataset.id;
   if (b.dataset.est) setMarca(id, { estado: marca(id).estado === b.dataset.est ? '' : b.dataset.est });
@@ -204,7 +211,7 @@ document.addEventListener('click', e => {
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
   // Los eventos tienen su pestaña.
   if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; evCat = ''; evZona = ''; evRango = 'todo'; ir('eventos'); return; }
-  abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
+  abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = fNinos = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
 
 // ---------- 🏠 Este finde ---------- (la pestaña está en finde.js)
@@ -215,7 +222,7 @@ function cuentaHTML() {
 function viewFinde() { return viewFindeS5(); }
 
 // ---------- 📍 Sitios ----------
-let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', orden = load('esc.orden', 'municipio');
+let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', fNinos = '', orden = load('esc.orden', 'municipio');
 const muniAbiertos = new Set();
 const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['fuimos', '✅', 'Visitado'], ['no', '✖️', 'No'], ['sin', '⬜', 'Sin marcar']];
 const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien lo visitó']];
@@ -230,7 +237,7 @@ const ganas = id => (marca(id).estado === 'quiero' ? 1 : 0) + (enGrupo() ? otros
 function filtrados() {
   const a = sinTildes(q).trim();
   return SITIOS.filter(s => enIsla(s) && !s.agenda && (!fTipo || s.tipo === fTipo) && (!fZona || zonaNom(s) === fZona)
-    && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
+    && (!fNinos || conNinos(s.id)) && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
     && (!fGrupo || !enGrupo() || (fGrupo === 'nadie' ? nadieFue(s.id) : fGrupo === 'ganas' ? otrosEn(s.id).quiero.length > 0 : otrosEn(s.id).fuimos.length > 0))
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
 }
@@ -254,7 +261,8 @@ function filtrosHTML(lista) {
     fTipo && ['fTipo', tipoIc(fTipo) + ' ' + tipoNom(fTipo)],
     fEst && ['fEst', ESTADOS_F.find(x => x[0] === fEst).slice(1).join(' ')],
     fGrupo && ['fGrupo', GRUPO_F.find(x => x[0] === fGrupo).slice(1).join(' ')],
-    fZona && ['fZona', ZONAS[fZona].ic + ' ' + ZONAS[fZona].nom]
+    fZona && ['fZona', ZONAS[fZona].ic + ' ' + ZONAS[fZona].nom],
+    fNinos && ['fNinos', '🧸 Con niños']
   ].filter(Boolean);
   const isla = ISLAS[islaSel];
   // Siempre a la vista y en pequeño: una fila de botoncitos por grupo (tocar otra vez quita el filtro).
@@ -262,6 +270,7 @@ function filtrosHTML(lista) {
   return `<div class="buscador"><input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off"></div>
     <div class="filtros-mini">
       ${pills('fTipo', fTipo, tiposHay.map(t => [t, tipoIc(t), tipoNom(t).split(' ')[0]]))}
+      ${pills('fNinos', fNinos, [['si', '🧸', 'Con niños']])}
       ${pills('fEst', fEst, ESTADOS_F.slice(1))}
       ${enGrupo() ? pills('fGrupo', fGrupo, GRUPO_F.slice(1)) : ''}
       ${pills('fZona', fZona, Object.entries(ZONAS).map(([k, z]) => [k, z.ic, z.nom]))}
@@ -272,7 +281,7 @@ function filtrosHTML(lista) {
 }
 // Búsqueda o filtros sin resultados: por qué puede ser y qué hacer (quitar filtros, buscar fuera o añadirlo el grupo).
 function sinResultadosHTML() {
-  const t = q.trim(), a = sinTildes(t), filtros = !!(fTipo || fEst || fGrupo || fZona);
+  const t = q.trim(), a = sinTildes(t), filtros = !!(fTipo || fEst || fGrupo || fZona || fNinos);
   const comer = /guachinch|restaur|bar\b|comer|cena|almuerzo|tasca|bodega|cafe/.test(a);
   const lineas = [];
   if (t) lineas.push(`No hay nada con «${esc(t)}» en el catálogo${filtros ? ' con los filtros que tienes puestos' : ''}.`);
@@ -311,7 +320,8 @@ document.addEventListener('click', e => {
   const qq = e.target.closest('[data-quitar]'); if (qq) { if (qq.dataset.quitar === 'fTipo') fTipo = ''; else if (qq.dataset.quitar === 'fEst') fEst = ''; else if (qq.dataset.quitar === 'fGrupo') fGrupo = ''; else fZona = ''; render(); return; }
   const b = e.target.closest('[data-filtro]'); if (!b) return;
   const k = b.dataset.filtro, v = b.dataset.v;
-  if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = ''; }
+  if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = fNinos = ''; }
+  else if (k === 'fNinos') fNinos = fNinos ? '' : 'si';
   else if (b.classList.contains('fm') && b.classList.contains('on') && k !== 'isla') { if (k === 'fTipo') fTipo = ''; else if (k === 'fEst') fEst = ''; else if (k === 'fGrupo') fGrupo = ''; else if (k === 'fZona') fZona = ''; }
   else if (k === 'isla') { if (!ISLAS[v].activa) return; islaSel = v; save('esc.isla', v); }
   else if (k === 'fTipo') fTipo = v; else if (k === 'fEst') fEst = v; else if (k === 'fGrupo') fGrupo = v; else if (k === 'fZona') fZona = v;
@@ -354,7 +364,7 @@ function viewMapa() {
     <p class="leyenda">Acerca bastante el mapa (＋ o con dos dedos) para ver los iconos; toca un punto para marcarlo. Azul 🔖 quiero ir · verde ✅ visitado · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
 // Los de la agenda solo salen si se elige «Evento» (van al centro de su municipio, aproximados).
-const puntos = () => SITIOS.filter(s => enIsla(s) && (!s.agenda || mpTipos.has('evento')) && mpVe(s.tipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
+const puntos = () => SITIOS.filter(s => enIsla(s) && (!(s.agenda || s.aprox) || mpTipos.has('evento')) && mpVe(s.tipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
 // Zoom con la isla entera a la vista (con él se decide cuándo los puntitos pasan a iconos).
 function zEncaje(W, H) {
   const la = ISLA.map(c => c[1]), lo = ISLA.map(c => c[0]);

@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v27 · Con niños, fiestas patronales y cartelera de cine (2026-11-21)
+- 🧸 Con niños: 21 sitios del catálogo con el motivo de su fuente, botón «Bien para ir con niños» en cada ficha (lo ve
+  el grupo) y filtro en Sitios.
+- 🎉 42 fiestas patronales de 30 municipios con su día festivo oficial (BOC); el programa, a verificar en el ayuntamiento.
+- 🎬 Cartelera de hoy de 5 cines (Meridiano, Multicines La Laguna, La Villa, X-Sur, Zentral) con horas y VOSE, desde
+  SensaCine; se actualiza sola cada mañana. En Eventos → Cine.
+- Pruebas nuevas: `node pruebas/cine.js`, `node pruebas/ninos_fiestas.js`.
+
 ## v26 · Búsqueda sin resultados y ventajas del grupo (2026-11-21)
 - Buscar algo que no está explica por qué (guachinches y restaurantes los añade el grupo; el catálogo sale de
   Wikipedia) y ofrece: quitar filtros, 🌐 buscar en Google Maps o «➕ Añadir» con el nombre ya escrito.

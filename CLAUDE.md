@@ -54,6 +54,8 @@ se adapta, sin restos de Corea.
 - `propios.js`: 👥 sitios que añade el grupo (`BASE` = catálogo; `mezclarSitios()` → `SITIOS`).
 - `eventos.js`: 🎟️ fechas de eventos (regla `cuando`), portada de Este finde, pestaña Eventos y agenda automática.
 - `herramientas/agenda_webtenerife.py` → `data/agenda.json` (lo ejecuta `.github/workflows/eventos.yml`).
+- `herramientas/cartelera_sensacine.py` → `data/cine.json` (cada mañana con `.github/workflows/cine.yml`).
+- `herramientas/fiestas_boc.py`: fiestas patronales (eventos `fiesta-…`) desde `data/festivos.json`.
 - `festivos.js` + `data/festivos.json`: 🎉 festivos nacionales/Canarias/Tenerife (BOE) y los 2 locales de cada
   municipio (BOC, con sus enlaces en `fuentes`). Los locales que se ven, los del municipio elegido en Más (`esc.mimuni`).
 - `islas.js`: islas (Tenerife activa, el resto «pronto») y la identidad de cada
@@ -98,7 +100,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 ## Iconos (uno por significado)
 - Pestañas: 🏠 Planes (antes «Este finde») · 🌤️ Tiempo · 🎟️ Eventos · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
-- Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota.
+- Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota · 🧸 bien con niños.
+- 🎬 cine (cartelera y categoría de eventos) · 🗣️ versión original.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
 - Días: 👍 puedo ese día · 🙅 no puedo · 🎉 festivo · 🌆 víspera (tarde antes de un festivo).
 - Planes: 🎠 carrusel de un finde · 💡 idea (sitio que encaja) · 🔎 nivel de zoom del mapa.
@@ -364,3 +367,15 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   `pruebas/capturas/` no se suben.
 - Pruebas: `node pruebas/humo.js` (todas las pestañas, sin grupo y con grupo falso); `pruebas/comun.js` para guiones nuevos.
 - OpenCode no viene instalado en las sesiones en la nube: instalarlo al empezar (o con el script de arranque del entorno).
+
+## Con niños, fiestas patronales y cine (v27, pedido del usuario)
+- 🧸 Con niños: `ninos` en sitios.json = lo que dice la fuente (lo decidió el investigador con el texto de Wikipedia; 21
+  sitios) y `ninos: true` en la marca de cada uno («🧸 Bien para ir con niños» en la ficha; va al grupo; reglas: bool).
+  Filtro «🧸 Con niños» en Sitios: del catálogo, tuyo o de alguien del grupo.
+- Fiestas patronales: 42 eventos `fiesta-<municipio>-<santo>` con el día festivo local del BOC (`herramientas/fiestas_boc.py`;
+  rehacer al añadir un año a festivos.json). VERIFICAR: el programa lo publica el ayuntamiento. Sin Martes de Carnaval
+  ni las que ya tienen ficha. Ubicación aproximada (centro del municipio): en el mapa solo con «Evento».
+- Cine: SensaCine (robots.txt permite /cines/cine/…; los otros días van por /_/, prohibido → solo el día). Cines:
+  Meridiano (E0627), Multicines La Laguna (E0284), La Villa (E0622), X-Sur (E0700), Zentral Center (E0541).
+  `data/cine.json` {fecha, cines:[{peliculas:[{titulo, original, generos, edad, estreno, cartel, sesiones:[{h, v: Doblada|VOSE|VO, f?}]}]}]}.
+  En Eventos → 🎬 Cine: cartelera por cine con «🗣️ Solo versión original»; en 🎭 ¿Qué hay? → Cine, enlace a la cartelera.

@@ -169,13 +169,13 @@ async function compartirCodigo() {
 // suben al grupo; sin red, Firestore las guarda y las envía al volver. Las de todos llegan al momento (onSnapshot).
 // Al quitar una marca se sube vacía (no se borra el documento) para que otro móvil tuyo sin red no la «resucite».
 const K_BORRADAS = 'esc.borradas'; // { sitioId: cuándo la quitaste } (solo hace falta hasta subirla)
-const vacia = m => !m || (!m.estado && !m.estrellas && !m.nota);
+const vacia = m => !m || (!m.estado && !m.estrellas && !m.nota && !m.ninos);
 const enGrupo = () => !!(NUBE.user && NUBE.grupo && NUBE.db);
 const refMarca = id => NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('marcas').doc(NUBE.user.uid + '_' + id);
 function datosMarca(id) {
   const m = marcas[id], b = load(K_BORRADAS, {});
   return { uid: NUBE.user.uid, sitioId: id, estado: (m && m.estado) || '', estrellas: (m && m.estrellas) | 0,
-    nota: (m && m.nota) || '', fecha: (m && m.fecha) || '', actualizado: (m && m.actualizado) || b[id] || Date.now() };
+    nota: (m && m.nota) || '', ninos: !!(m && m.ninos), fecha: (m && m.fecha) || '', actualizado: (m && m.actualizado) || b[id] || Date.now() };
 }
 // La llama app.js cada vez que cambias una marca.
 function subirMarca(id) {
@@ -215,7 +215,7 @@ function sincronizarMias(mias) {
     const l = marcas[id], tl = Math.max((l && l.actualizado) || 0, b[id] || 0);
     if ((r.actualizado || 0) > tl) { // la nube es más nueva (otro móvil tuyo)
       if (vacia(r)) delete marcas[id];
-      else { const m = { actualizado: r.actualizado }; if (r.estado) m.estado = r.estado; if (r.estrellas) m.estrellas = r.estrellas; if (r.nota) m.nota = r.nota; if (r.fecha) m.fecha = r.fecha; marcas[id] = m; }
+      else { const m = { actualizado: r.actualizado }; if (r.estado) m.estado = r.estado; if (r.estrellas) m.estrellas = r.estrellas; if (r.nota) m.nota = r.nota; if (r.ninos) m.ninos = true; if (r.fecha) m.fecha = r.fecha; marcas[id] = m; }
       delete b[id]; cambia = true;
     }
   }

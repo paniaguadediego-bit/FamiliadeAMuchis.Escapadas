@@ -35,6 +35,7 @@ function agendaHTML() {
     const evs = agCat === 'fiestas' && typeof eventosEntre === 'function' ? eventosEntre(masDias(sab, -1), masDias(sab, 1)).filter(([s]) => !agDonde || s.municipio === agDonde) : [];
     res = `<div class="ag-res">
       <div class="ag-q">${C.ic} <b>${esc(C.n)}</b> · ${esc(lugar)} · ${esc(ft)}</div>
+      ${agCat === 'cine' && typeof CINE !== 'undefined' && CINE ? '<button class="mini" data-vercine>🎬 Ver la cartelera de hoy en la app</button>' : ''}
       <div class="acciones"><a class="btn mini" href="${gBusca(q)}" target="_blank" rel="noopener">🔎 Buscar en Google</a>
         <a class="btn sec mini" href="${gNoticias(`${C.q} ${lugar} ${MESES_AG[new Date(sab + 'T12:00').getMonth()]}`)}" target="_blank" rel="noopener">📰 En las noticias</a></div>
       ${evs.length ? `<div class="ag-sub">🎟️ Fiestas de la app ese finde</div>${evs.map(([s, f]) => `<button class="reciente" data-irficha="${esc(s.id)}"><span class="d-dia">${+f[0].slice(8)}</span><span><b>${esc(s.nombre)}</b><br><small class="muted">${esc(s.municipio)}</small></span></button>`).join('')}` : ''}

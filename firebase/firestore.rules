@@ -60,7 +60,8 @@ service cloud.firestore {
           && request.resource.data.estado in ['quiero', 'fuimos', 'no', '']
           && request.resource.data.estrellas is int
           && request.resource.data.estrellas >= 0 && request.resource.data.estrellas <= 5
-          && request.resource.data.nota is string && request.resource.data.nota.size() <= 1000;
+          && request.resource.data.nota is string && request.resource.data.nota.size() <= 1000
+          && (!('ninos' in request.resource.data) || request.resource.data.ninos is bool);
         allow delete: if esMiembro(gid) && resource.data.uid == yo();
       }
 

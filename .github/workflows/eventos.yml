@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: eventos
+  group: datos-main
   cancel-in-progress: false
 
 jobs:

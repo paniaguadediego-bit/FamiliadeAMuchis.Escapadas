@@ -94,6 +94,37 @@ function cargarAgenda(d) {
   });
 }
 
+// ---------- 🎬 Cartelera de cine (data/cine.json: SensaCine, cada mañana con GitHub Actions; solo las sesiones del día) ----------
+let CINE = null, cineSel = null, cineVO = false;
+const cineHoy = () => CINE && CINE.fecha === hoyISO();
+const VERS = { VOSE: 'VOSE', VO: 'VO', Doblada: '' };
+const CINE_CORTO = { E0627: 'Meridiano', E0284: 'Multicines La Laguna', E0622: 'La Villa', E0700: 'X-Sur', E0541: 'Zentral Center' };
+function carteleraHTML() {
+  if (!CINE) return `<div class="card muted centro">🎬 ${navigator.onLine ? 'Cargando la cartelera…' : 'La cartelera se verá cuando haya conexión.'}</div>`;
+  const cines = CINE.cines.filter(c => c.peliculas.length || c.aviso);
+  if (!cineSel || !cines.some(c => c.id === cineSel)) cineSel = load('esc.cine', cines[0] && cines[0].id);
+  const c = cines.find(x => x.id === cineSel) || cines[0]; if (!c) return '<div class="card muted">Sin cartelera.</div>';
+  const fechaTxt = new Date(CINE.fecha + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  const pelis = c.peliculas.map(p => [p, p.sesiones.filter(s => !cineVO || s.v !== 'Doblada')]).filter(([, ss]) => ss.length);
+  const nVO = x => x.peliculas.filter(p => p.sesiones.some(s => s.v !== 'Doblada')).length;
+  return `<div class="cine-cab"><b>🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del ' + esc(fechaTxt)}</b>
+      <span class="muted">${cineHoy() ? esc(fechaTxt) : 'se actualiza cada mañana'}</span></div>
+    <div class="chips cine-sel">${cines.map(x => `<button class="chip ${x.id === c.id ? 'on' : ''}" data-cine="${x.id}">${ZONAS[x.zona] ? ZONAS[x.zona].ic : '🎬'} ${esc(CINE_CORTO[x.id] || x.nombre)}${nVO(x) ? ' <small>VOSE</small>' : ''}</button>`).join('')}</div>
+    <div class="chips"><button class="chip ${cineVO ? 'on' : ''}" data-cinevo>🗣️ Solo versión original (VOSE)</button></div>
+    <p class="muted cuenta-lista">${esc(c.nombre)} · ${esc(c.municipio)} · ${pelis.length} película${pelis.length === 1 ? '' : 's'}${c.aviso ? ' · ⚠️ ' + esc(c.aviso) : ''}</p>
+    ${pelis.length ? pelis.map(([p, ss]) => `<div class="card peli">${p.cartel ? `<img class="peli-cartel" src="${esc(p.cartel)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+      <div class="peli-tx"><b>${esc(p.titulo)}</b>${p.estreno ? ' <span class="peli-est">Estreno</span>' : ''}
+        <div class="muted peli-m">${esc([p.generos.join(', '), p.edad && p.edad.replace(/^Película no recomendada a menores de /, '+').replace(/^Película /, '')].filter(Boolean).join(' · '))}${p.original ? `<br><i>${esc(p.original)}</i>` : ''}</div>
+        <div class="peli-ses">${ss.map(s => `<span class="ses ${s.v !== 'Doblada' ? 'vo' : ''}">${esc(s.h)}${VERS[s.v] ? ` <small>${VERS[s.v]}</small>` : ''}${s.f ? ` <small>${esc(s.f)}</small>` : ''}</span>`).join('')}</div></div></div>`).join('')
+      : `<div class="card muted">${cineVO ? 'Hoy no hay sesiones en versión original en este cine.' : 'Sin sesiones.'}</div>`}
+    <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.</p>`;
+}
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-cine]'); if (c) { cineSel = c.dataset.cine; save('esc.cine', cineSel); render(); return; }
+  if (e.target.closest('[data-cinevo]')) { cineVO = !cineVO; render(); return; }
+  if (e.target.closest('[data-vercine]')) { evCat = 'cine'; ir('eventos'); }
+});
+
 // ---------- 🎟️ pestaña Eventos ----------
 let evCat = '', evZona = '', evRango = 'mes';
 const RANGOS = { finde: 'Este finde', siguiente: 'El finde que viene', mes: 'Próximo mes', todo: 'Próximos 4 meses' };
@@ -115,8 +146,9 @@ function viewEventos() {
       <label class="orden-sel"><span class="vh">Zona</span><select id="ev-zona"><option value="">🗺️ Toda la isla</option>${Object.entries(ZONAS).map(([k, z]) => `<option value="${k}" ${evZona === k ? 'selected' : ''}>${z.ic} ${esc(z.nom)}</option>`).join('')}</select></label>
     </div>
     ${typeof propioBotonHTML === 'function' && enGrupo() ? propioBotonHTML('evento') : ''}
-    <p class="muted cuenta-lista">${lista.length} evento${lista.length === 1 ? '' : 's'}${act ? ` · agenda de Turismo de Tenerife del ${esc(act)}` : ''}</p>
-    ${lista.length ? Object.keys(semanas).sort().map(sb => `<h2>📅 ${esc(titulo(sb))}</h2>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}`).join('')
+    ${evCat === 'cine' && !lista.length ? '' : `<p class="muted cuenta-lista">${lista.length} evento${lista.length === 1 ? '' : 's'}${act ? ` · agenda de Turismo de Tenerife del ${esc(act)}` : ''}</p>`}
+    ${evCat === 'cine' ? carteleraHTML() + (lista.length ? '<h2>🎟️ Otros eventos de cine</h2>' : '') : CINE && !evCat ? `<button class="card ev-enlace" data-filtro="evcat" data-v="cine">🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del día'}: ${CINE.cines.filter(c => c.peliculas.length).length} cines${CINE.cines.some(c => c.peliculas.some(p => p.sesiones.some(s => s.v !== 'Doblada'))) ? ', con VOSE' : ''} · <span class="tr-ver">Ver ›</span></button>` : ''}
+    ${evCat === 'cine' && !lista.length ? '' : lista.length ? Object.keys(semanas).sort().map(sb => `<h2>📅 ${esc(titulo(sb))}</h2>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}`).join('')
       : '<div class="card muted">Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.</div>'}
     <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
 }

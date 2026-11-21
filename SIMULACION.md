@@ -58,6 +58,6 @@ Problemas:
 1. Prueba real con dos móviles (entrar con Google en la app instalada, marcas y planes al momento).
 2. ~~Búsqueda sin resultados que explica y ofrece añadir; Grupo con invitación clara~~ (hecho en v26).
 3. ~~Atajos arriba en Este finde~~ (v22: carruseles con planes, eventos e ideas).
-4. Etiqueta «con niños» con fuente.
-5. Más fiestas de pueblo con fuente oficial.
+4. ~~Etiqueta «con niños» con fuente~~ (v27).
+5. ~~Más fiestas de pueblo con fuente oficial~~ (v27: 42 del BOC).
 6. Ir quitando ⚠️ VERIFICAR del catálogo (v25: quedan 52, cada uno con su motivo).
