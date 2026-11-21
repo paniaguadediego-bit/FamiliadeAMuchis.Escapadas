@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v28 · Guachinches del Cabildo (2026-11-21)
+- 97 guachinches del censo de locales de hostelería del Cabildo de Tenerife (datos abiertos, CC BY): nombre, municipio
+  y ubicación en el mapa. Sin teléfonos ni direcciones. Todos con VERIFICAR: abren por temporada y muchos datos son
+  de 2015-2019 (el grupo marca ✅ los que conoce y ✖️ los cerrados).
+- Restaurantes no se cargan (son miles): los sigue añadiendo el grupo.
+- Prueba nueva: `node pruebas/guachinches.js`.
+
 ## v27 · Con niños, fiestas patronales y cartelera de cine (2026-11-21)
 - 🧸 Con niños: 21 sitios del catálogo con el motivo de su fuente, botón «Bien para ir con niños» en cada ficha (lo ve
   el grupo) y filtro en Sitios.

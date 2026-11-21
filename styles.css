@@ -668,4 +668,4 @@ i.cal-p { display: inline-block; min-width: .55rem; height: .55rem; border-radiu
 .ninos-f { margin: 6px 0; text-align: center; font-size: .8rem; }
 .ninos-f button { width: auto; }
 .ninos-f button.on { border-color: #b45309; color: #b45309; font-weight: 700; }
-:root { --css-ver: "v27"; }
+:root { --css-ver: "v28"; }

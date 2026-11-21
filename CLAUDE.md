@@ -55,6 +55,7 @@ se adapta, sin restos de Corea.
 - `eventos.js`: 🎟️ fechas de eventos (regla `cuando`), portada de Este finde, pestaña Eventos y agenda automática.
 - `herramientas/agenda_webtenerife.py` → `data/agenda.json` (lo ejecuta `.github/workflows/eventos.yml`).
 - `herramientas/cartelera_sensacine.py` → `data/cine.json` (cada mañana con `.github/workflows/cine.yml`).
+- `herramientas/guachinches_cabildo.py`: guachinches del censo del Cabildo (ids `gua-…`).
 - `herramientas/fiestas_boc.py`: fiestas patronales (eventos `fiesta-…`) desde `data/festivos.json`.
 - `festivos.js` + `data/festivos.json`: 🎉 festivos nacionales/Canarias/Tenerife (BOE) y los 2 locales de cada
   municipio (BOC, con sus enlaces en `fuentes`). Los locales que se ven, los del municipio elegido en Más (`esc.mimuni`).
@@ -195,7 +196,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   y pausas entre peticiones (si no, 429).
 - Coordenadas = las del artículo. Municipio = el que dice el artículo; si no
   lo dice, VERIFICAR. Horarios, precios, reservas: nunca de memoria → VERIFICAR.
-- Guachinches y restaurantes: sin fuente fiable todavía; no se añaden hasta tenerla.
+- Guachinches (v28): los 97 del censo de hostelería del Cabildo (datos abiertos CC BY), con `herramientas/guachinches_cabildo.py`
+  (ids `gua-…`; solo nombre, municipio y coordenadas, nunca teléfonos ni direcciones; VERIFICAR: abren por temporada).
+  Restaurantes: no se cargan (miles); los añade el grupo.
 
 ## Este finde (S5)
 - Zonas (elegidas por el usuario, 6): 🌅 Oeste (Santiago del Teide, Guía de Isora),

@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v27';
+const VERSION = 'v28';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -286,7 +286,7 @@ function sinResultadosHTML() {
   const lineas = [];
   if (t) lineas.push(`No hay nada con «${esc(t)}» en el catálogo${filtros ? ' con los filtros que tienes puestos' : ''}.`);
   else lineas.push('Nada con esos filtros.');
-  if (comer) lineas.push('Guachinches y restaurantes no vienen en el catálogo porque no hay una fuente pública fiable: los añade el grupo.');
+  if (comer) lineas.push('Los guachinches del catálogo salen del censo del Cabildo; los que falten, y los restaurantes, los añade el grupo.');
   else if (t) lineas.push('El catálogo sale de Wikipedia y no tiene todos los rincones; si lo conocéis, añadidlo.');
   const botones = [
     filtros && '<button class="sec mini" data-filtro="limpiar">✕ Quitar filtros</button>',
