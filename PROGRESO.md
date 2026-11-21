@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v25 · Catálogo: revisión de los ⚠️ VERIFICAR (2026-11-21)
+- Revisados los 88 sitios marcados con su artículo de Wikipedia: 36 confirmados (se quita el aviso) y 52 siguen
+  marcados, ahora con el motivo visible en la ficha («⚠️ VERIFICAR: …»).
+- Primer trabajo real de los agentes de OpenCode (investigador en 3 tandas; revisión por muestreo del director).
+
 ## Herramientas · Agentes de OpenCode (2026-11-21, sin cambios en la app)
 - 6 agentes de OpenCode con modelos gratuitos (`.opencode/agents/`), `AGENTS.md` corto, lanzador
   `herramientas/lanzar_agente.sh` y pruebas automáticas en `pruebas/` (`node pruebas/humo.js`).

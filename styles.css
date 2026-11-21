@@ -650,4 +650,4 @@ i.cal-p { display: inline-block; min-width: .55rem; height: .55rem; border-radiu
 .dia-sel .finde-cab button { background: var(--pri); color: var(--pri-fg); }
 .cal-v { font-size: .62rem; }
 .dispo .dias .dia:only-child { max-width: 8rem; }
-:root { --css-ver: "v24"; }
+:root { --css-ver: "v25"; }
