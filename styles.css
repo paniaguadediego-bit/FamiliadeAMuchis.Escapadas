@@ -711,4 +711,9 @@ button.rapido.on { color: var(--pri); }
 .cal-n small { font-size: .55rem; font-weight: 500; color: var(--muted); }
 .ganas .ev-tarjeta { flex-basis: 62%; }
 .ganas button.ev-ban, .ganas button.ev-ban:first-child { min-height: 6.5rem; }
-:root { --css-ver: "v30"; }
+.peli-notas { display: flex; gap: 8px; align-items: baseline; font-size: .8rem; font-weight: 700; margin: 0 0 4px; }
+.peli-notas small { font-weight: 500; }
+.peli-mas { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-top: 5px; font-size: .78rem; }
+.peli-mas details { flex: 1 1 100%; } .peli-mas summary { cursor: pointer; color: var(--pri); font-weight: 600; }
+.peli-mas p { margin: 4px 0 0; color: var(--fg); }
+:root { --css-ver: "v31"; }

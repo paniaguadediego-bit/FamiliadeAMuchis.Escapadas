@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v31 · Cine con notas y sinopsis (2026-11-21)
+- Cada película de la cartelera lleva la nota media del público y de la prensa (sobre 5, de SensaCine), su sinopsis
+  plegable y un enlace «Ver en FilmAffinity ›». FilmAffinity no permite lectura automática, así que no se copian sus notas.
+
 ## v30 · Portada nueva de Planes (2026-11-21)
 - Arriba, tarjeta de bienvenida con lo esencial del finde (planes, eventos, tiempo y mejor día) y 4 botones rápidos:
   ➕ Plan, 🎲 Sorpréndeme, 🎭 ¿Qué hay? y 🌤️ Tiempo (se despliegan ahí mismo).

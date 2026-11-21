@@ -4,7 +4,8 @@
 - Qué lee: la página pública de cada cine (/cines/cine/<id>/), que su robots.txt permite. Solo trae las sesiones del
   día: los otros días los carga la web con una ruta que su robots.txt no permite (/_/), así que no se usa.
   Por eso lo ejecuta GitHub Actions cada mañana (.github/workflows/cine.yml).
-- Qué guarda por película: título, título original, géneros, edad recomendada, si es estreno, cartel y las sesiones
+- Qué guarda por película: título, título original, géneros, edad recomendada, si es estreno, cartel, sinopsis, notas
+  medias de SensaCine (prensa y usuarios, sobre 5) y las sesiones
   (hora y versión: doblada, VOSE o VO; 3D si lo indica). Enlace a la página del cine en SensaCine (la fuente).
 - No inventa nada: si una página no se puede leer, ese cine queda vacío con su aviso.
 """
@@ -54,6 +55,10 @@ def pelicula(card):
     edad = limpia((re.search(r'certificate-text">(.*?)</span>', card, re.S) or [None, ''])[1])
     cartel = (re.search(r'class="thumbnail-img"[^>]*?(?:data-src|src)="(https://[^"]+/c_160_213/[^"]+)"', card) or [None, ''])[1]
     estreno = 'estreno esta semana' in card.lower()
+    sinopsis = limpia((re.search(r'<div class="synopsis">\s*<div class="content-txt[^"]*">(.*?)</div>', card, re.S) or [None, ''])[1])
+    notas = {}  # notas medias de SensaCine (sobre 5): «Medios» (prensa) y «Usuarios»
+    for quien, nota in re.findall(r'rating-title">\s*(Medios|Usuarios)\s*</span>.*?stareval-note">([\d,]+)<', card, re.S):
+        notas['prensa' if quien == 'Medios' else 'usuarios'] = float(nota.replace(',', '.'))
     sesiones, fecha = [], ''
     for bloque in re.split(r'<div class="showtimes-version">', card)[1:]:
         texto = limpia((re.search(r'<div class="text">(.*?)</div>', bloque, re.S) or [None, ''])[1])
@@ -83,6 +88,10 @@ def pelicula(card):
         p['cartel'] = cartel
     if estreno:
         p['estreno'] = True
+    if sinopsis:
+        p['sinopsis'] = sinopsis if len(sinopsis) <= 420 else sinopsis[:420].rsplit(' ', 1)[0] + '…'
+    if notas:
+        p['notas'] = notas
     return p, fecha
 
 

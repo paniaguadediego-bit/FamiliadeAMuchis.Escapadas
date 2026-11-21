@@ -115,7 +115,10 @@ function carteleraHTML() {
     ${pelis.length ? pelis.map(([p, ss]) => `<div class="card peli">${p.cartel ? `<img class="peli-cartel" src="${esc(p.cartel)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
       <div class="peli-tx"><b>${esc(p.titulo)}</b>${p.estreno ? ' <span class="peli-est">Estreno</span>' : ''}
         <div class="muted peli-m">${esc([p.generos.join(', '), p.edad && p.edad.replace(/^Película no recomendada a menores de /, '+').replace(/^Película /, '')].filter(Boolean).join(' · '))}${p.original ? `<br><i>${esc(p.original)}</i>` : ''}</div>
-        <div class="peli-ses">${ss.map(s => `<span class="ses ${s.v !== 'Doblada' ? 'vo' : ''}">${esc(s.h)}${VERS[s.v] ? ` <small>${VERS[s.v]}</small>` : ''}${s.f ? ` <small>${esc(s.f)}</small>` : ''}</span>`).join('')}</div></div></div>`).join('')
+        ${p.notas ? `<div class="peli-notas">${p.notas.usuarios ? `<span>⭐ ${String(p.notas.usuarios).replace('.', ',')} <small>público</small></span>` : ''}${p.notas.prensa ? `<span>⭐ ${String(p.notas.prensa).replace('.', ',')} <small>prensa</small></span>` : ''}<small class="muted">/5 SensaCine</small></div>` : ''}
+        <div class="peli-ses">${ss.map(s => `<span class="ses ${s.v !== 'Doblada' ? 'vo' : ''}">${esc(s.h)}${VERS[s.v] ? ` <small>${VERS[s.v]}</small>` : ''}${s.f ? ` <small>${esc(s.f)}</small>` : ''}</span>`).join('')}</div>
+        <div class="peli-mas">${p.sinopsis ? `<details><summary>Sinopsis</summary><p>${esc(p.sinopsis)}</p></details>` : ''}
+          <a href="https://www.filmaffinity.com/es/search.php?stext=${encodeURIComponent(p.original || p.titulo)}" target="_blank" rel="noopener">Ver en FilmAffinity ›</a></div></div></div>`).join('')
       : `<div class="card muted">${cineVO ? 'Hoy no hay sesiones en versión original en este cine.' : 'Sin sesiones.'}</div>`}
     <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.</p>`;
 }
