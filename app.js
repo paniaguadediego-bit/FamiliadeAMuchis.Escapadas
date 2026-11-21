@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v28';
+const VERSION = 'v29';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -40,7 +40,7 @@ const quienNinos = id => Object.entries((typeof NUBE !== 'undefined' && NUBE.mar
 const conNinos = id => { const s = sitio(id); return !!((s && s.ninos) || marca(id).ninos || (enGrupo() && quienNinos(id).length)); };
 const sitio = id => SITIOS.find(s => s.id === id);
 // SITIOS = catálogo (BASE) + los que añade el grupo (propios.js).
-fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d) ? d : []; mezclarSitios(); render(); })
+fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d) ? d : []; mezclarSitios(); render(); abrirEnlace(); })
   .catch(() => { BASE = []; mezclarSitios(); render(); });
 
 // ---------- fotos (Wikimedia Commons, del artículo de Wikipedia de cada sitio) ----------
@@ -111,21 +111,27 @@ function applyLetra() { const l = load('esc.letra', 'compacta'); if (l === 'comp
 applyLetra();
 
 // ---------- pestañas ----------
-const TABS = [['finde', 'Planes', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['eventos', 'Eventos', '🎟️'], ['sitios', 'Sitios', '📍'], ['mapa', 'Mapa', '🗺️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+// 5 pestañas (como las apps más valoradas). «Explorar» es Sitios y Mapa en una sola pestaña con «Lista ⇄ Mapa»;
+// el Tiempo se abre desde Planes. Las vistas internas siguen siendo: finde, tiempo, eventos, sitios, mapa, grupo, mas.
+const TABS = [['finde', 'Planes', '🏠'], ['explorar', 'Explorar', '🧭'], ['eventos', 'Eventos', '🎟️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const VISTAS = { finde: 'Escapadas', tiempo: 'Tiempo', eventos: 'Eventos', sitios: 'Explorar', mapa: 'Explorar', grupo: 'Grupo', mas: 'Más' };
+const pestañaDe = t => t === 'sitios' || t === 'mapa' ? 'explorar' : t === 'tiempo' ? 'finde' : t;
 let tab = load('esc.tab', 'finde');
-if (!TABS.some(t => t[0] === tab)) tab = 'finde';
-function ir(t) { tab = t; save('esc.tab', t); window.scrollTo(0, 0); render(); }
+if (!VISTAS[tab]) tab = 'finde';
+function ir(t) { if (t === 'explorar') t = load('esc.explorar', 'sitios'); if (t === 'sitios' || t === 'mapa') save('esc.explorar', t); tab = t; save('esc.tab', t); window.scrollTo(0, 0); render(); }
 function pintarTabs() {
-  $('#tabs').innerHTML = TABS.map(([k, n, ic]) => `<button class="${k === tab ? 'on' : ''}" data-tab="${k}"><span>${ic}</span>${n}</button>`).join('');
+  $('#tabs').innerHTML = TABS.map(([k, n, ic]) => `<button class="${k === pestañaDe(tab) ? 'on' : ''}" data-tab="${k}"><span>${ic}</span>${n}</button>`).join('');
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) ir(b.dataset.tab); });
 $('#buscabtn').addEventListener('click', () => { ir('sitios'); const i = $('#q'); if (i) i.focus(); });
 
+// Explorar: «📋 Lista ⇄ 🗺️ Mapa» arriba (como AllTrails).
+const conmutador = () => MP.elegir ? '' : `<div class="conmutador" role="tablist"><button class="${tab === 'sitios' ? 'on' : ''}" data-tab="sitios" role="tab">📋 Lista</button><button class="${tab === 'mapa' ? 'on' : ''}" data-tab="mapa" role="tab">🗺️ Mapa</button></div>`;
 function render() {
   pintarTabs();
-  $('#title').textContent = tab === 'finde' ? 'Escapadas' : (TABS.find(t => t[0] === tab) || [])[1] || 'Escapadas';
+  $('#title').textContent = VISTAS[tab] || 'Escapadas';
   const v = $('#view');
-  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
+  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'sitios' ? conmutador() + viewSitios() : tab === 'mapa' ? conmutador() + viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
   if ((tab === 'sitios' || tab === 'eventos') && irFicha) {
@@ -135,6 +141,28 @@ function render() {
     requestAnimationFrame(ver); setTimeout(ver, 350); setTimeout(ver, 900);
   }
 }
+
+// ---------- 📤 compartir (WhatsApp, etc.) y enlaces que abren la app en una ficha (#f=id) o un día (#d=AAAA-MM-DD) ----------
+const urlApp = h => location.origin + location.pathname.replace(/index\.html$/, '') + '#' + h;
+function compartir(clave) {
+  const [t, id] = [clave.slice(0, 1), clave.slice(2)]; let texto = '', url = '';
+  if (t === 's') { const s = sitio(id); if (!s) return;
+    const f = typeof proximaVez === 'function' && esEvento(s) ? proximaVez(s) : null;
+    texto = `${tipoIc(s.tipo)} ${s.nombre}${s.municipio ? ' (' + s.municipio + ')' : ''}${f ? ' · ' + fechaEventoTxt(f) : ''}. ¿Vamos?`; url = urlApp('f=' + id); }
+  else { const p = (NUBE.planes || []).find(x => x.id === id); if (!p) return; const s = p.sitioId && sitio(p.sitioId);
+    texto = `📅 Plan: ${s ? s.nombre : p.destino} · ${enVotacion(p) ? 'votando el día (' + p.opciones.map(diaCorto).join(', ') + ')' : fechaPlan(p)}. ¿Te apuntas?`; url = urlApp('d=' + p.fecha); }
+  if (navigator.share) navigator.share({ title: 'Escapadas', text: texto, url }).catch(() => {});
+  else window.open('https://wa.me/?text=' + encodeURIComponent(texto + ' ' + url), '_blank', 'noopener');
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-compartir]'); if (b) { e.preventDefault(); compartir(b.dataset.compartir); } });
+function abrirEnlace() {
+  const h = decodeURIComponent(location.hash.slice(1)); if (!h || !SITIOS.length) return;
+  if (h.startsWith('f=') && sitio(h.slice(2))) { const b = document.createElement('button'); b.dataset.irficha = h.slice(2); b.hidden = true; document.body.append(b); b.click(); b.remove(); }
+  else if (/^d=\d{4}-\d{2}-\d{2}$/.test(h) && typeof calSel !== 'undefined') { calSel = h.slice(2); calMes = calSel.slice(0, 7); ir('finde'); setTimeout(() => { const x = document.querySelector('.cal'); if (x) x.scrollIntoView({ block: 'start' }); }, 300); }
+  else return;
+  history.replaceState(null, '', location.pathname + location.search);
+}
+addEventListener('hashchange', abrirEnlace);
 
 // ---------- fichas ----------
 const abiertas = new Set();
@@ -165,6 +193,7 @@ function fichaHTML(s) {
         : `<div class="fuente">📚 Fuente: ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.fuente || s.url)}</a>` : esc(s.fuente || '—')}</div>`}
       <div class="acciones">
         <a class="btn sec mini" href="${gmaps(s)}" target="_blank" rel="noopener">🌐 Google Maps</a>
+        <button class="sec mini" data-compartir="s:${esc(s.id)}">📤 Compartir</button>
         ${isFinite(s.lat) && s.lat !== null && !s.aprox ? `<button class="sec mini" data-vermapa="${esc(s.id)}">🗺️ Ver en el mapa</button>` : ''}
         ${accionesPropio(s)}
       </div>
@@ -226,7 +255,7 @@ let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', fNinos = '', orden =
 const muniAbiertos = new Set();
 const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['fuimos', '✅', 'Visitado'], ['no', '✖️', 'No'], ['sin', '⬜', 'Sin marcar']];
 const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien lo visitó']];
-const ORDENES = { municipio: '🏘️ Por municipio', zona: '🧭 Por zona', nombre: '🔤 Nombre (A-Z)', cerca: '📍 Más cerca de mí', valorados: '⭐ Mejor valorados', deseados: '🔖 Más deseados' };
+const ORDENES = { municipio: '🏘️ Por municipio', zona: '🏞️ Por zona', nombre: '🔤 Nombre (A-Z)', cerca: '📍 Más cerca de mí', valorados: '⭐ Mejor valorados', deseados: '🔖 Más deseados' };
 const zonaNom = s => typeof zonaDe === 'function' ? zonaDe(s) : '';
 // ⭐ media de tus estrellas y las del grupo; 🔖 cuántos quieren ir (tú incluido).
 function notaMedia(id) {

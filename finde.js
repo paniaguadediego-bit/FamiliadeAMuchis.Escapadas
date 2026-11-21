@@ -172,7 +172,7 @@ function proximosDiasHTML() {
 }
 function viewTiempo() {
   pedirTiempo();
-  return `<h2>🌤️ El fin de semana</h2>${tiempoHTML()}
+  return `<button class="sec mini volver" data-tab="finde">‹ Planes</button><h2>🌤️ El fin de semana</h2>${tiempoHTML()}
     <h2>📆 Los próximos días</h2>${proximosDiasHTML() || '<div class="card muted">Sin previsión todavía.</div>'}
     <p class="muted">Previsión de Open-Meteo para seis zonas de la isla (un punto de referencia por zona). En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
 }
@@ -263,7 +263,7 @@ function viewFindeS5() {
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
   const sab = proximoSabado(), v = masDias(sab, -1), dom = masDias(sab, 1), d = x => new Date(x + 'T12:00');
   const fechas = `Viernes ${d(v).getDate()} · Sábado ${d(sab).getDate()} · Domingo ${d(dom).getDate()} de ${d(dom).toLocaleDateString('es-ES', { month: 'long' })}`;
-  return `<p class="finde-fechas">${esc(fechas)}</p>
+  return `<p class="finde-fechas">${esc(fechas)} · <button class="enlace" data-tab="tiempo">🌤️ Ver el tiempo ›</button></p>
     ${carruselFindeHTML(0)}${carruselFindeHTML(1)}
     <button class="sec ver-eventos" data-tab="eventos">🎟️ Ver todos los eventos ›</button>
     ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '<div class="card muted centro">👥 Entra en el grupo (pestaña Grupo) para ver y proponer planes y decir qué días puedes.</div>'}

@@ -99,13 +99,14 @@ Rambla, San Miguel de Abona, Santa Cruz de Tenerife, Santa Úrsula,
 Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 
 ## Iconos (uno por significado)
-- Pestañas: 🏠 Planes (antes «Este finde») · 🌤️ Tiempo · 🎟️ Eventos · 📍 Sitios · 🗺️ Mapa · 👥 Grupo · ☰ Más.
+- Pestañas (v29, 5): 🏠 Planes · 🧭 Explorar (📋 Lista ⇄ 🗺️ Mapa) · 🎟️ Eventos · 👥 Grupo · ☰ Más. 🌤️ Tiempo se abre desde Planes.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
 - Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota · 🧸 bien con niños.
 - 🎬 cine (cartelera y categoría de eventos) · 🗣️ versión original.
 - 🌐 Google Maps (abrir fuera) · 🔍 buscar · ⚠️ VERIFICAR · 📚 fuente.
 - Días: 👍 puedo ese día · 🙅 no puedo · 🎉 festivo · 🌆 víspera (tarde antes de un festivo).
-- Planes: 🎠 carrusel de un finde · 💡 idea (sitio que encaja) · 🔎 nivel de zoom del mapa.
+- Planes: 🎠 carrusel de un finde · 💡 idea (sitio que encaja) · 🔎 nivel de zoom del mapa · 💫 mejor día · 🗳️ votar fechas · 📤 compartir.
+- 🏞️ orden «por zona» en Sitios (🧭 es Explorar).
 - Tema: 🌓 auto · ☀️ claro · 🌙 oscuro.
 
 ## Marcas
@@ -382,3 +383,15 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   Meridiano (E0627), Multicines La Laguna (E0284), La Villa (E0622), X-Sur (E0700), Zentral Center (E0541).
   `data/cine.json` {fecha, cines:[{peliculas:[{titulo, original, generos, edad, estreno, cartel, sesiones:[{h, v: Doblada|VOSE|VO, f?}]}]}]}.
   En Eventos → 🎬 Cine: cartelera por cine con «🗣️ Solo versión original»; en 🎭 ¿Qué hay? → Cine, enlace a la cartelera.
+
+## Navegación, mejor día, votar fechas y compartir (v29, ideas de apps muy valoradas: AllTrails, Howbout, Fever)
+- 5 pestañas. Vistas internas siguen siendo `finde, tiempo, eventos, sitios, mapa, grupo, mas`; `pestañaDe()` marca la
+  de abajo y `ir('explorar')` abre la última de Lista/Mapa (`esc.explorar`). Tiempo: «🌤️ Ver el tiempo ›» en la línea
+  de fechas de Planes y «‹ Planes» para volver.
+- 💫 Mejor día (`mejorDia`): próximas 4 semanas, solo días de finde/festivo/víspera, el de más 👍 (mín. 2) y menos 🙅;
+  tarjeta encima del calendario y casilla con borde morado.
+- 🗳️ Votar fechas: al proponer, hasta 2 fechas más → plan con `opciones` [≤3] y `votos` {uid: [fechas]}; cada uno cambia
+  solo su voto (`votos.<uid>`; reglas: diff de votos solo en tu uid); quien propone «Fija» (fecha = elegida y se borran
+  opciones y votos). Mientras, el plan sale en todos los días de la votación con «🗳️ Día por decidir».
+- 📤 Compartir (fichas y planes): `navigator.share` o WhatsApp (wa.me). Enlaces `#f=<sitioId>` (abre la ficha) y
+  `#d=AAAA-MM-DD` (abre ese día del calendario), atendidos por `abrirEnlace()`.

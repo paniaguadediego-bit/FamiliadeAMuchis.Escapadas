@@ -42,8 +42,11 @@ async function proponerPlan(d) {
   if (!sitioId && !destino) return alert('¿A dónde? Escribe un sitio o un destino.');
   planForm = null;
   const planB = leerB(d.planB);
+  // 🗳️ Varias fechas para votar: la primera hace de fecha del plan hasta que quien propone fije una.
+  const opciones = [...new Set([d.fecha, ...(d.opciones || [])].filter(f => /^\d{4}-\d{2}-\d{2}$/.test(f || '') && f >= hoyISO()))].sort().slice(0, 3);
+  if (opciones.length > 1) d.fecha = opciones[0];
   try {
-    await colPlanes().add({ sitioId, destino, isla, fecha: d.fecha, hasta: d.hasta && d.hasta > d.fecha ? d.hasta : '', nota: String(d.nota || '').trim().slice(0, 300),
+    await colPlanes().add({ ...(opciones.length > 1 ? { opciones, votos: {} } : {}), sitioId, destino, isla, fecha: d.fecha, hasta: d.hasta && d.hasta > d.fecha ? d.hasta : '', nota: String(d.nota || '').trim().slice(0, 300),
       propone: NUBE.user.uid, apuntados: [NUBE.user.uid], creado: firebase.firestore.FieldValue.serverTimestamp(), ...(planB ? { planB } : {}) });
   } catch (e) { alert('No se pudo proponer (' + (e.code || e.message) + '). ¿Están publicadas las reglas nuevas?'); }
   refrescarVista();
@@ -99,6 +102,28 @@ function apuntarse(id, si) {
 function cancelarPlan(id) { if (confirm('¿Cancelar este plan para todo el grupo?')) colPlanes().doc(id).delete().catch(() => {}); }
 
 // ---------- cómo se ve un plan ----------
+// 🗳️ Votación de fechas: cada uno marca las que le valen; quien propone fija la elegida.
+const enVotacion = p => Array.isArray(p.opciones) && p.opciones.length > 1;
+function votacionHTML(p) {
+  if (!enVotacion(p)) return '';
+  const votos = p.votos || {}, yo = NUBE.user.uid, quien = f => Object.keys(votos).filter(u => (votos[u] || []).includes(f));
+  const max = Math.max(...p.opciones.map(f => quien(f).length));
+  return `<div class="votacion"><div class="gl-t">🗳️ ¿Qué día os va mejor?</div>${p.opciones.map(f => { const q = quien(f), mio = q.includes(yo);
+    return `<div class="voto ${max && q.length === max ? 'lider' : ''}"><button class="mini ${mio ? '' : 'sec'}" data-plan="votar" data-id="${esc(p.id)}" data-f="${f}" aria-pressed="${mio}">${mio ? '✓ ' : ''}${esc(diaCorto(f))} ${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { month: 'short' }))}</button>
+      <span class="voto-n">${q.length}</span><span class="voto-caras">${q.map(u => esc(perfilDe(u).emoji)).join('')}</span>
+      ${p.propone === yo ? `<button class="sec mini" data-plan="fijar" data-id="${esc(p.id)}" data-f="${f}">Fijar</button>` : ''}</div>`; }).join('')}
+    <div class="muted mini-nota">${p.propone === yo ? 'Cuando lo tengáis claro, toca «Fijar» en el día elegido.' : `Lo fija ${esc(perfilDe(p.propone).nombre)} cuando lo tengáis claro.`}</div></div>`;
+}
+function votar(id, f) {
+  const p = (NUBE.planes || []).find(x => x.id === id); if (!p) return;
+  const uid = NUBE.user.uid, mios = new Set((p.votos || {})[uid] || []);
+  if (mios.has(f)) mios.delete(f); else mios.add(f);
+  colPlanes().doc(id).update({ ['votos.' + uid]: [...mios].sort() }).catch(e => alert('No se pudo votar (' + (e.code || e.message) + ').'));
+}
+function fijar(id, f) {
+  const D = firebase.firestore.FieldValue;
+  colPlanes().doc(id).update({ fecha: f, opciones: D.delete(), votos: D.delete() }).catch(e => alert('No se pudo (' + (e.code || e.message) + ').'));
+}
 function planHTML(p, { conSitio = true, compacto = false } = {}) {
   const s = p.sitioId && sitio(p.sitioId), isla = ISLAS[p.isla] || ISLAS.tenerife, yoVoy = (p.apuntados || []).includes(NUBE.user.uid);
   const fueron = s ? Object.entries(NUBE.marcasGrupo[p.sitioId] || {}).filter(([, m]) => m.estado === 'fuimos').map(([u]) => u) : [];
@@ -107,13 +132,15 @@ function planHTML(p, { conSitio = true, compacto = false } = {}) {
     : `<div class="plan-s">${isla.ic} ${esc(p.destino || 'Plan')}${p.isla && p.isla !== 'tenerife' ? ` <small>· ${esc(isla.nombre)}</small>` : ''}</div>`;
   const foto = s && FOTOS[s.id] ? fotoImg(s.id, 'plan-foto') : '';
   return `<div class="plan ${foto ? 'con-foto' : ''} ${compacto ? 'compacto' : ''}" style="${s ? varsMuni(s.municipio) : '--h:200'}">
-    ${conSitio ? `<div class="plan-cab">${foto}<div class="plan-cab-tx"><div class="plan-f">📅 ${esc(fechaPlan(p))}</div>${titulo}</div></div>` : `<div class="plan-f solo">📅 ${esc(fechaPlan(p))}</div>`}
+    ${conSitio ? `<div class="plan-cab">${foto}<div class="plan-cab-tx"><div class="plan-f">${enVotacion(p) ? '🗳️ Día por decidir' : '📅 ' + esc(fechaPlan(p))}</div>${titulo}</div></div>` : `<div class="plan-f solo">${enVotacion(p) ? '🗳️ Día por decidir' : '📅 ' + esc(fechaPlan(p))}</div>`}
     <div class="plan-cuerpo">
       <div class="muted">Propone ${esc(perfilDe(p.propone).emoji)} ${esc(perfilDe(p.propone).nombre)}${p.nota ? ` · «${esc(p.nota)}»` : ''}</div>
       <div class="gl"><span class="gl-t">🙋 Van (${(p.apuntados || []).length})</span>${caras(p.apuntados || [])}</div>
       ${s ? (fueron.length ? `<div class="gl"><span class="gl-t">✅ Ya lo visitaron</span>${caras(fueron)}</div>` : '<div class="muted">🌱 Nadie del grupo ha ido todavía.</div>') : ''}
+      ${votacionHTML(p)}
       ${planBHTML(p)}
       <div class="acciones">${yoVoy ? `<button class="sec mini" data-plan="no" data-id="${esc(p.id)}">Ya no voy</button>` : `<button class="mini" data-plan="si" data-id="${esc(p.id)}">🙋 Me apunto</button>`}
+        <button class="sec mini" data-compartir="p:${esc(p.id)}">📤</button>
         ${!p.planB && planBForm !== p.id ? `<button class="sec mini" data-plan="b-abrir" data-id="${esc(p.id)}">🅱️ Plan B</button>` : ''}
         ${p.propone === NUBE.user.uid ? `<button class="danger mini" data-plan="cancelar" data-id="${esc(p.id)}">Cancelar plan</button>` : ''}</div>
     </div></div>`;
@@ -129,6 +156,9 @@ function formPlanHTML(f) {
       <datalist id="pl-sitios">${SITIOS.map(x => `<option value="${esc(x.nombre)}">`).join('')}</datalist>`}
     <div class="row"><div style="flex:1"><label class="muted" for="pl-fecha">Día</label><input type="date" id="pl-fecha" value="${sab}" min="${hoyISO()}"></div>
       <div style="flex:1"><label class="muted" for="pl-hasta">Hasta (opcional)</label><input type="date" id="pl-hasta" min="${hoyISO()}"></div></div>
+    <details class="pl-votar"><summary>🗳️ ¿No sabéis qué día? Añade otras fechas y que el grupo vote</summary>
+      <div class="row"><div style="flex:1"><label class="muted" for="pl-op2">Otra fecha</label><input type="date" id="pl-op2" min="${hoyISO()}"></div>
+        <div style="flex:1"><label class="muted" for="pl-op3">Y otra</label><input type="date" id="pl-op3" min="${hoyISO()}"></div></div></details>
     <input id="pl-nota" maxlength="300" placeholder="Hora, punto de encuentro, barco… (opcional)">
     <input id="pl-b" list="pl-sitios-b" maxlength="80" placeholder="🅱️ Plan B por si acaso (opcional)">
     <datalist id="pl-sitios-b">${SITIOS.map(x => `<option value="${esc(x.nombre)}">`).join('')}</datalist>
@@ -168,16 +198,27 @@ function bloqueDe(f) {
   if (fest) return { tipo: 'festivo', sab: fest, dias: vale([...(esVispera(masDias(fest, -1)) ? [masDias(fest, -1) + 'T'] : []), fest]) };
   return { tipo: 'suelto', sab: f, dias: vale([f]) }; // cualquier otro día (un cumpleaños un miércoles…)
 }
-const planesDelDia = f => proximosPlanes().filter(p => p.fecha <= f && finPlan(p) >= f);
+const planesDelDia = f => proximosPlanes().filter(p => (p.fecha <= f && finPlan(p) >= f) || (enVotacion(p) && p.opciones.includes(f)));
 let calMes = null, calSel = null; // mes que se ve ('AAAA-MM') y día elegido
 const CAL_DIAS = 7 * SEMANAS_CAL; // hasta dónde se puede decir si puedes y proponer
+// 💫 Mejor día: en las próximas 4 semanas, el día de finde, festivo o víspera en que más gente ha dicho 👍 (y menos 🙅).
+function mejorDia() {
+  const ms = (NUBE.grupo && NUBE.grupo.miembros) || [], hoy = hoyISO(); let mejor = null;
+  for (let i = 0; i <= 28; i++) {
+    const f = masDias(hoy, i), b = bloqueDe(f); if (b.tipo === 'suelto') continue;
+    const k = b.dias.find(x => x.slice(0, 10) === f); if (!k) continue;
+    const si = ms.filter(u => dispoDe(u, k) === 'si').length, no = ms.filter(u => dispoDe(u, k) === 'no').length;
+    if (si >= 2 && (!mejor || si > mejor.si || (si === mejor.si && no < mejor.no))) mejor = { f, k, si, no };
+  }
+  return mejor;
+}
 function calendarioHTML() {
   if (!enGrupo()) return '';
   const hoy = hoyISO(), limite = masDias(hoy, CAL_DIAS);
   if (!calSel || calSel < hoy) calSel = proximoSabado() < hoy ? hoy : proximoSabado();
   if (!calMes) calMes = calSel.slice(0, 7);
   const [y, m] = calMes.split('-').map(Number), d1 = `${calMes}-01`, nDias = new Date(y, m, 0).getDate();
-  const hueco = (diaSemana(d1) + 6) % 7, yo = NUBE.user.uid, otros = (NUBE.grupo.miembros || []).filter(u => u !== yo);
+  const mej = mejorDia(), hueco = (diaSemana(d1) + 6) % 7, yo = NUBE.user.uid, otros = (NUBE.grupo.miembros || []).filter(u => u !== yo);
   let celdas = '<span class="cal-h">L</span><span class="cal-h">M</span><span class="cal-h">X</span><span class="cal-h">J</span><span class="cal-h">V</span><span class="cal-h">S</span><span class="cal-h">D</span>'
     + '<span></span>'.repeat(hueco);
   for (let d = 1; d <= nDias; d++) {
@@ -185,9 +226,9 @@ function calendarioHTML() {
     const fest = festivo(f), visp = esVispera(f) || (w === 5 && !fest), ps = fuera ? [] : planesDelDia(f);
     const k = visp && !fest ? f + 'T' : f, mio = fuera ? '' : dispoDe(yo, k) || (w === 5 ? dispoDe(yo, f) : '');
     const si = fuera ? 0 : otros.filter(u => dispoDe(u, k) === 'si').length;
-    const cls = ['cal-d', fuera && 'fuera', f === hoy && 'hoy', (w === 0 || w === 6) && 'finde', fest && 'fest', f === calSel && 'sel', mio && 'm-' + mio].filter(Boolean).join(' ');
+    const cls = ['cal-d', mej && mej.f === f && 'mejor', fuera && 'fuera', f === hoy && 'hoy', (w === 0 || w === 6) && 'finde', fest && 'fest', f === calSel && 'sel', mio && 'm-' + mio].filter(Boolean).join(' ');
     celdas += `<button class="${cls}" ${fuera ? 'disabled' : `data-cal="${f}"`} aria-label="${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }))}${fest ? ', festivo' : ''}${ps.length ? `, ${ps.length} plan` : ''}">
-      <span class="cal-n">${d}</span><span class="cal-m">${esVispera(f) ? '<span class="cal-v" title="Víspera de festivo">🌆</span>' : ''}${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
+      <span class="cal-n">${mej && mej.f === f ? '💫' : ''}${d}</span><span class="cal-m">${esVispera(f) ? '<span class="cal-v" title="Víspera de festivo">🌆</span>' : ''}${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
   }
   const mesNom = new Date(d1 + 'T12:00').toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
   const prev = masDias(d1, -1).slice(0, 7), next = masDias(`${calMes}-${nDias}`, 1).slice(0, 7);
@@ -196,8 +237,10 @@ function calendarioHTML() {
   const enDia = new Set(bloqueDe(calSel).dias.map(k => k.slice(0, 10)));
   const ps = proximosPlanes(), mas = ps.filter(p => p.fecha > masDias(proximoSabado(), 9) && ![...enDia].some(d => p.fecha <= d && finPlan(p) >= d));
   return `<h2>📅 Calendario: findes, festivos y vísperas</h2>${miMuni() ? '' : '<p class="muted mini-nota">🎉 Para ver los festivos locales de tu municipio, elígelo en ☰ Más.</p>'}
+    ${mej ? `<button class="card mejor-dia" data-cal="${mej.f}" data-calmesir="${mej.f.slice(0, 7)}">💫 <b>Mejor día para quedar:</b> ${esc(nomDia(mej.k))}${mej.k.endsWith('T') ? ' ' + +mej.f.slice(8) : ''} · ${mej.si} de ${(NUBE.grupo.miembros || []).length} pueden${mej.no ? ` (${mej.no} no)` : ''} <span class="tr-ver">Ver ›</span></button>`
+      : '<p class="muted mini-nota">💫 Marcad 👍 los días que podéis y aquí saldrá el mejor día para quedar.</p>'}
     <div class="card cal">${nav}<div class="cal-g">${celdas}</div>
-      <div class="cal-ley"><span><i class="cal-p"></i> plan</span><span class="l-fest">🎉 festivo</span><span>🌆 víspera</span><span>👍 / 🙅 tú</span><span>👍n el grupo</span></div></div>
+      <div class="cal-ley"><span>💫 mejor día</span><span><i class="cal-p"></i> plan</span><span class="l-fest">🎉 festivo</span><span>🌆 víspera</span><span>👍 / 🙅 tú</span><span>👍n el grupo</span></div></div>
     ${diaHTML(calSel)}
     ${mas.length ? `<h2>🔭 Más planes por delante</h2>${mas.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;
 }
@@ -219,7 +262,7 @@ function diaHTML(f) {
     ${abierto ? formPlanHTML(planForm) : ''}</section>`;
 }
 document.addEventListener('click', e => {
-  const d = e.target.closest('[data-cal]'); if (d) { calSel = d.dataset.cal; planForm = null; render(); const x = document.querySelector('.dia-sel'); if (x) x.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+  const d = e.target.closest('[data-cal]'); if (d) { calSel = d.dataset.cal; if (d.dataset.calmesir) calMes = d.dataset.calmesir; planForm = null; render(); const x = document.querySelector('.dia-sel'); if (x) x.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
   const m = e.target.closest('[data-calmes]'); if (m) { calMes = m.dataset.calmes; render(); }
 });
 
@@ -328,8 +371,10 @@ document.addEventListener('click', e => {
   const a = b.dataset.plan, id = b.dataset.id, val = k => (document.getElementById(k) || {}).value || '';
   if (a === 'abrir') { planForm = b.dataset.sitio ? { sitioId: b.dataset.sitio, sabado: b.dataset.sabado, carrusel: b.dataset.carrusel } : { sabado: b.dataset.sabado }; render(); const f = document.querySelector('.plan-form'); if (f) f.scrollIntoView({ block: 'center' }); }
   else if (a === 'cerrar') { planForm = null; render(); }
-  else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), hasta: val('pl-hasta'), nota: val('pl-nota'), planB: val('pl-b') });
+  else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), opciones: [val('pl-op2'), val('pl-op3')], hasta: val('pl-hasta'), nota: val('pl-nota'), planB: val('pl-b') });
   else if (a === 'si' || a === 'no') apuntarse(id, a === 'si');
+  else if (a === 'votar') votar(id, b.dataset.f);
+  else if (a === 'fijar') fijar(id, b.dataset.f);
   else if (a === 'cancelar') cancelarPlan(id);
   else if (a === 'b-abrir') { planBForm = id; render(); const f = document.getElementById('pb-' + id); if (f) f.focus(); }
   else if (a === 'b-cerrar') { planBForm = null; render(); }

@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v29 · 5 pestañas, mejor día, votar fechas y compartir (2026-11-21)
+- Ideas de apps muy valoradas (AllTrails, Howbout, Fever). Navegación de 5 pestañas: Planes · Explorar (Lista ⇄ Mapa)
+  · Eventos · Grupo · Más; el Tiempo, desde Planes.
+- 💫 Mejor día para quedar: el finde, festivo o víspera con más gente que puede.
+- 🗳️ Votar fechas: al proponer un plan se pueden poner hasta 3 días; cada uno vota y quien propone fija el elegido.
+- 📤 Compartir fichas y planes por WhatsApp; el enlace abre la app en esa ficha o ese día.
+- Prueba nueva: `node pruebas/v29.js`.
+
 ## v28 · Guachinches del Cabildo (2026-11-21)
 - 97 guachinches del censo de locales de hostelería del Cabildo de Tenerife (datos abiertos, CC BY): nombre, municipio
   y ubicación en el mapa. Sin teléfonos ni direcciones. Todos con VERIFICAR: abren por temporada y muchos datos son

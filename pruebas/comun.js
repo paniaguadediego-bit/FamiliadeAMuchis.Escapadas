@@ -53,7 +53,8 @@ async function conGrupo(p) {
     const col = c => ({ onSnapshot: f => { (subs[c] = subs[c] || []).push(f); emit(c); return () => {}; },
       add: async d => { const id = 'x' + Math.random().toString(36).slice(2, 7); (store[c] = store[c] || {})[id] = d; emit(c); return { id }; },
       doc: id => ({ set: async d => { (store[c] = store[c] || {})[id] = d; emit(c); }, delete: async () => { delete store[c][id]; emit(c); },
-        update: async u => { const d = store[c][id]; for (const [k, v] of Object.entries(u)) { if (v && v.del) delete d[k]; else d[k] = v && v.u ? [...new Set([...(d[k] || []), v.u])] : v && v.r ? (d[k] || []).filter(x => x !== v.r) : v; } emit(c); } }) });
+        update: async u => { const d = store[c][id]; for (const [k0, v] of Object.entries(u)) { const ps = k0.split('.'), k = ps.pop(), o = ps.reduce((a, x) => (a[x] = a[x] || {}), d);
+          if (v && v.del) delete o[k]; else o[k] = v && v.u ? [...new Set([...(o[k] || []), v.u])] : v && v.r ? (o[k] || []).filter(x => x !== v.r) : v; } emit(c); } }) });
     NUBE.db = { collection: () => ({ doc: () => ({ collection: c => col(c) }) }) }; window.__store = store;
     NUBE.estado = 'lista'; NUBE.user = { uid: 'u1', email: 'x' }; NUBE.perfil = { nombre: 'Yo', emoji: '🌋', color: '#d97706' };
     NUBE.grupo = { id: 'PRUEBA23', nombre: 'Familia', miembros: ['u1', 'u2', 'u3'] };
@@ -62,6 +63,7 @@ async function conGrupo(p) {
     await new Promise(r => setTimeout(r, 150)); render();
   });
 }
-const tab = async (p, t) => { await p.click(`#tabs [data-tab="${t}"]`); await p.waitForTimeout(300); };
+// Pestaña de abajo si existe (planes, explorar, eventos, grupo, mas); si no, la vista (sitios, mapa, tiempo).
+const tab = async (p, t) => { if (await p.locator(`#tabs [data-tab="${t}"]`).count()) await p.click(`#tabs [data-tab="${t}"]`); else await p.evaluate(x => ir(x), t); await p.waitForTimeout(300); };
 const captura = async (p, nombre, entera = false) => { fs.mkdirSync(CAPTURAS, { recursive: true }); const f = path.join(CAPTURAS, nombre + '.png'); await p.screenshot({ path: f, fullPage: entera }); return path.relative(RAIZ, f); };
 module.exports = { abrir, conGrupo, tab, captura };
