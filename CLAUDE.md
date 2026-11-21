@@ -405,3 +405,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   (el primero con «Todos los eventos ›») → 📅 Calendario en franja de 2 semanas («▾ Ver el mes entero», `esc.calvista`)
   y el detalle del día → 🔖 Con ganas de ir (carrusel: tuyas y del grupo) → contador.
 - El formulario de «➕ Plan» rápido lleva `planForm.rapido` para no repetirse en el detalle del día.
+
+## Colecciones (v33)
+- `COLECCIONES` (app.js): [icono, nombre, filtro, soloGrupo]; filtro `fCol` en Explorar. Solo con datos ya presentes (tipo, `ninos`, texto, marcas).
+  Iconos: 🌧️ lluvia · 💦 charcos · 🌱 sin estrenar (los demás, los de su tipo o marca).

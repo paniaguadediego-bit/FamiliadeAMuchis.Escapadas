@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v33 · Colecciones (2026-11-21)
+- Explorar → Lista empieza con colecciones: 🌧️ Día de lluvia, 🧸 Con niños, 💦 Charcos y piscinas, 🍷 Ruta de guachinches,
+  👀 Miradores, 🌱 Nadie del grupo ha ido y 🔖 Lo que el grupo quiere (`COLECCIONES` en app.js, con datos de la app).
+
 ## v32 · Ordenar películas (2026-11-21)
 - Cartelera: ordenar por estrenos, ⭐ público, ⭐ prensa o título (se recuerda en el móvil).
 

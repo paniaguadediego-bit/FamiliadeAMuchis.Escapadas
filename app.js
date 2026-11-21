@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v32';
+const VERSION = 'v33';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -240,7 +240,7 @@ document.addEventListener('click', e => {
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
   // Los eventos tienen su pestaña.
   if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; evCat = ''; evZona = ''; evRango = 'todo'; ir('eventos'); return; }
-  abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = fNinos = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
+  abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = fNinos = fCol = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
 
 // ---------- 🏠 Este finde ---------- (la pestaña está en finde.js)
@@ -251,7 +251,22 @@ function cuentaHTML() {
 function viewFinde() { return viewFindeS5(); }
 
 // ---------- 📍 Sitios ----------
-let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', fNinos = '', orden = load('esc.orden', 'municipio');
+// 📚 Colecciones (idea de Komoot): grupos de sitios hechos con datos que la app ya tiene. [icono, nombre, filtro, solo con grupo]
+const COLECCIONES = {
+  lluvia: ['🌧️', 'Día de lluvia', s => s.tipo === 'museo'],
+  ninos: ['🧸', 'Con niños', s => conNinos(s.id)],
+  charcos: ['💦', 'Charcos y piscinas', s => s.tipo === 'playa' && /charco|piscina/i.test(s.nombre + ' ' + s.desc)],
+  guachinches: ['🍷', 'Ruta de guachinches', s => s.tipo === 'guachinche'],
+  miradores: ['👀', 'Miradores', s => s.tipo === 'mirador'],
+  estrenar: ['🌱', 'Nadie del grupo ha ido', s => enGrupo() && nadieFue(s.id) && marca(s.id).estado !== 'fuimos', true],
+  ganas: ['🔖', 'Lo que el grupo quiere', s => ganas(s.id) > 0, true]
+};
+function coleccionesHTML() {
+  const cs = Object.entries(COLECCIONES).filter(([, c]) => !c[3] || enGrupo()).map(([k, c]) => [k, c, SITIOS.filter(s => enIsla(s) && !s.agenda && s.tipo !== 'evento' && c[2](s)).length]).filter(([, , n]) => n);
+  return `<div class="colecciones">${cs.map(([k, [ic, n], num]) => `<button class="col ${fCol === k ? 'on' : ''}" data-col="${k}"><span>${ic}</span><b>${esc(n)}</b><small>${num} sitio${num === 1 ? '' : 's'}</small></button>`).join('')}</div>`;
+}
+document.addEventListener('click', e => { const c = e.target.closest('[data-col]'); if (c) { fCol = fCol === c.dataset.col ? '' : c.dataset.col; render(); } });
+let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', fNinos = '', fCol = '', orden = load('esc.orden', 'municipio');
 const muniAbiertos = new Set();
 const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['fuimos', '✅', 'Visitado'], ['no', '✖️', 'No'], ['sin', '⬜', 'Sin marcar']];
 const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien lo visitó']];
@@ -266,7 +281,7 @@ const ganas = id => (marca(id).estado === 'quiero' ? 1 : 0) + (enGrupo() ? otros
 function filtrados() {
   const a = sinTildes(q).trim();
   return SITIOS.filter(s => enIsla(s) && !s.agenda && (!fTipo || s.tipo === fTipo) && (!fZona || zonaNom(s) === fZona)
-    && (!fNinos || conNinos(s.id)) && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
+    && (!fCol || (COLECCIONES[fCol] && COLECCIONES[fCol][2](s))) && (!fNinos || conNinos(s.id)) && (!fEst || (fEst === 'sin' ? !marca(s.id).estado : marca(s.id).estado === fEst))
     && (!fGrupo || !enGrupo() || (fGrupo === 'nadie' ? nadieFue(s.id) : fGrupo === 'ganas' ? otrosEn(s.id).quiero.length > 0 : otrosEn(s.id).fuimos.length > 0))
     && (!a || sinTildes([s.nombre, s.municipio, s.desc, tipoNom(s.tipo)].join(' ')).includes(a)));
 }
@@ -291,7 +306,8 @@ function filtrosHTML(lista) {
     fEst && ['fEst', ESTADOS_F.find(x => x[0] === fEst).slice(1).join(' ')],
     fGrupo && ['fGrupo', GRUPO_F.find(x => x[0] === fGrupo).slice(1).join(' ')],
     fZona && ['fZona', ZONAS[fZona].ic + ' ' + ZONAS[fZona].nom],
-    fNinos && ['fNinos', '🧸 Con niños']
+    fNinos && ['fNinos', '🧸 Con niños'],
+    fCol && ['fCol', COLECCIONES[fCol][0] + ' ' + COLECCIONES[fCol][1]]
   ].filter(Boolean);
   const isla = ISLAS[islaSel];
   // Siempre a la vista y en pequeño: una fila de botoncitos por grupo (tocar otra vez quita el filtro).
@@ -310,7 +326,7 @@ function filtrosHTML(lista) {
 }
 // Búsqueda o filtros sin resultados: por qué puede ser y qué hacer (quitar filtros, buscar fuera o añadirlo el grupo).
 function sinResultadosHTML() {
-  const t = q.trim(), a = sinTildes(t), filtros = !!(fTipo || fEst || fGrupo || fZona || fNinos);
+  const t = q.trim(), a = sinTildes(t), filtros = !!(fTipo || fEst || fGrupo || fZona || fNinos || fCol);
   const comer = /guachinch|restaur|bar\b|comer|cena|almuerzo|tasca|bodega|cafe/.test(a);
   const lineas = [];
   if (t) lineas.push(`No hay nada con «${esc(t)}» en el catálogo${filtros ? ' con los filtros que tienes puestos' : ''}.`);
@@ -328,7 +344,7 @@ function sinResultadosHTML() {
 function viewSitios() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const lista = ordenar(filtrados()), filtro = !!(q || fTipo || fEst || fGrupo || fZona);
-  const cab = propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · 📍 buscando dónde estás para ordenar por distancia…' : ''}</p>`;
+  const cab = coleccionesHTML() + propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · 📍 buscando dónde estás para ordenar por distancia…' : ''}</p>`;
   if (!lista.length) return cab + sinResultadosHTML();
   // Agrupado: por municipio (banners) o por zona; si no, lista seguida en el orden elegido.
   // Buscando: lista seguida, primero lo que coincide en el nombre (ver ordenar).
@@ -349,7 +365,7 @@ document.addEventListener('click', e => {
   const qq = e.target.closest('[data-quitar]'); if (qq) { if (qq.dataset.quitar === 'fTipo') fTipo = ''; else if (qq.dataset.quitar === 'fEst') fEst = ''; else if (qq.dataset.quitar === 'fGrupo') fGrupo = ''; else fZona = ''; render(); return; }
   const b = e.target.closest('[data-filtro]'); if (!b) return;
   const k = b.dataset.filtro, v = b.dataset.v;
-  if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = fNinos = ''; }
+  if (k === 'limpiar') { fTipo = fEst = fGrupo = fZona = fNinos = fCol = ''; }
   else if (k === 'fNinos') fNinos = fNinos ? '' : 'si';
   else if (b.classList.contains('fm') && b.classList.contains('on') && k !== 'isla') { if (k === 'fTipo') fTipo = ''; else if (k === 'fEst') fEst = ''; else if (k === 'fGrupo') fGrupo = ''; else if (k === 'fZona') fZona = ''; }
   else if (k === 'isla') { if (!ISLAS[v].activa) return; islaSel = v; save('esc.isla', v); }
