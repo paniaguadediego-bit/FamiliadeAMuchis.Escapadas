@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v25';
+const VERSION = 'v26';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -270,11 +270,28 @@ function filtrosHTML(lista) {
         ${activos.length ? '<button class="fm quitar" data-filtro="limpiar">✕ Quitar filtros</button>' : ''}</div>
     </div>`;
 }
+// Búsqueda o filtros sin resultados: por qué puede ser y qué hacer (quitar filtros, buscar fuera o añadirlo el grupo).
+function sinResultadosHTML() {
+  const t = q.trim(), a = sinTildes(t), filtros = !!(fTipo || fEst || fGrupo || fZona);
+  const comer = /guachinch|restaur|bar\b|comer|cena|almuerzo|tasca|bodega|cafe/.test(a);
+  const lineas = [];
+  if (t) lineas.push(`No hay nada con «${esc(t)}» en el catálogo${filtros ? ' con los filtros que tienes puestos' : ''}.`);
+  else lineas.push('Nada con esos filtros.');
+  if (comer) lineas.push('Guachinches y restaurantes no vienen en el catálogo porque no hay una fuente pública fiable: los añade el grupo.');
+  else if (t) lineas.push('El catálogo sale de Wikipedia y no tiene todos los rincones; si lo conocéis, añadidlo.');
+  const botones = [
+    filtros && '<button class="sec mini" data-filtro="limpiar">✕ Quitar filtros</button>',
+    t && `<a class="btn sec mini" href="https://www.google.com/maps/search/${encodeURIComponent(t + ' Tenerife')}" target="_blank" rel="noopener">🌐 Buscar en Google Maps</a>`,
+    t && enGrupo() && `<button class="mini" data-propio="nuevo" data-tipo="${comer ? (/restaur|cena|almuerzo|cafe|bar\b/.test(a) ? 'restaurante' : 'guachinche') : 'curioso'}" data-nombre="${esc(t)}">➕ Añadir «${esc(t)}»</button>`,
+    t && !enGrupo() && '<button class="sec mini" data-tab="grupo">👥 Entra en el grupo para añadirlo</button>'
+  ].filter(Boolean);
+  return `<div class="card sin-res">${lineas.map(l => `<p>${l}</p>`).join('')}<div class="acciones">${botones.join('')}</div></div>`;
+}
 function viewSitios() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const lista = ordenar(filtrados()), filtro = !!(q || fTipo || fEst || fGrupo || fZona);
   const cab = propioBotonHTML() + filtrosHTML(lista) + `<p class="muted cuenta-lista">${lista.length} de ${SITIOS.filter(enIsla).length} sitios${orden === 'cerca' && !casa() ? ' · 📍 buscando dónde estás para ordenar por distancia…' : ''}</p>`;
-  if (!lista.length) return cab + '<div class="card muted">Nada con esos filtros.</div>';
+  if (!lista.length) return cab + sinResultadosHTML();
   // Agrupado: por municipio (banners) o por zona; si no, lista seguida en el orden elegido.
   // Buscando: lista seguida, primero lo que coincide en el nombre (ver ordenar).
   if (sinTildes(q).trim() && (orden === 'municipio' || orden === 'zona')) return cab + `<div class="lista-plana">${lista.map(fichaHTML).join('')}</div>`;

@@ -282,6 +282,8 @@ document.addEventListener('click', e => { if (e.target.closest('[data-nadie]')) 
 
 // ---------- pestaña 👥 Grupo ----------
 const carita = (p, uid) => `<span class="carita" style="--cc:${esc((p && p.color) || '#475569')}" title="${esc((p && p.nombre) || '')}">${esc((p && p.emoji) || '👤')}</span>`;
+const VENTAJAS_GRUPO = `<ul class="ventajas"><li>✅ Ver quién ha visitado cada sitio y quién quiere ir 🔖</li><li>📅 Proponer planes y apuntarte con un toque</li>
+  <li>👍 Decir qué días puedes (findes, festivos y vísperas)</li><li>➕ Añadir guachinches, restaurantes y eventos que conozcáis</li></ul>`;
 function viewNube() {
   const aviso = NUBE.msg ? `<div class="aviso">${esc(NUBE.msg)}</div>` : '';
   if (!nubeConfigurada()) return `<div class="vacio"><div class="grande">👥</div><p class="big">El grupo aún no está conectado</p>
@@ -289,7 +291,8 @@ function viewNube() {
   if (NUBE.estado === 'error') return aviso;
   if (NUBE.estado !== 'lista') return '<div class="vacio"><div class="grande">⏳</div>Conectando…</div>';
   if (!NUBE.user) return `<div class="vacio"><div class="grande">👥</div><p class="big">Escapadas en grupo</p>
-    <p class="muted">Entra con tu cuenta de Google (una vez en cada móvil) para unirte a la Familia de A Muchis y ver lo que ha marcado cada uno.</p></div>
+    <p class="muted">Entra con tu cuenta de Google (una vez en cada móvil) para unirte a la Familia de A Muchis.</p></div>
+    <div class="card"><b>Qué ganas al entrar</b>${VENTAJAS_GRUPO}</div>
     ${aviso}<button data-nube="entrar">Entrar con Google</button>
     <p class="muted">Solo se guarda tu nombre y el emoji que elijas; tu correo no se enseña a nadie.</p>`;
   if (!NUBE.perfil) return '<div class="vacio"><div class="grande">⏳</div>Cargando tu perfil…</div>' + aviso;
@@ -303,6 +306,7 @@ function viewNube() {
   const yo = `<div class="card row yo">${carita(p)}<div style="flex:1"><b>${esc(p.nombre)}</b><div class="muted">${esc(NUBE.user.email || '')}</div></div><button class="sec mini" data-nube="editar">✏️</button></div>`;
   if (!NUBE.grupo) return `${yo}${aviso}
     <h2>👥 Grupo</h2>
+    <div class="card"><b>Qué ganas en un grupo</b>${VENTAJAS_GRUPO}</div>
     <div class="card"><p>¿Alguien te ha pasado un código? Escríbelo aquí:</p>
       <input id="codigo" placeholder="ABCD-2345" autocapitalize="characters" autocomplete="off" maxlength="12">
       <button data-nube="unirse" ${NUBE.ocupado ? 'disabled' : ''}>Unirme con código</button></div>

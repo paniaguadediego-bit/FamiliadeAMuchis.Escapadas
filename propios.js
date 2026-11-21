@@ -113,7 +113,7 @@ document.addEventListener('input', e => {
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-propio]'); if (!b) return;
   const a = b.dataset.propio;
-  if (a === 'nuevo') { propioForm = { tipo: b.dataset.tipo || 'guachinche', municipio: '', lat: null, lon: null }; render(); const n = document.getElementById('pf-n'); if (n) n.focus(); }
+  if (a === 'nuevo') { propioForm = { tipo: b.dataset.tipo || 'guachinche', municipio: '', lat: null, lon: null, nombre: b.dataset.nombre || '' }; render(); const n = document.getElementById('pf-n'); if (n) n.focus(); }
   else if (a === 'cerrar') { propioForm = null; render(); }
   else if (a === 'guardar') guardarPropio();
   else if (a === 'gps') {

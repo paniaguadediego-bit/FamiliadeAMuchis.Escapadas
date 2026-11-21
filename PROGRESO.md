@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v26 · Búsqueda sin resultados y ventajas del grupo (2026-11-21)
+- Buscar algo que no está explica por qué (guachinches y restaurantes los añade el grupo; el catálogo sale de
+  Wikipedia) y ofrece: quitar filtros, 🌐 buscar en Google Maps o «➕ Añadir» con el nombre ya escrito.
+- Pestaña Grupo sin sesión o sin grupo: «Qué ganas» con las 4 ventajas.
+- Prueba nueva: `node pruebas/sin_resultados.js`.
+
 ## v25 · Catálogo: revisión de los ⚠️ VERIFICAR (2026-11-21)
 - Revisados los 88 sitios marcados con su artículo de Wikipedia: 36 confirmados (se quita el aviso) y 52 siguen
   marcados, ahora con el motivo visible en la ficha («⚠️ VERIFICAR: …»).

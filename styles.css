@@ -650,4 +650,7 @@ i.cal-p { display: inline-block; min-width: .55rem; height: .55rem; border-radiu
 .dia-sel .finde-cab button { background: var(--pri); color: var(--pri-fg); }
 .cal-v { font-size: .62rem; }
 .dispo .dias .dia:only-child { max-width: 8rem; }
-:root { --css-ver: "v25"; }
+/* v26: sin resultados y ventajas del grupo */
+.sin-res p { margin: 0 0 6px; }
+.ventajas { margin: 6px 0 0; padding-left: 0; list-style: none; display: grid; gap: 4px; font-size: .88rem; }
+:root { --css-ver: "v26"; }
