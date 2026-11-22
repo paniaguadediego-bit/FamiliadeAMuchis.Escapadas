@@ -319,6 +319,7 @@ function viewNube() {
     <div class="card"><div class="muted">Código para invitar</div><div class="codigo">${esc(codigoBonito(g.id))}</div>
       <button class="sec" data-nube="compartir">📤 Pasar el código</button></div>
     <div class="card">${ms.map(([id, m]) => `<div class="row miembro">${carita(m)}<span>${esc((m && m.nombre) || '…')}${id === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span></div>`).join('')}</div>
+    ${typeof pasaporteHTML === 'function' ? pasaporteHTML() : ''}
     ${resumenGrupoHTML()}
     <div class="row"><button class="sec" data-nube="salirgrupo">Salir del grupo</button><button class="sec" data-nube="salir">Cerrar sesión</button></div>`;
 }

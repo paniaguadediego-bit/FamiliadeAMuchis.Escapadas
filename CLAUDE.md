@@ -409,3 +409,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 ## Colecciones (v33)
 - `COLECCIONES` (app.js): [icono, nombre, filtro, soloGrupo]; filtro `fCol` en Explorar. Solo con datos ya presentes (tipo, `ninos`, texto, marcas).
   Iconos: 🌧️ lluvia · 💦 charcos · 🌱 sin estrenar (los demás, los de su tipo o marca).
+
+## Pasaporte (v34)
+- 🛂 `pasaporteHTML()` (diario.js): municipio «hecho» si hay algún sitio con ✅ (tuyo o, con grupo, de alguien). Grupo → en la
+  pestaña Grupo; sin grupo → en Más. 🏁 reto = zona con menos municipios por completar.

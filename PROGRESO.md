@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v34 · Pasaporte de Tenerife (2026-11-22)
+- 🛂 Los 31 municipios en casillas que se colorean al visitar algo allí, progreso por zonas y un reto (la zona más
+  cerca de completarse). Con grupo, en la pestaña Grupo y con lo de todos; sin grupo, en Más. Prueba: `node pruebas/pasaporte.js`.
+
 ## v33 · Colecciones (2026-11-21)
 - Explorar → Lista empieza con colecciones: 🌧️ Día de lluvia, 🧸 Con niños, 💦 Charcos y piscinas, 🍷 Ruta de guachinches,
   👀 Miradores, 🌱 Nadie del grupo ha ido y 🔖 Lo que el grupo quiere (`COLECCIONES` en app.js, con datos de la app).

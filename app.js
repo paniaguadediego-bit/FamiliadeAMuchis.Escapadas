@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v33';
+const VERSION = 'v34';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -535,6 +535,7 @@ function viewMas() {
     <div class="chips">${Object.entries(TEMAS).map(([k, [ic, n]]) => `<button class="chip ${t === k ? 'on' : ''}" data-settema="${k}">${ic} ${n}</button>`).join('')}</div>
     <h2>🔠 Letra</h2>
     <div class="chips">${Object.entries(LETRAS).map(([k, n]) => `<button class="chip ${load('esc.letra', 'compacta') === k ? 'on' : ''}" data-setletra="${k}" style="font-size:${k === 'compacta' ? '.78rem' : k === 'normal' ? '.88rem' : '1rem'}">Aa ${n}</button>`).join('')}</div>
+    ${!enGrupo() ? pasaporteHTML() : ''}
     <h2>🎉 Festivos</h2>
     ${festivosHTML()}
     <h2>📷 Fotos sin conexión</h2>

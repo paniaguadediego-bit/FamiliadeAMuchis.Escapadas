@@ -725,4 +725,16 @@ button.col { flex: 0 0 auto; width: 7.2rem; min-height: 5.4rem; margin: 0; paddi
   background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sombra); scroll-snap-align: start; font-size: .74rem; line-height: 1.15; text-align: center; }
 button.col span { font-size: 1.6rem; } button.col small { color: var(--muted); font-size: .66rem; }
 button.col.on { background: var(--pri); color: var(--pri-fg); border-color: transparent; } button.col.on small { color: var(--pri-fg); }
-:root { --css-ver: "v33"; }
+/* v34: pasaporte */
+.pas-cab { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; font-size: .9rem; }
+.pas-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.pas-m { border-radius: 10px; padding: 5px 3px; text-align: center; background: var(--bg); border: 1px dashed var(--line); color: var(--muted); display: flex; flex-direction: column; align-items: center; line-height: 1.1; min-height: 4rem; }
+.pas-m.si { background: linear-gradient(135deg, hsl(var(--h) 55% 30%), hsl(calc(var(--h) + 35) 62% 44%)); color: #fff; border: 0; }
+.pas-ic { font-size: 1.15rem; filter: grayscale(1); opacity: .5; } .pas-m.si .pas-ic { filter: none; opacity: 1; }
+.pas-n { font-size: .62rem; font-weight: 700; margin-top: 2px; } .pas-m small { font-size: .58rem; }
+.pas-z { margin-top: 10px; display: grid; gap: 4px; }
+.pas-zona { display: grid; grid-template-columns: 8.5rem 1fr 2.4rem; align-items: center; gap: 6px; font-size: .76rem; }
+.pas-barra { height: 7px; border-radius: 999px; background: var(--line); overflow: hidden; } .pas-barra i { display: block; height: 100%; background: var(--pri); }
+.pas-zona small { text-align: right; color: var(--muted); }
+.pas-reto { font-size: .8rem; margin: 8px 0 0; text-align: center; }
+:root { --css-ver: "v34"; }
