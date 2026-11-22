@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v39 · Pestaña Cultura (2026-11-22)
+- 🎨 Cultura: interruptor 🎬 Cine (cartelera) · 🎭 Teatro · 🎵 Música (próximos 4 meses por semanas plegables, por zona).
+  Eventos se queda con fiestas, deporte, expos, ferias, niños y otros. Un concierto u obra se abre en Cultura.
+- Prueba nueva: `node pruebas/cultura.js`.
+
 ## v38 · Planes sin tiempo y filtros sin repeticiones (2026-11-22)
 - Planes ya no muestra el tiempo (tiene su pestaña): fuera la línea de la bienvenida y el botón redondo.
 - Explorar → Lista: las colecciones repetían los filtros; las dos que no (🌧️ Día de lluvia, 💦 Charcos y piscinas) pasan

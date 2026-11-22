@@ -423,3 +423,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Mapa: `mpMunis` (esc.mpmunis), panel «📍 Municipios» por zonas; `mpEncuadrar()` ajusta el zoom a los puntos.
 - Calendario: siempre 5 semanas desde el lunes actual (`fechasCal`); ya no hay vista de mes.
 - Eventos: `evCats` (Set, esc.evcats; vacía = nada); «Solo cine» = cartelera completa; semanas en <details> (`evCerradas`).
+
+## Cultura (v39) y filtros (v38)
+- Pestañas (7): 🏠 Planes · 🌤️ Tiempo · 🧭 Explorar · 🎟️ Eventos · 🎨 Cultura · 👥 Grupo · ☰ Más. Planes no muestra el tiempo.
+- `CULTURA = ['cine','teatro','musica']` (eventos.js): fuera de las categorías de Eventos; `viewCultura()` con `culSec` (esc.cultura).
+- Colecciones: solo 🌧️ Día de lluvia y 💦 Charcos (no repiten filtros), en la fila temática de los filtros con 🧸.

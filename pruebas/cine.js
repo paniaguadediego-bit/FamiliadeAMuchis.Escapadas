@@ -3,9 +3,7 @@ const P = require('./comun');
 (async () => {
   const { p, errores, cerrar } = await P.abrir();
   await p.route(/acsta\.net/, r => r.abort());
-  await P.tab(p, 'eventos'); await p.waitForTimeout(300);
-  console.log('Aviso en Eventos:', (await p.textContent('.ev-enlace[data-evcats="cine"]').catch(() => 'no sale')).replace(/\s+/g, ' ').trim());
-  await p.click('.ev-enlace[data-evcats="cine"]'); await p.waitForTimeout(300);
+  await P.tab(p, 'cultura'); await p.waitForTimeout(300);
   console.log('Cines:', await p.$$eval('[data-cine]', x => x.map(e => e.textContent.trim()).join(' | ')));
   console.log('Películas en el primero:', await p.locator('.peli').count());
   await p.click('[data-cinevo]'); await p.waitForTimeout(200);

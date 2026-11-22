@@ -770,4 +770,6 @@ details.ev-sem > summary::-webkit-details-marker { display: none; }
 details.ev-sem > summary::after { content: "▾"; color: var(--muted); margin-left: 6px; } details.ev-sem:not([open]) > summary::after { content: "▸"; }
 details.ev-sem > summary small { margin-left: auto; color: var(--muted); font-weight: 500; }
 .rapidos { grid-template-columns: repeat(3, 1fr); }
-:root { --css-ver: "v38"; }
+.conmutador.cultura button { font-size: .9rem; gap: 5px; }
+nav#tabs button { font-size: .58rem; } nav#tabs button span { font-size: 1.1rem; }
+:root { --css-ver: "v39"; }

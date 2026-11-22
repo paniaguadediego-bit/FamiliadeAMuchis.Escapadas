@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v38';
+const VERSION = 'v39';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -113,8 +113,8 @@ applyLetra();
 // ---------- pestañas ----------
 // 5 pestañas (como las apps más valoradas). «Explorar» es Sitios y Mapa en una sola pestaña con «Lista ⇄ Mapa»;
 // el Tiempo se abre desde Planes. Las vistas internas siguen siendo: finde, tiempo, eventos, sitios, mapa, grupo, mas.
-const TABS = [['finde', 'Planes', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['explorar', 'Explorar', '🧭'], ['eventos', 'Eventos', '🎟️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
-const VISTAS = { finde: 'Escapadas', tiempo: 'Tiempo', eventos: 'Eventos', sitios: 'Explorar', mapa: 'Explorar', grupo: 'Grupo', mas: 'Más' };
+const TABS = [['finde', 'Planes', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['explorar', 'Explorar', '🧭'], ['eventos', 'Eventos', '🎟️'], ['cultura', 'Cultura', '🎨'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const VISTAS = { finde: 'Escapadas', tiempo: 'Tiempo', eventos: 'Eventos', cultura: 'Cultura', sitios: 'Explorar', mapa: 'Explorar', grupo: 'Grupo', mas: 'Más' };
 const pestañaDe = t => t === 'sitios' || t === 'mapa' ? 'explorar' : t;
 let tab = load('esc.tab', 'finde');
 if (!VISTAS[tab]) tab = 'finde';
@@ -131,10 +131,10 @@ function render() {
   pintarTabs();
   $('#title').textContent = VISTAS[tab] || 'Escapadas';
   const v = $('#view');
-  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'sitios' ? conmutador() + viewSitios() : tab === 'mapa' ? conmutador() + viewMapa()
+  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'cultura' ? viewCultura() : tab === 'sitios' ? conmutador() + viewSitios() : tab === 'mapa' ? conmutador() + viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
-  if ((tab === 'sitios' || tab === 'eventos') && irFicha) {
+  if ((tab === 'sitios' || tab === 'eventos' || tab === 'cultura') && irFicha) {
     // Directo a la ficha (también si las fotos de encima tardan en cargar y la empujan).
     const id = irFicha; irFicha = null; let y = null;
     const ver = () => { const el = document.getElementById('f-' + id); if (!el || (y !== null && Math.abs(scrollY - y) > 4)) return; el.scrollIntoView({ block: 'start' }); y = scrollY; };
@@ -239,6 +239,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-irficha]'); if (!b) return;
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
   // Los eventos tienen su pestaña.
+  if (s.tipo === 'evento' && typeof CULTURA !== 'undefined' && CULTURA.includes(catDe(s))) { abiertas.add(id); irFicha = id; culSec = catDe(s); evZona = ''; evCerradas.clear(); ir('cultura'); return; }
   if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; ponerCats(Object.keys(CAT_EV)); evZona = ''; evCerradas.clear(); evRango = 'todo'; ir('eventos'); return; }
   abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = fNinos = fCol = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
