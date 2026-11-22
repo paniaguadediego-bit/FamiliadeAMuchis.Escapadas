@@ -791,4 +791,4 @@ details.novedades > summary { cursor: pointer; font-weight: 800; font-size: .92r
 .ev-lista button.ev-ban, .ev-lista button.ev-ban:first-child { min-height: 6.2rem; }
 .ev-lista .ev-acc { justify-content: flex-end; margin-top: -2px; }
 .ver-mas { display: block; margin: 6px auto 0; font-size: .82rem; }
-:root { --css-ver: "v43"; }
+:root { --css-ver: "v44"; }

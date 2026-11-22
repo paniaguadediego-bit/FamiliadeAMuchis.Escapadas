@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v44 · Programación del Auditorio de Tenerife (2026-11-22)
+- Nueva fuente automática: el Auditorio de Tenerife (robots.txt lo permite), con su programación hasta octubre de 2027:
+  `herramientas/agenda_auditorio.py` → `data/agenda_auditorio.json` (lunes y jueves, con la agenda de Turismo).
+- La app junta las dos agendas y quita los repetidos (mismo nombre y día). Cultura: de 14 a 94 conciertos y de 10 a 36
+  obras en el próximo año. Las novedades del Auditorio también saldrán en 🆕.
+- Teatro Leal y Teatro Guimerá: pendientes de revisar (su programación se publica en el Auditorio o en sus webs).
+
 ## v43 · Planes en lista y retoques (2026-11-22)
 - Planes: «Este finde» y «El que viene» en lista vertical (4 y «Ver más»); los planes del grupo primero y el resto en orden
   aleatorio, que cambia cada vez que se abre la app.

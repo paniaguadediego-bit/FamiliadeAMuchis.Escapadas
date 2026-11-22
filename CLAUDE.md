@@ -445,3 +445,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   anteriores a v42 quedaron con '').
 - App: `novedades(area)` (eventos | cultura) = agenda con `visto` en los últimos 21 días; contador 🆕 en la pestaña con lo
   posterior a `esc.novvisto[area]` (se pone a hoy al abrirla). Notificaciones del móvil: descartadas por ahora (FCM).
+
+## Auditorio de Tenerife (v44)
+- `herramientas/agenda_auditorio.py`: sitemap `evento-sitemap*.xml` (páginas /es/evento/ modificadas en el último año); del texto:
+  «N Función/es | fechas | Tipo/Ciclo | Sala | Entradas». Año deducido (futuro o < 1 mes). ids `au-…`, mismo formato que agenda.json.
+- App: `cargarAgenda(doc, 'tenerife'|'auditorio')` junta y quita repetidos (nombre normalizado + día de inicio). Crédito de foto según fuente.

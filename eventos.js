@@ -83,15 +83,24 @@ const CAT_EV = { fiestas: ['🎉', 'Fiestas'], musica: ['🎵', 'Música'], cine
   expo: ['🖼️', 'Exposiciones'], feria: ['🛍️', 'Ferias y mercados'], ninos: ['🧸', 'Con niños'], otros: ['🎟️', 'Otros'] };
 const catDe = s => s.categoria || (s.tipo === 'evento' ? 'fiestas' : 'otros');
 const catIc = s => (CAT_EV[catDe(s)] || CAT_EV.otros)[0];
-function cargarAgenda(d) {
-  AGENDA_INFO = d && { fuente: d.fuente, actualizado: d.actualizado };
-  FOTOS_AG = {};
-  AGENDA_SITIOS = ((d && d.eventos) || []).filter(e => e.hasta >= hoyISO()).map(e => {
-    if (e.foto) FOTOS_AG[e.id] = { src: e.foto, credito: 'Turismo de Tenerife', enlace: e.url };
-    return { id: e.id, nombre: e.nombre, tipo: 'evento', municipio: e.municipio || '', lat: e.lat, lon: e.lon, aprox: !!e.aprox, agenda: true,
-      categoria: e.categoria, lugar: e.lugar, desc: e.extracto || '', fuente: 'Agenda de Turismo de Tenerife', url: e.url,
-      cuando: { tipo: 'fechas', lista: [[e.desde, e.hasta]] }, visto: e.visto || '' };
-  });
+// Varias agendas (Turismo de Tenerife y, desde v44, Auditorio de Tenerife): se juntan y se quitan los repetidos
+// (mismo nombre y misma fecha de inicio; se queda la primera fuente).
+const AGENDAS = {}, FUENTE_AG = { tenerife: ['Agenda de Turismo de Tenerife', 'Turismo de Tenerife'], auditorio: ['Auditorio de Tenerife', 'Auditorio de Tenerife'] };
+function cargarAgenda(d, clave = 'tenerife') {
+  AGENDAS[clave] = d;
+  if (clave === 'tenerife') AGENDA_INFO = d && { fuente: d.fuente, actualizado: d.actualizado };
+  FOTOS_AG = {}; const vistos = new Set(), norm = t => sinTildes(t).replace(/[^a-z0-9]+/g, ' ').trim();
+  AGENDA_SITIOS = [];
+  for (const k of Object.keys(FUENTE_AG)) {
+    const doc = AGENDAS[k]; if (!doc) continue;
+    for (const e of (doc.eventos || []).filter(e => e.hasta >= hoyISO())) {
+      const clv = norm(e.nombre) + '|' + e.desde; if (vistos.has(clv)) continue; vistos.add(clv);
+      if (e.foto) FOTOS_AG[e.id] = { src: e.foto, credito: FUENTE_AG[k][1], enlace: e.url };
+      AGENDA_SITIOS.push({ id: e.id, nombre: e.nombre, tipo: 'evento', municipio: e.municipio || '', lat: e.lat, lon: e.lon, aprox: !!e.aprox, agenda: true,
+        categoria: e.categoria, lugar: e.lugar, desc: e.extracto || '', fuente: FUENTE_AG[k][0], url: e.url,
+        cuando: { tipo: 'fechas', lista: [[e.desde, e.hasta]] }, visto: e.visto || '' });
+    }
+  }
 }
 
 // ---------- 🎬 Cartelera de cine (data/cine.json: SensaCine, cada mañana con GitHub Actions; solo las sesiones del día) ----------
