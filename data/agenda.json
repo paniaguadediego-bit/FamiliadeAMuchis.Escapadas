@@ -1,6 +1,6 @@
 {
 "fuente": "Turismo de Tenerife · webtenerife.com/agenda",
-"actualizado": "2026-11-20T18:29Z",
+"actualizado": "2026-11-22T08:35Z",
 "eventos": [
 {
 "id": "ag-mientras-seamos-salvajes",
@@ -15,22 +15,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/mientras-seamos-salvajes/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
-},
-{
-"id": "ag-lohengrin",
-"nombre": "Lohengrin",
-"desde": "2026-11-15",
-"hasta": "2026-11-21",
-"lugar": "Auditorio de Tenerife, Avenida de la Constitucion, 1, , 38003 Santa Cruz de Tenerife",
-"municipio": "Santa Cruz de Tenerife",
-"categoria": "teatro",
-"extracto": "La ópera Lohengrin, de Richard Wagner, llega al Auditorio de Tenerife los días 15, 18 y 21 de noviembre dentro de la temporada de Ópera de Tenerife. Esta ópera",
-"foto": "https://www.webtenerife.com/-/media/files/events/2026/11/lohengrin_96dpi1.png",
-"url": "https://www.webtenerife.com/agenda/2026/11/lohengrin/",
-"lat": 28.56154,
-"lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-deka-tenerife-2026",
@@ -45,7 +31,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/deka-tenerife-2026/",
 "lat": null,
 "lon": null,
-"aprox": false
+"aprox": false,
+"visto": ""
 },
 {
 "id": "ag-el-viaje-de-coclea",
@@ -60,22 +47,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/el-viaje-de-coclea/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
-},
-{
-"id": "ag-el-de-las-tinieblas-a-la-luz",
-"nombre": "Él. De las tinieblas a la luz",
-"desde": "2026-11-21",
-"hasta": "2026-11-21",
-"lugar": "C. Obispo Rey Redondo, 50, 38201 La Laguna, Santa Cruz de Tenerife",
-"municipio": "San Cristóbal de La Laguna",
-"categoria": "teatro",
-"extracto": "Él. De las tinieblas a la luz llega al Teatro Leal de La Laguna el próximo 21 de noviembre con una creación inspirada en la vida y la obra de Mercedes Pinto autora",
-"foto": "https://www.webtenerife.com/-/media/files/events/2026/11/elde_las_tinieblas_a_la_luz_96dpi1.png",
-"url": "https://www.webtenerife.com/agenda/2026/11/el-de-las-tinieblas-a-la-luz/",
-"lat": 28.56861,
-"lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-festival-mar-abierto-sole-gimenez",
@@ -90,7 +63,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/festival-mar-abierto-sole-gimenez/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-lucia-galan-en-tenerife",
@@ -105,7 +79,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/lucia-galan-en-tenerife/",
 "lat": 28.37952,
 "lon": -16.58363,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-paul-lewis",
@@ -120,7 +95,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/paul-lewis/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-surfest-las-americas-pro",
@@ -135,7 +111,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/surfest-las-americas-pro/",
 "lat": 28.0675,
 "lon": -16.7325,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-cuarta-de-chaikovski",
@@ -150,7 +127,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/cuarta-de-chaikovski/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-feboda",
@@ -165,7 +143,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/feboda/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-an-idiots-guide-to-wine-comedia-entre-copas-en-tenerife",
@@ -180,7 +159,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/an-idiots-guide-to-wine-comedia-entre-copas-en-tenerife/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-sergio-dalma-en-tenerife",
@@ -195,7 +175,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/sergio-dalma-en-tenerife/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-soul-sanet-alma-de-navidad-en-tenerife",
@@ -210,7 +191,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/soul-sanet-alma-de-navidad-en-tenerife/",
 "lat": 28.44028,
 "lon": -16.43889,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-tenerife-spartan-weekend-2026",
@@ -225,7 +207,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/tenerife-spartan-weekend-2026/",
 "lat": 28.41444,
 "lon": -16.55861,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-xii-5km-nocturna-el-rosario-2026",
@@ -240,7 +223,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/xii-5km-nocturna-el-rosario-2026/",
 "lat": 28.40444,
 "lon": -16.33139,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-miguel-lago-lago-reislas-2026",
@@ -255,7 +239,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/11/miguel-lago-lago-reislas-2026/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-michel-gallero",
@@ -270,7 +255,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/michel-gallero/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-maru-candel",
@@ -285,7 +271,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/maru-candel/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-oleflamenco-show",
@@ -300,7 +287,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/oleflamenco-show/",
 "lat": 28.16028,
 "lon": -16.76694,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-21-gospel-canarias-festival-2026",
@@ -315,7 +303,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/21-gospel-canarias-festival-2026/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-jaywheeler",
@@ -330,7 +319,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/jaywheeler/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-k42-anaga-marathon",
@@ -345,7 +335,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/k42-anaga-marathon/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-festivalamateur",
@@ -360,7 +351,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/festivalamateur/",
 "lat": 28.4597,
 "lon": -16.4214,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-the-rave-kulture-en-tenerife",
@@ -375,7 +367,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/the-rave-kulture-en-tenerife/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-mao-fujita",
@@ -390,7 +383,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/mao-fujita/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-cross-navideno-puerto-de-la-cruz-2026",
@@ -405,7 +399,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/cross-navideno-puerto-de-la-cruz-2026/",
 "lat": 28.41444,
 "lon": -16.55861,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-echohyracesantacruz",
@@ -420,7 +415,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/echohyracesantacruz/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-phil-collins-tribute-show",
@@ -435,7 +431,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/phil-collins-tribute-show/",
 "lat": 28.41444,
 "lon": -16.55861,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-the-jury-experience-muerte-por-ia",
@@ -450,7 +447,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/the-jury-experience-muerte-por-ia/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-alex-ubago",
@@ -465,7 +463,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/alex-ubago/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-pablo-sainz-villegas",
@@ -480,7 +479,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/pablo-sainz-villegas/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-xxxv-pit-2026",
@@ -495,7 +495,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/xxxv-pit-2026/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-el-elfo",
@@ -510,7 +511,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/el-elfo/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-the-soul-of-gospel",
@@ -525,7 +527,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/the-soul-of-gospel/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-concierto-navidad-en-el-puerto-de-santa-cruz",
@@ -540,7 +543,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/concierto-navidad-en-el-puerto-de-santa-cruz/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-el-fantasma-de-la-opera",
@@ -555,7 +559,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/el-fantasma-de-la-opera/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-san-silvestre-candelaria-2026",
@@ -570,7 +575,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/san-silvestre-candelaria-2026/",
 "lat": 28.35128,
 "lon": -16.36978,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-xi-san-silvestre-tejinera",
@@ -585,7 +591,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/xi-san-silvestre-tejinera/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-xlii-san-silvestre-lagunera",
@@ -600,7 +607,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/xlii-san-silvestre-lagunera/",
 "lat": 28.56861,
 "lon": -16.32528,
-"aprox": true
+"aprox": true,
+"visto": ""
 },
 {
 "id": "ag-day-one-2027",
@@ -615,7 +623,8 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/day-one-2027/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true
+"aprox": true,
+"visto": ""
 }
 ]
 }
