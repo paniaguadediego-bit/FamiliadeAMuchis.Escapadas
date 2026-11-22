@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v38 · Planes sin tiempo y filtros sin repeticiones (2026-11-22)
+- Planes ya no muestra el tiempo (tiene su pestaña): fuera la línea de la bienvenida y el botón redondo.
+- Explorar → Lista: las colecciones repetían los filtros; las dos que no (🌧️ Día de lluvia, 💦 Charcos y piscinas) pasan
+  a una fila de los filtros junto a 🧸 Con niños.
+
 ## v37 · Más eventos conocidos (2026-11-22)
 - 5 eventos anuales con fecha de su fuente (Wikipedia), buscados por el investigador y revisados: Corazones de Tejina
   (destacado), Baile de Magos de Santa Cruz, Cristo de Tacoronte, Virgen del Carmen de Los Cristianos y San Isidro de

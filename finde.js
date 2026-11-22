@@ -279,7 +279,6 @@ function portadaHTML() {
   const lineas = [
     g ? (ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} este finde${voy ? ` · vas a ${voy}` : ''}` : '🙋 Aún no hay planes este finde') : '👥 Entra en el grupo para ver los planes',
     evs ? `🎟️ ${evs} evento${evs > 1 ? 's' : ''} en la isla` : '',
-    t ? `<button class="enlace claro" data-tab="tiempo">${esc(t)} ›</button>` : '',
     mej ? `<button class="enlace claro" data-cal="${mej.f}" data-calmesir="${mej.f.slice(0, 7)}" data-irCal="1">💫 Mejor día: ${esc(nomDia(mej.k))}${mej.k.endsWith('T') ? ' ' + +mej.f.slice(8) : ''} (${mej.si}/${(NUBE.grupo.miembros || []).length}) ›</button>` : ''
   ].filter(Boolean);
   const foto = fotoSrc('teide') ? `<img class="portada-foto" src="${esc(fotoSrc('teide'))}" alt="" loading="lazy" onerror="this.remove()">` : '';
@@ -290,7 +289,7 @@ function portadaHTML() {
   else if (panelPlanes === 'agenda' && typeof agendaHTML === 'function') panel = agendaHTML();
   return `<div class="portada-h">${foto}<div class="portada-tx"><div class="portada-hola">${esc(saludo + nombre)} 👋</div>
       <div class="portada-f">Este finde · ${esc(rango)}</div>${lineas.map(l => `<div class="portada-l">${l}</div>`).join('')}</div></div>
-    <div class="rapidos">${boton('plan', '➕', 'Plan')}${boton('sorp', '🎲', 'Sorpréndeme')}${boton('agenda', '🎭', '¿Qué hay?')}${boton('tiempo', '🌤️', 'Tiempo')}</div>
+    <div class="rapidos">${boton('plan', '➕', 'Plan')}${boton('sorp', '🎲', 'Sorpréndeme')}${boton('agenda', '🎭', '¿Qué hay?')}</div>
     ${panel ? `<div class="panel-rapido">${panel}</div>` : ''}`;
 }
 document.addEventListener('click', e => {

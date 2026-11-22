@@ -769,4 +769,5 @@ details.ev-sem { margin: 8px 0; } details.ev-sem > summary { display: flex; just
 details.ev-sem > summary::-webkit-details-marker { display: none; }
 details.ev-sem > summary::after { content: "▾"; color: var(--muted); margin-left: 6px; } details.ev-sem:not([open]) > summary::after { content: "▸"; }
 details.ev-sem > summary small { margin-left: auto; color: var(--muted); font-weight: 500; }
-:root { --css-ver: "v37"; }
+.rapidos { grid-template-columns: repeat(3, 1fr); }
+:root { --css-ver: "v38"; }
