@@ -417,3 +417,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 ## Comentarios (v35)
 - 💬 `grupos/{gid}/comentarios/{id}` = { planId, uid, texto (≤300), creado (ms) }; una escucha (`seguirComentarios`) →
   `NUBE.coment[planId]`. Reglas: leer el grupo; crear con tu uid; borrar solo los tuyos.
+
+## v36 (pedido del usuario)
+- Pestañas (6): 🏠 Planes · 🌤️ Tiempo · 🧭 Explorar · 🎟️ Eventos · 👥 Grupo · ☰ Más.
+- Mapa: `mpMunis` (esc.mpmunis), panel «📍 Municipios» por zonas; `mpEncuadrar()` ajusta el zoom a los puntos.
+- Calendario: siempre 5 semanas desde el lunes actual (`fechasCal`); ya no hay vista de mes.
+- Eventos: `evCats` (Set, esc.evcats; vacía = nada); «Solo cine» = cartelera completa; semanas en <details> (`evCerradas`).

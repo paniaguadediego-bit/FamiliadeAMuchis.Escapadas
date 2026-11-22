@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v35';
+const VERSION = 'v36';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -113,9 +113,9 @@ applyLetra();
 // ---------- pestañas ----------
 // 5 pestañas (como las apps más valoradas). «Explorar» es Sitios y Mapa en una sola pestaña con «Lista ⇄ Mapa»;
 // el Tiempo se abre desde Planes. Las vistas internas siguen siendo: finde, tiempo, eventos, sitios, mapa, grupo, mas.
-const TABS = [['finde', 'Planes', '🏠'], ['explorar', 'Explorar', '🧭'], ['eventos', 'Eventos', '🎟️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const TABS = [['finde', 'Planes', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['explorar', 'Explorar', '🧭'], ['eventos', 'Eventos', '🎟️'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
 const VISTAS = { finde: 'Escapadas', tiempo: 'Tiempo', eventos: 'Eventos', sitios: 'Explorar', mapa: 'Explorar', grupo: 'Grupo', mas: 'Más' };
-const pestañaDe = t => t === 'sitios' || t === 'mapa' ? 'explorar' : t === 'tiempo' ? 'finde' : t;
+const pestañaDe = t => t === 'sitios' || t === 'mapa' ? 'explorar' : t;
 let tab = load('esc.tab', 'finde');
 if (!VISTAS[tab]) tab = 'finde';
 function ir(t) { if (t === 'explorar') t = load('esc.explorar', 'sitios'); if (t === 'sitios' || t === 'mapa') save('esc.explorar', t); tab = t; save('esc.tab', t); window.scrollTo(0, 0); render(); }
@@ -126,7 +126,7 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-tab]
 $('#buscabtn').addEventListener('click', () => { ir('sitios'); const i = $('#q'); if (i) i.focus(); });
 
 // Explorar: «📋 Lista ⇄ 🗺️ Mapa» arriba (como AllTrails).
-const conmutador = () => MP.elegir ? '' : `<div class="conmutador" role="tablist"><button class="${tab === 'sitios' ? 'on' : ''}" data-tab="sitios" role="tab">📋 Lista</button><button class="${tab === 'mapa' ? 'on' : ''}" data-tab="mapa" role="tab">🗺️ Mapa</button></div>`;
+const conmutador = () => MP.elegir ? '' : `<div class="conmutador" role="tablist"><button class="${tab === 'sitios' ? 'on' : ''}" data-tab="sitios" role="tab"><span>📋</span>Lista</button><button class="${tab === 'mapa' ? 'on' : ''}" data-tab="mapa" role="tab"><span>🗺️</span>Mapa</button></div>`;
 function render() {
   pintarTabs();
   $('#title').textContent = VISTAS[tab] || 'Escapadas';
@@ -239,7 +239,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-irficha]'); if (!b) return;
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
   // Los eventos tienen su pestaña.
-  if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; evCat = ''; evZona = ''; evRango = 'todo'; ir('eventos'); return; }
+  if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; ponerCats(Object.keys(CAT_EV)); evZona = ''; evCerradas.clear(); evRango = 'todo'; ir('eventos'); return; }
   abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = fNinos = fCol = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
 
@@ -263,7 +263,7 @@ const COLECCIONES = {
 };
 function coleccionesHTML() {
   const cs = Object.entries(COLECCIONES).filter(([, c]) => !c[3] || enGrupo()).map(([k, c]) => [k, c, SITIOS.filter(s => enIsla(s) && !s.agenda && s.tipo !== 'evento' && c[2](s)).length]).filter(([, , n]) => n);
-  return `<div class="colecciones">${cs.map(([k, [ic, n], num]) => `<button class="col ${fCol === k ? 'on' : ''}" data-col="${k}"><span>${ic}</span><b>${esc(n)}</b><small>${num} sitio${num === 1 ? '' : 's'}</small></button>`).join('')}</div>`;
+  return `<div class="colecciones"><span class="col-t">📚 Colecciones</span>${cs.map(([k, [ic, n], num]) => `<button class="col ${fCol === k ? 'on' : ''}" data-col="${k}" aria-pressed="${fCol === k}">${ic} ${esc(n)} <small>${num}</small></button>`).join('')}</div>`;
 }
 document.addEventListener('click', e => { const c = e.target.closest('[data-col]'); if (c) { fCol = fCol === c.dataset.col ? '' : c.dataset.col; render(); } });
 let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', fNinos = '', fCol = '', orden = load('esc.orden', 'municipio');
@@ -395,6 +395,21 @@ const MP = { z: null, c: [28.29, -16.6], sel: null, yo: null };
 // Tipos que se ven en el mapa: ninguno elegido = todos; se pueden elegir uno o varios.
 const mpTipos = new Set(load('esc.mptipos', []));
 const mpVe = t => !mpTipos.size || mpTipos.has(t);
+// Municipios que se ven en el mapa (ninguno = todos); al elegirlos, el mapa se encuadra en sus puntos.
+const mpMunis = new Set(load('esc.mpmunis', [])); let mpMunisAbierto = false;
+function mpEncuadrar() {
+  const el = $('#mapa'); if (!el) return; const ps = puntos(); if (!ps.length || !mpMunis.size) { mpEncajar(el.clientWidth, el.clientHeight); mpDibujar(el); return; }
+  const la = ps.map(s => s.lat), lo = ps.map(s => s.lon), [a, b, c, d] = [Math.min(...la), Math.max(...la), Math.min(...lo), Math.max(...lo)];
+  let z = MPZ[1]; while (z > MPZ[0] && (mpX(d, z) - mpX(c, z) > el.clientWidth - 50 || mpY(a, z) - mpY(b, z) > el.clientHeight - 50)) z--;
+  MP.c = [(a + b) / 2, (c + d) / 2]; MP.z = Math.min(z, 15); mpDibujar(el);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-mpmunis]'); if (t) { mpMunisAbierto = !mpMunisAbierto; render(); if (!mpMunisAbierto) mpEncuadrar(); return; }
+  const z = e.target.closest('[data-mpzona]'); if (z) { const ms = [...document.querySelectorAll(`[data-mpzona="${z.dataset.mpzona}"] ~ [data-mpmuni]`)].map(b => b.dataset.mpmuni);
+    const todos = ms.every(m => mpMunis.has(m)); ms.forEach(m => todos ? mpMunis.delete(m) : mpMunis.add(m)); save('esc.mpmunis', [...mpMunis]); MP.sel = null; render(); return; }
+  const m = e.target.closest('[data-mpmuni]'); if (m) { const k = m.dataset.mpmuni; if (!k) mpMunis.clear(); else if (mpMunis.has(k)) mpMunis.delete(k); else mpMunis.add(k);
+    save('esc.mpmunis', [...mpMunis]); MP.sel = null; render(); if (!k) mpEncuadrar(); }
+});
 function viewMapa() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando sitios…</div>';
   const tiposHay = Object.keys(TIPOS).filter(t => SITIOS.some(s => s.tipo === t));
@@ -402,14 +417,18 @@ function viewMapa() {
     <div class="mapa elegir" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-zoom" aria-live="polite"></div><div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>`;
-  return `<div class="mp-tipos">${tiposHay.map(t => `<button class="mp-tipo ${mpTipos.has(t) ? 'on' : ''}" data-mptipo="${t}" aria-pressed="${mpTipos.has(t)}"><span>${tipoIc(t)}</span>${esc(tipoNom(t).split(' ')[0])}</button>`).join('')}${mpTipos.size ? '<button class="mp-tipo todos" data-mptipo="">✕<span class="vh"> Ver todos</span></button>' : ''}</div>
+  const zonasM = Object.entries(ZONAS).map(([z, Z]) => [z, Z, MUNICIPIOS.filter(m => zonaDe(SITIOS.find(s => s.municipio === m && !s.agenda && !s.aprox) || { municipio: m }) === z)]);
+  const munis = `<div class="mp-munis"><button class="mp-mu-btn ${mpMunis.size ? 'act' : ''}" data-mpmunis>📍 Municipios${mpMunis.size ? ` (${mpMunis.size})` : ': todos'} ${mpMunisAbierto ? '▴' : '▾'}</button>
+    ${mpMunisAbierto ? `<div class="mp-mu-panel">${zonasM.map(([z, Z, ms]) => `<div class="mp-mu-z"><button class="mp-mu-zona" data-mpzona="${z}">${Z.ic} ${esc(Z.nom)}</button>${ms.map(m => `<button class="mp-tipo ${mpMunis.has(m) ? 'on' : ''}" data-mpmuni="${esc(m)}">${esc(m)}</button>`).join('')}</div>`).join('')}
+      <div class="mp-mu-pie"><button class="enlace" data-mpmuni="">✕ Todos los municipios</button><button class="mini" data-mpmunis>Ver en el mapa</button></div></div>` : ''}</div>`;
+  return munis + `<div class="mp-tipos">${tiposHay.map(t => `<button class="mp-tipo ${mpTipos.has(t) ? 'on' : ''}" data-mptipo="${t}" aria-pressed="${mpTipos.has(t)}"><span>${tipoIc(t)}</span>${esc(tipoNom(t).split(' ')[0])}</button>`).join('')}${mpTipos.size ? '<button class="mp-tipo todos" data-mptipo="">✕<span class="vh"> Ver todos</span></button>' : ''}</div>
     <div class="mapa" id="mapa"><div class="mp-vista"><div class="mp-capa"></div></div>
       <div class="mp-bot"><button data-mpz="1" aria-label="Acercar">+</button><button data-mpz="-1" aria-label="Alejar">−</button><button data-mpfit aria-label="Ver toda la isla">⤢</button><button data-mpyo aria-label="Dónde estoy">🎯</button></div>
       <div class="mp-zoom" aria-live="polite"></div><div class="mp-attr">© OpenStreetMap</div><div class="mp-info"></div></div>
     <p class="leyenda">Acerca bastante el mapa (＋ o con dos dedos) para ver los iconos; toca un punto para marcarlo. Azul 🔖 quiero ir · verde ✅ visitado · apagado ✖️ no. Sin conexión se ven los puntos sobre la silueta de la isla.</p>`;
 }
 // Los de la agenda solo salen si se elige «Evento» (van al centro de su municipio, aproximados).
-const puntos = () => SITIOS.filter(s => enIsla(s) && (!(s.agenda || s.aprox) || mpTipos.has('evento')) && mpVe(s.tipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
+const puntos = () => SITIOS.filter(s => enIsla(s) && (!mpMunis.size || mpMunis.has(s.municipio)) && (!(s.agenda || s.aprox) || mpTipos.has('evento')) && mpVe(s.tipo) && isFinite(s.lat) && s.lat !== null && isFinite(s.lon));
 // Zoom con la isla entera a la vista (con él se decide cuándo los puntitos pasan a iconos).
 function zEncaje(W, H) {
   const la = ISLA.map(c => c[1]), lo = ISLA.map(c => c[0]);

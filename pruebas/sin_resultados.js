@@ -2,10 +2,10 @@
 const P = require('./comun');
 (async () => {
   const { p, errores, cerrar } = await P.abrir();
-  await P.tab(p, 'sitios'); await p.fill('#q', 'guachinche'); await p.waitForTimeout(400);
+  await P.tab(p, 'sitios'); await p.fill('#q', 'restaurante Casa Pepe'); await p.waitForTimeout(400);
   console.log('Sin grupo:', (await p.textContent('.sin-res')).replace(/\s+/g, ' ').trim());
   await p.evaluate(() => { NUBE.estado = 'lista'; NUBE.user = null; }); await P.tab(p, 'grupo'); console.log('Grupo sin sesión, ventajas:', await p.locator('.ventajas li').count());
-  await P.conGrupo(p); await P.tab(p, 'sitios'); await p.fill('#q', 'Guachinche El Lagar'); await p.waitForTimeout(400);
+  await P.conGrupo(p); await P.tab(p, 'sitios'); await p.fill('#q', 'Guachinche Zzz Prueba'); await p.waitForTimeout(400);
   await p.click('.sin-res [data-propio="nuevo"]'); await p.waitForTimeout(200);
   console.log('Formulario: nombre =', await p.inputValue('#pf-n'), '| tipo =', await p.inputValue('#pf-t'));
   console.log('Captura:', await P.captura(p, 'sin-resultados'));

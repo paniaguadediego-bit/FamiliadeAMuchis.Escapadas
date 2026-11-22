@@ -247,10 +247,10 @@ function calendarioHTML() {
   const [y, m] = calMes.split('-').map(Number), d1 = `${calMes}-01`, nDias = new Date(y, m, 0).getDate();
   const mej = mejorDia(), hueco = (diaSemana(d1) + 6) % 7, yo = NUBE.user.uid, otros = (NUBE.grupo.miembros || []).filter(u => u !== yo);
   let celdas = '<span class="cal-h">L</span><span class="cal-h">M</span><span class="cal-h">X</span><span class="cal-h">J</span><span class="cal-h">V</span><span class="cal-h">S</span><span class="cal-h">D</span>'
-    + (calVista === 'mes' ? '<span></span>'.repeat(hueco) : '');
+    + '';
   // Franja de 2 semanas (desde el lunes de esta) o el mes entero.
   const lunes = masDias(hoy, -((diaSemana(hoy) + 6) % 7));
-  const fechasCal = calVista === 'mes' ? Array.from({ length: nDias }, (_, i) => `${calMes}-${String(i + 1).padStart(2, '0')}`) : Array.from({ length: 14 }, (_, i) => masDias(lunes, i));
+  const fechasCal = Array.from({ length: 35 }, (_, i) => masDias(lunes, i)); // esta semana y las 4 siguientes
   for (const f of fechasCal) {
     const d = +f.slice(8), w = diaSemana(f), fuera = f < hoy || f > limite;
     const fest = festivo(f), visp = esVispera(f) || (w === 5 && !fest), ps = fuera ? [] : planesDelDia(f);
@@ -258,7 +258,7 @@ function calendarioHTML() {
     const si = fuera ? 0 : otros.filter(u => dispoDe(u, k) === 'si').length;
     const cls = ['cal-d', mej && mej.f === f && 'mejor', fuera && 'fuera', f === hoy && 'hoy', (w === 0 || w === 6) && 'finde', fest && 'fest', f === calSel && 'sel', mio && 'm-' + mio].filter(Boolean).join(' ');
     celdas += `<button class="${cls}" ${fuera ? 'disabled' : `data-cal="${f}"`} aria-label="${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }))}${fest ? ', festivo' : ''}${ps.length ? `, ${ps.length} plan` : ''}">
-      <span class="cal-n">${mej && mej.f === f ? '💫' : ''}${d}${calVista !== 'mes' && (d === 1 || f === lunes) ? `<small> ${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { month: 'short' }))}</small>` : ''}</span><span class="cal-m">${esVispera(f) ? '<span class="cal-v" title="Víspera de festivo">🌆</span>' : ''}${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
+      <span class="cal-n">${mej && mej.f === f ? '💫' : ''}${d}${d === 1 || f === lunes ? `<small> ${esc(new Date(f + 'T12:00').toLocaleDateString('es-ES', { month: 'short' }))}</small>` : ''}</span><span class="cal-m">${esVispera(f) ? '<span class="cal-v" title="Víspera de festivo">🌆</span>' : ''}${ps.length ? `<i class="cal-p">${ps.length > 1 ? ps.length : ''}</i>` : ''}${mio ? IC_DISPO[mio] : ''}${si ? `<small>👍${si}</small>` : ''}</span></button>`;
   }
   const mesNom = new Date(d1 + 'T12:00').toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
   const prev = masDias(d1, -1).slice(0, 7), next = masDias(`${calMes}-${nDias}`, 1).slice(0, 7);
@@ -267,8 +267,7 @@ function calendarioHTML() {
   const enDia = new Set(bloqueDe(calSel).dias.map(k => k.slice(0, 10)));
   const ps = proximosPlanes(), mas = ps.filter(p => p.fecha > masDias(proximoSabado(), 9) && ![...enDia].some(d => p.fecha <= d && finPlan(p) >= d));
   return `<h2>📅 Calendario</h2>${miMuni() ? '' : '<p class="muted mini-nota">🎉 Para ver los festivos locales de tu municipio, elígelo en ☰ Más.</p>'}
-    <div class="card cal">${calVista === 'mes' ? nav : '<div class="cal-nav"><b>Próximas 2 semanas</b></div>'}<div class="cal-g">${celdas}</div>
-      <button class="enlace cal-ver" data-calvista="${calVista === 'mes' ? 'semanas' : 'mes'}">${calVista === 'mes' ? '▴ Ver solo 2 semanas' : '▾ Ver el mes entero'}</button>
+    <div class="card cal"><div class="cal-nav"><b>Esta semana y las 4 siguientes</b></div><div class="cal-g">${celdas}</div>
       <div class="cal-ley"><span>💫 mejor día</span><span><i class="cal-p"></i> plan</span><span class="l-fest">🎉 festivo</span><span>🌆 víspera</span><span>👍 / 🙅 tú</span><span>👍n el grupo</span></div></div>
     ${diaHTML(calSel)}
     ${mas.length ? `<h2>🔭 Más planes por delante</h2>${mas.map(p => planHTML(p, { compacto: true })).join('')}` : ''}`;

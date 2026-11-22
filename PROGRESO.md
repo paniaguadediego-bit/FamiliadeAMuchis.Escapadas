@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v36 · Tiempo como pestaña, Explorar más claro, municipios en el mapa y Eventos plegables (2026-11-22)
+- 🌤️ Tiempo vuelve a ser pestaña propia (6 pestañas).
+- Explorar: interruptor Lista ⇄ Mapa grande; colecciones en botones pequeños que caben sin deslizar.
+- Mapa: «📍 Municipios» para ver solo los puntos de los municipios elegidos (por zona o uno a uno); se encuadra en ellos.
+- Planes: calendario con esta semana y las 4 siguientes (sin «ver el mes»).
+- Eventos: categorías que se marcan una a una, con «Todas», «Ninguna» y «Solo cine»; cada semana se pliega.
+- Prueba nueva: `node pruebas/v36.js`.
+
 ## v35 · Comentarios en los planes (2026-11-22)
 - 💬 Cada plan tiene su conversación: se ve el último comentario y, al abrir, todos con carita y hora. Cada uno escribe
   y borra solo los suyos (reglas nuevas). Prueba: `node pruebas/comentarios.js`.

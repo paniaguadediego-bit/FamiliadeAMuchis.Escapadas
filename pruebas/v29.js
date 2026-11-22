@@ -8,7 +8,7 @@ const P = require('./comun');
   await p.click('.conmutador [data-tab="mapa"]'); await p.waitForTimeout(300);
   await p.click('#tabs [data-tab="finde"]'); await p.click('#tabs [data-tab="explorar"]'); await p.waitForTimeout(200);
   console.log('Recuerda el mapa:', await p.evaluate(() => tab), '| pestaña resaltada:', await p.$eval('#tabs .on', e => e.dataset.tab));
-  await p.click('#tabs [data-tab="finde"]'); await p.click('.rapidos [data-tab="tiempo"]'); await p.waitForTimeout(200);
+  await p.click('#tabs [data-tab="tiempo"]'); await p.waitForTimeout(200);
   console.log('Tiempo desde Planes:', await p.evaluate(() => tab), '| resaltada:', await p.$eval('#tabs .on', e => e.dataset.tab));
   await P.conGrupo(p);
   await p.evaluate(() => { const s = proximoSabado(); __store.disponibilidad = { u2: { uid: 'u2', si: [masDias(s, 7)], no: [] }, u3: { uid: 'u3', si: [masDias(s, 7)], no: [] } }; seguirDisponibilidad('PRUEBA23'); });

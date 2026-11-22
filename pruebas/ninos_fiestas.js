@@ -12,7 +12,7 @@ const P = require('./comun');
   console.log('Marca mía con niños:', await p.evaluate(() => JSON.stringify(marca('loro-parque'))), '| subida:', await p.evaluate(() => JSON.stringify((__store.marcas || {})['u1_loro-parque'] || null)));
   const f = await p.evaluate(() => SITIOS.filter(s => s.id.startsWith('fiesta-')).length);
   console.log('Fiestas del BOC:', f, '| Santa Catalina (Tacoronte) próxima:', await p.evaluate(() => JSON.stringify(proximaVez(sitio('fiesta-tacoronte-santa-catalina')))));
-  await p.evaluate(() => { evCat = 'fiestas'; evRango = 'todo'; }); await P.tab(p, 'eventos');
+  await p.evaluate(() => { ponerCats(['fiestas']); evRango = 'todo'; }); await P.tab(p, 'eventos');
   console.log('Fiestas en Eventos (4 meses):', await p.locator('.ficha').count());
   await P.tab(p, 'mapa'); console.log('Puntos del mapa sin «Evento»:', await p.evaluate(() => puntos().filter(s => s.id.startsWith('fiesta-')).length));
   console.log('Captura:', await P.captura(p, 'fiestas', true));

@@ -131,17 +131,23 @@ function carteleraHTML() {
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-cine]'); if (c) { cineSel = c.dataset.cine; save('esc.cine', cineSel); render(); return; }
   if (e.target.closest('[data-cinevo]')) { cineVO = !cineVO; render(); return; }
-  if (e.target.closest('[data-vercine]')) { evCat = 'cine'; ir('eventos'); }
+  if (e.target.closest('[data-vercine]')) { ponerCats(['cine']); ir('eventos'); }
 });
 
 // ---------- 🎟️ pestaña Eventos ----------
-let evCat = '', evZona = '', evRango = 'mes';
+let evZona = '', evRango = 'mes';
+// Categorías elegidas (una a una; «Todas» / «Ninguna»). Solo cine = cartelera completa.
+let evCats = null; const leerCats = () => evCats || (evCats = new Set(load('esc.evcats', Object.keys(CAT_EV))));
+const evSoloCine = () => leerCats().size === 1 && evCats.has('cine');
+const evCerradas = new Set(); // semanas plegadas (en esta visita)
+function ponerCats(ks) { evCats = new Set(ks); save('esc.evcats', [...evCats]); }
 const RANGOS = { finde: 'Este finde', siguiente: 'El finde que viene', mes: 'Próximo mes', todo: 'Próximos 4 meses' };
 function viewEventos() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando eventos…</div>';
   const sab = proximoSabado(), hoy = hoyISO();
   const [a, b] = evRango === 'finde' ? [isoMas(sab, -1), isoMas(sab, 1)] : evRango === 'siguiente' ? [isoMas(sab, 6), isoMas(sab, 8)] : [hoy, isoMas(hoy, evRango === 'mes' ? 31 : 124)];
-  const lista = eventosEntre(a, b).filter(([s]) => (!evCat || catDe(s) === evCat) && (!evZona || (typeof zonaDe === 'function' && zonaDe(s) === evZona)));
+  leerCats();
+  const lista = eventosEntre(a, b).filter(([s]) => evCats.has(catDe(s)) && (!evZona || (typeof zonaDe === 'function' && zonaDe(s) === evZona)));
   const nFinde = eventosEntre(isoMas(sab, -1), isoMas(sab, 1)).length;
   // Agrupados por semana (lunes a domingo), con el finde de cada una como título.
   const semanas = {};
@@ -149,19 +155,24 @@ function viewEventos() {
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
   return `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
-    ${rejilla('evcat', evCat, [['', '🗂️', 'Todos'], ...Object.entries(CAT_EV).map(([k, [ic, n]]) => [k, ic, n])])}
+    <div class="ev-cats">${Object.entries(CAT_EV).map(([k, [ic, n]]) => `<button class="fm ${evCats.has(k) ? 'on' : ''}" data-evcat="${k}" aria-pressed="${evCats.has(k)}">${ic} ${esc(n.replace(' y espectáculos', '').replace(' y mercados', ''))}</button>`).join('')}
+      <div class="ev-cats-pie"><button class="enlace" data-evcats="todas">✓ Todas</button><button class="enlace" data-evcats="ninguna">✕ Ninguna</button><button class="enlace" data-evcats="cine">🎬 Solo cine</button></div></div>
     <div class="filtros-barra">
       <label class="orden-sel"><span class="vh">Cuándo</span><select id="ev-rango">${Object.entries(RANGOS).map(([k, n]) => `<option value="${k}" ${evRango === k ? 'selected' : ''}>📅 ${n}</option>`).join('')}</select></label>
       <label class="orden-sel"><span class="vh">Zona</span><select id="ev-zona"><option value="">🗺️ Toda la isla</option>${Object.entries(ZONAS).map(([k, z]) => `<option value="${k}" ${evZona === k ? 'selected' : ''}>${z.ic} ${esc(z.nom)}</option>`).join('')}</select></label>
     </div>
     ${typeof propioBotonHTML === 'function' && enGrupo() ? propioBotonHTML('evento') : ''}
-    ${evCat === 'cine' && !lista.length ? '' : `<p class="muted cuenta-lista">${lista.length} evento${lista.length === 1 ? '' : 's'}${act ? ` · agenda de Turismo de Tenerife del ${esc(act)}` : ''}</p>`}
-    ${evCat === 'cine' ? carteleraHTML() + (lista.length ? '<h2>🎟️ Otros eventos de cine</h2>' : '') : CINE && !evCat ? `<button class="card ev-enlace" data-filtro="evcat" data-v="cine">🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del día'}: ${CINE.cines.filter(c => c.peliculas.length).length} cines${CINE.cines.some(c => c.peliculas.some(p => p.sesiones.some(s => s.v !== 'Doblada'))) ? ', con VOSE' : ''} · <span class="tr-ver">Ver ›</span></button>` : ''}
-    ${evCat === 'cine' && !lista.length ? '' : lista.length ? Object.keys(semanas).sort().map(sb => `<h2>📅 ${esc(titulo(sb))}</h2>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}`).join('')
-      : '<div class="card muted">Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.</div>'}
+    ${evSoloCine() && !lista.length ? '' : `<p class="muted cuenta-lista">${lista.length} evento${lista.length === 1 ? '' : 's'}${act ? ` · agenda de Turismo de Tenerife del ${esc(act)}` : ''}</p>`}
+    ${evSoloCine() ? carteleraHTML() + (lista.length ? '<h2>🎟️ Otros eventos de cine</h2>' : '') : CINE && evCats.has('cine') ? `<button class="card ev-enlace" data-evcats="cine">🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del día'}: ${CINE.cines.filter(c => c.peliculas.length).length} cines${CINE.cines.some(c => c.peliculas.some(p => p.sesiones.some(s => s.v !== 'Doblada'))) ? ', con VOSE' : ''} · <span class="tr-ver">Ver ›</span></button>` : ''}
+    ${evSoloCine() && !lista.length ? '' : lista.length ? Object.keys(semanas).sort().map(sb => `<details class="ev-sem" data-sem="${sb}" ${evCerradas.has(sb) ? '' : 'open'}><summary><span>📅 ${esc(titulo(sb))}</span><small>${semanas[sb].length} evento${semanas[sb].length === 1 ? '' : 's'}</small></summary>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}</details>`).join('')
+      : `<div class="card muted">${evCats.size ? 'Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.' : 'No hay ninguna categoría marcada: toca las que quieras ver o «✓ Todas».'}</div>`}
     <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
 }
-document.addEventListener('click', e => { const c = e.target.closest('[data-filtro="evcat"]'); if (c) { e.stopImmediatePropagation(); evCat = c.dataset.v; render(); } }, true);
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-evcat]'); if (c) { leerCats(); const k = c.dataset.evcat; if (evCats.has(k)) evCats.delete(k); else evCats.add(k); ponerCats(evCats); render(); return; }
+  const t = e.target.closest('[data-evcats]'); if (t) { const v = t.dataset.evcats; ponerCats(v === 'todas' ? Object.keys(CAT_EV) : v === 'cine' ? ['cine'] : []); render(); }
+});
+document.addEventListener('toggle', e => { const d = e.target; if (d.dataset && d.dataset.sem) { if (d.open) evCerradas.delete(d.dataset.sem); else evCerradas.add(d.dataset.sem); } }, true);
 document.addEventListener('change', e => {
   if (e.target.id === 'ev-rango') { evRango = e.target.value; render(); } else if (e.target.id === 'ev-zona') { evZona = e.target.value; render(); }
 });

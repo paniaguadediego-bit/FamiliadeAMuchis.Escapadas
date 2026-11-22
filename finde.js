@@ -172,7 +172,7 @@ function proximosDiasHTML() {
 }
 function viewTiempo() {
   pedirTiempo();
-  return `<button class="sec mini volver" data-tab="finde">‹ Planes</button><h2>🌤️ El fin de semana</h2>${tiempoHTML()}
+  return `<h2>🌤️ El fin de semana</h2>${tiempoHTML()}
     <h2>📆 Los próximos días</h2>${proximosDiasHTML() || '<div class="card muted">Sin previsión todavía.</div>'}
     <p class="muted">Previsión de Open-Meteo para seis zonas de la isla (un punto de referencia por zona). En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
 }

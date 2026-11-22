@@ -746,4 +746,27 @@ button.col.on { background: var(--pri); color: var(--pri-fg); border-color: tran
 .coment-m.mio > div { flex: 1; }
 button.enlace.borrar { color: var(--muted); font-size: .75rem; }
 .coment-n { display: flex; gap: 6px; margin-top: 6px; } .coment-n input { flex: 1; margin: 0; } .coment-n button { width: auto; margin: 0; }
-:root { --css-ver: "v35"; }
+/* v36: Explorar (conmutador grande, colecciones compactas, municipios en el mapa), 6 pestañas */
+nav#tabs button { font-size: .62rem; } nav#tabs button span { font-size: 1.15rem; }
+.conmutador { max-width: none; margin: 0 0 10px; padding: 4px; border-radius: 16px; border: 2px solid var(--pri); }
+.conmutador button { min-height: 3.1rem; border-radius: 12px; font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.conmutador button span { font-size: 1.4rem; }
+.colecciones { flex-wrap: wrap; overflow: visible; margin: 0 0 6px; padding: 0; gap: 5px; justify-content: center; }
+.col-t { width: 100%; text-align: center; font-size: .74rem; font-weight: 700; color: var(--muted); }
+button.col { width: auto; min-height: 0; flex-direction: row; padding: 4px 10px; border-radius: 999px; font-size: .74rem; gap: 4px; box-shadow: none; }
+button.col small { font-size: .64rem; }
+.mp-munis { margin: 0 0 4px; text-align: center; }
+button.mp-mu-btn { width: auto; margin: 0 auto; min-height: 0; padding: 5px 14px; border-radius: 999px; font-size: .8rem; font-weight: 700; background: var(--card); color: var(--fg); border: 1px solid var(--line); }
+button.mp-mu-btn.act { background: var(--pri); color: var(--pri-fg); border-color: transparent; }
+.mp-mu-panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sombra); padding: 6px; margin: 6px 0; text-align: left; }
+.mp-mu-z { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 0; border-bottom: 1px dashed var(--line); justify-content: center; }
+button.mp-mu-zona { width: 100%; margin: 0; min-height: 0; padding: 2px; background: none; border: 0; color: var(--pri); font-weight: 700; font-size: .78rem; }
+.mp-mu-pie { display: flex; justify-content: space-between; align-items: center; padding-top: 6px; } .mp-mu-pie button.mini { width: auto; margin: 0; }
+.ev-cats { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 6px; margin: 6px 0; box-shadow: var(--sombra); }
+.ev-cats-pie { width: 100%; display: flex; justify-content: center; gap: 16px; border-top: 1px dashed var(--line); padding-top: 4px; margin-top: 2px; font-size: .78rem; }
+details.ev-sem { margin: 8px 0; } details.ev-sem > summary { display: flex; justify-content: space-between; align-items: baseline; cursor: pointer; list-style: none;
+  font-weight: 700; font-size: .95rem; padding: 6px 4px; border-bottom: 2px solid var(--line); }
+details.ev-sem > summary::-webkit-details-marker { display: none; }
+details.ev-sem > summary::after { content: "▾"; color: var(--muted); margin-left: 6px; } details.ev-sem:not([open]) > summary::after { content: "▸"; }
+details.ev-sem > summary small { margin-left: auto; color: var(--muted); font-weight: 500; }
+:root { --css-ver: "v36"; }
