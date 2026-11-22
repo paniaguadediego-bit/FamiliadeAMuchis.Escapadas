@@ -413,3 +413,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 ## Pasaporte (v34)
 - 🛂 `pasaporteHTML()` (diario.js): municipio «hecho» si hay algún sitio con ✅ (tuyo o, con grupo, de alguien). Grupo → en la
   pestaña Grupo; sin grupo → en Más. 🏁 reto = zona con menos municipios por completar.
+
+## Comentarios (v35)
+- 💬 `grupos/{gid}/comentarios/{id}` = { planId, uid, texto (≤300), creado (ms) }; una escucha (`seguirComentarios`) →
+  `NUBE.coment[planId]`. Reglas: leer el grupo; crear con tu uid; borrar solo los tuyos.

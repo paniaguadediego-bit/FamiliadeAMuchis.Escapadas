@@ -85,6 +85,18 @@ service cloud.firestore {
         allow delete: if esMiembro(gid) && resource.data.autor == yo();
       }
 
+      // Comentarios de los planes: los lee el grupo; cada uno escribe y borra solo los suyos.
+      match /comentarios/{cid} {
+        allow read: if esMiembro(gid);
+        allow create: if esMiembro(gid)
+          && request.resource.data.keys().hasOnly(['planId', 'uid', 'texto', 'creado'])
+          && request.resource.data.uid == yo()
+          && request.resource.data.planId is string && request.resource.data.planId.size() <= 60
+          && request.resource.data.texto is string && request.resource.data.texto.size() > 0 && request.resource.data.texto.size() <= 300
+          && request.resource.data.creado is number;
+        allow delete: if esMiembro(gid) && resource.data.uid == yo();
+      }
+
       // Disponibilidad: cada uno dice qué días puede (si) y cuáles no (no): 'AAAA-MM-DD' o 'AAAA-MM-DDT' (viernes tarde).
       // (Antes: nopuedo = lista de sábados.) Lo ve el grupo; cada uno escribe el suyo.
       match /disponibilidad/{uid} {

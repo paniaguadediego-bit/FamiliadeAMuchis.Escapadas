@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v35 · Comentarios en los planes (2026-11-22)
+- 💬 Cada plan tiene su conversación: se ve el último comentario y, al abrir, todos con carita y hora. Cada uno escribe
+  y borra solo los suyos (reglas nuevas). Prueba: `node pruebas/comentarios.js`.
+
 ## v34 · Pasaporte de Tenerife (2026-11-22)
 - 🛂 Los 31 municipios en casillas que se colorean al visitar algo allí, progreso por zonas y un reto (la zona más
   cerca de completarse). Con grupo, en la pestaña Grupo y con lo de todos; sin grupo, en Más. Prueba: `node pruebas/pasaporte.js`.

@@ -59,7 +59,7 @@ async function conGrupo(p) {
     NUBE.estado = 'lista'; NUBE.user = { uid: 'u1', email: 'x' }; NUBE.perfil = { nombre: 'Yo', emoji: '🌋', color: '#d97706' };
     NUBE.grupo = { id: 'PRUEBA23', nombre: 'Familia', miembros: ['u1', 'u2', 'u3'] };
     NUBE.miembros = { u1: NUBE.perfil, u2: { nombre: 'Ana', emoji: '🐢', color: '#db2777' }, u3: { nombre: 'Leo', emoji: '🦎', color: '#2563eb' } };
-    seguirMarcas('PRUEBA23'); seguirPlanes('PRUEBA23'); seguirDisponibilidad('PRUEBA23'); seguirPropios('PRUEBA23');
+    seguirMarcas('PRUEBA23'); seguirPlanes('PRUEBA23'); seguirDisponibilidad('PRUEBA23'); seguirPropios('PRUEBA23'); seguirComentarios('PRUEBA23');
     await new Promise(r => setTimeout(r, 150)); render();
   });
 }

@@ -124,6 +124,31 @@ function fijar(id, f) {
   const D = firebase.firestore.FieldValue;
   colPlanes().doc(id).update({ fecha: f, opciones: D.delete(), votos: D.delete() }).catch(e => alert('No se pudo (' + (e.code || e.message) + ').'));
 }
+// 💬 Comentarios de cada plan (idea de Howbout): grupos/{gid}/comentarios/{id} = { planId, uid, texto, creado }.
+// Una sola escucha para todo el grupo; cada uno escribe y borra solo lo suyo.
+const comentAbiertos = new Set();
+function seguirComentarios(gid) {
+  if (NUBE.offComent) NUBE.offComent();
+  NUBE.offComent = NUBE.db.collection('grupos').doc(gid).collection('comentarios').onSnapshot(q => {
+    const c = {}; q.forEach(d => { const v = d.data(); if (v && v.planId) (c[v.planId] = c[v.planId] || []).push({ id: d.id, ...v }); });
+    Object.values(c).forEach(l => l.sort((a, b) => (a.creado || 0) - (b.creado || 0)));
+    NUBE.coment = c; refrescarVista();
+  }, () => {});
+}
+function comentariosHTML(p) {
+  const l = (NUBE.coment || {})[p.id] || [], abierto = comentAbiertos.has(p.id), yo = NUBE.user.uid;
+  const hora = t => t ? new Date(t).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) + ' ' + new Date(t).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '';
+  return `<div class="coment"><button class="enlace" data-plan="coment-ver" data-id="${esc(p.id)}">💬 ${l.length ? `${l.length} comentario${l.length > 1 ? 's' : ''}` : 'Comentar'}${l.length && !abierto ? ` · <span class="muted">${esc(perfilDe(l[l.length - 1].uid).emoji)} «${esc(l[l.length - 1].texto.slice(0, 40))}${l[l.length - 1].texto.length > 40 ? '…' : ''}»</span>` : ''}</button>
+    ${abierto ? `<div class="coment-l">${l.map(c => `<div class="coment-m ${c.uid === yo ? 'mio' : ''}">${carita(perfilDe(c.uid))}<div><b>${esc(c.uid === yo ? 'Tú' : perfilDe(c.uid).nombre)}</b> <small class="muted">${esc(hora(c.creado))}</small>${c.uid === yo ? ` <button class="enlace borrar" data-plan="coment-borrar" data-id="${esc(c.id)}" aria-label="Borrar comentario">✕</button>` : ''}<div>${esc(c.texto)}</div></div></div>`).join('')}
+      <div class="coment-n"><input id="cm-${esc(p.id)}" maxlength="300" placeholder="Escribe al grupo…" autocomplete="off"><button class="mini" data-plan="comentar" data-id="${esc(p.id)}">Enviar</button></div></div>` : ''}</div>`;
+}
+function comentar(planId) {
+  const i = document.getElementById('cm-' + planId), t = (i && i.value || '').trim().slice(0, 300); if (!t) return;
+  i.value = ''; i.blur();
+  NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('comentarios').add({ planId, uid: NUBE.user.uid, texto: t, creado: Date.now() })
+    .catch(e => alert('No se pudo enviar (' + (e.code || e.message) + ').'));
+}
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id && e.target.id.startsWith('cm-')) comentar(e.target.id.slice(3)); });
 function planHTML(p, { conSitio = true, compacto = false } = {}) {
   const s = p.sitioId && sitio(p.sitioId), isla = ISLAS[p.isla] || ISLAS.tenerife, yoVoy = (p.apuntados || []).includes(NUBE.user.uid);
   const fueron = s ? Object.entries(NUBE.marcasGrupo[p.sitioId] || {}).filter(([, m]) => m.estado === 'fuimos').map(([u]) => u) : [];
@@ -138,6 +163,7 @@ function planHTML(p, { conSitio = true, compacto = false } = {}) {
       <div class="gl"><span class="gl-t">🙋 Van (${(p.apuntados || []).length})</span>${caras(p.apuntados || [])}</div>
       ${s ? (fueron.length ? `<div class="gl"><span class="gl-t">✅ Ya lo visitaron</span>${caras(fueron)}</div>` : '<div class="muted">🌱 Nadie del grupo ha ido todavía.</div>') : ''}
       ${votacionHTML(p)}
+      ${comentariosHTML(p)}
       ${planBHTML(p)}
       <div class="acciones">${yoVoy ? `<button class="sec mini" data-plan="no" data-id="${esc(p.id)}">Ya no voy</button>` : `<button class="mini" data-plan="si" data-id="${esc(p.id)}">🙋 Me apunto</button>`}
         <button class="sec mini" data-compartir="p:${esc(p.id)}">📤</button>
@@ -378,6 +404,9 @@ document.addEventListener('click', e => {
   else if (a === 'crear') proponerPlan({ sitioId: planForm && planForm.sitioId, destino: val('pl-destino'), isla: val('pl-isla') || 'tenerife', fecha: val('pl-fecha'), opciones: [val('pl-op2'), val('pl-op3')], hasta: val('pl-hasta'), nota: val('pl-nota'), planB: val('pl-b') });
   else if (a === 'si' || a === 'no') apuntarse(id, a === 'si');
   else if (a === 'votar') votar(id, b.dataset.f);
+  else if (a === 'coment-ver') { if (comentAbiertos.has(id)) comentAbiertos.delete(id); else comentAbiertos.add(id); render(); const x = document.getElementById('cm-' + id); if (x) x.focus(); }
+  else if (a === 'comentar') comentar(id);
+  else if (a === 'coment-borrar') { if (confirm('¿Borrar tu comentario?')) NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('comentarios').doc(id).delete().catch(() => {}); }
   else if (a === 'fijar') fijar(id, b.dataset.f);
   else if (a === 'cancelar') cancelarPlan(id);
   else if (a === 'b-abrir') { planBForm = id; render(); const f = document.getElementById('pb-' + id); if (f) f.focus(); }
