@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v45 · Bandera de Canarias (2026-11-22)
+- Cabecera: banderita de Canarias ondeando junto al título y franja nueva con las tres bandas oficiales (blanco, azul
+  #0768A9, amarillo #FFCC00) onduladas y en movimiento lento (quieta si el móvil pide «reducir movimiento»).
+
 ## v44 · Programación del Auditorio de Tenerife (2026-11-22)
 - Nueva fuente automática: el Auditorio de Tenerife (robots.txt lo permite), con su programación hasta octubre de 2027:
   `herramientas/agenda_auditorio.py` → `data/agenda_auditorio.json` (lunes y jueves, con la agenda de Turismo).

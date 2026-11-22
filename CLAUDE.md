@@ -261,8 +261,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   Provisional: el usuario puede entregar su propia imagen.
 
 ## Estilo y filtros (v12, como viaje-corea)
-- Fondo de papel cálido (`--papel`) con textura diagonal suave; franja azul-amarillo-blanco
-  (bandera de Canarias) bajo la cabecera; tarjetas blancas con sombra (`--sombra`); pestaña
+- Fondo de papel cálido (`--papel`) con textura diagonal suave; (v45) franja ondulada blanco-azul #0768A9-amarillo #FFCC00
+  (SVG en `header::after`, se mueve despacio) y banderita SVG junto al título (index.html); tarjetas blancas con sombra (`--sombra`); pestaña
   activa en pastilla; buscador en píldora.
 - Sitios: nada de filas que se deslizan. «⚙️ Filtros ▾» abre un panel con rejillas de botones
   (icono arriba): Tipo, Tus marcas, El grupo (nadie ha ido / alguien quiere ir / alguien fue),
