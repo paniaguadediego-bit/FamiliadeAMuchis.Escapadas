@@ -785,4 +785,10 @@ details.novedades > summary { cursor: pointer; font-weight: 800; font-size: .92r
 .nov.sin-ver .nov-tx button { font-weight: 800; } .nov.sin-ver .nov-ic::after { content: "🆕"; font-size: .7rem; }
 .nov-ic { font-size: 1.2rem; flex: none; } .nov-tx { flex: 1; min-width: 0; } .nov-tx button.enlace { color: var(--fg); text-align: left; font-weight: 600; display: block; }
 .nov-tx small { font-size: .72rem; } .nov .btn { flex: none; margin: 0; font-size: .7rem; }
-:root { --css-ver: "v42"; }
+/* v43: Planes en lista vertical */
+.ev-lista { display: flex; flex-direction: column; gap: 8px; }
+.ev-lista .ev-tarjeta { flex: none; }
+.ev-lista button.ev-ban, .ev-lista button.ev-ban:first-child { min-height: 6.2rem; }
+.ev-lista .ev-acc { justify-content: flex-end; margin-top: -2px; }
+.ver-mas { display: block; margin: 6px auto 0; font-size: .82rem; }
+:root { --css-ver: "v43"; }

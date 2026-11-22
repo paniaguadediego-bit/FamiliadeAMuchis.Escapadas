@@ -140,7 +140,7 @@ function tiempoHTML() {
   const fs = findesConTiempo(); if (!fs.length) return '<div class="card muted">Sin previsión para el finde todavía.</div>';
   if (findeTiempo >= fs.length) findeTiempo = 0;
   const F = fs[findeTiempo], dias = F.dias;
-  const filas = Object.entries(ZONAS).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.lugar}${Z.nom !== Z.lugar ? `<small class="t-zona">${esc(Z.nom)}</small>` : ''}</th>${dias.map(([f]) => {
+  const filas = Object.entries(ZONAS).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.lugar}</th>${dias.map(([f]) => {
     const t = tiempoDe(z, f); if (!t) return '<td class="muted">—</td>';
     const [ic, txt] = cielo(t.c);
     return `<td title="${esc(txt)}"><span class="t-ic">${ic}</span> <b>${Math.round(t.max)}°</b><span class="muted">/${Math.round(t.min)}°</span>${t.p >= 20 ? `<div class="t-p">💧 ${t.p}%</div>` : ''}${t.v >= 40 ? `<div class="t-p">💨 ${Math.round(t.v)} km/h</div>` : ''}</td>`; }).join('')}</tr>`).join('');
