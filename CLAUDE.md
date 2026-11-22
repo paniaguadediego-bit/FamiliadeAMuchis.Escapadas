@@ -435,3 +435,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   OJO: en el GeoJSON las propiedades vienen descolocadas; los datos se toman del CSV y del GeoJSON solo la línea.
 - `data/senderos.json`: trazados Douglas-Peucker (tol. 0,00025°) → `TRAZOS`; el mapa dibuja el del sitio elegido (o todos
   los visibles si solo está el tipo Sendero y zoom ≥ 12). Iconos: 🔁 circular · ⛰️ desnivel.
+
+## Tiempo por lugar (v41)
+- `ZONAS[z].lugar`: Playa San Juan, Los Cristianos (antes Arona casco), Santa Cruz, La Laguna, La Orotava, Las Cañadas.
+  El Tiempo y el aviso de lluvia muestran el lugar; los filtros de Sitios siguen usando la zona (`nom`).

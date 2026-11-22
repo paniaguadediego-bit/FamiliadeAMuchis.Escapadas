@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v41 · El tiempo con nombre de lugar (2026-11-22)
+- La pestaña Tiempo dice el sitio desde donde se calcula cada previsión: Playa San Juan, Los Cristianos, Santa Cruz,
+  La Laguna, La Orotava y Las Cañadas (con la zona debajo). El punto del Sur pasa de Arona casco (≈ 600 m) a Los Cristianos.
+
 ## v40 · Senderos oficiales (2026-11-22)
 - 139 senderos de la red oficial del Cabildo (datos abiertos, CC BY), 36 circulares: en la ficha, km, desnivel de subida
   y si es circular; filtro «🔁 Senderos circulares»; en el mapa se dibuja el trazado (y se encuadra entero al abrirlo).

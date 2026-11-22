@@ -7,12 +7,14 @@ const K_TIEMPO = 'esc.tiempo16h', K_SORP = 'esc.sorp'; // 6 zonas, 16 días
 // ---------- zonas ----------
 // Seis zonas con tiempo muy distinto (elegidas por el usuario). El orden es el de la tabla.
 const ZONAS = {
-  oeste: { ic: '🌅', nom: 'Oeste', punto: [28.19, -16.80] },          // Guía de Isora / Playa San Juan
-  sur: { ic: '🏝️', nom: 'Sur', punto: [28.08, -16.68] },              // Adeje / Arona
-  este: { ic: '⚓', nom: 'Este', punto: [28.44, -16.29] },             // Santa Cruz / Radazul
-  laguna: { ic: '🏛️', nom: 'La Laguna', punto: [28.487, -16.316] },
-  norte: { ic: '🌿', nom: 'Norte', punto: [28.39, -16.52] },          // valle de La Orotava
-  teide: { ic: '🌋', nom: 'Teide y alrededores', punto: [28.22, -16.63] } // Las Cañadas
+  // `lugar`: el sitio desde donde se pide la previsión (lo que se enseña en el Tiempo). (v41) El Sur pasa de Arona casco
+  // (≈ 600 m de altura) a Los Cristianos, en la costa.
+  oeste: { ic: '🌅', nom: 'Oeste', lugar: 'Playa San Juan', punto: [28.19, -16.80] },
+  sur: { ic: '🏝️', nom: 'Sur', lugar: 'Los Cristianos', punto: [28.05, -16.717] },
+  este: { ic: '⚓', nom: 'Este', lugar: 'Santa Cruz', punto: [28.44, -16.29] },
+  laguna: { ic: '🏛️', nom: 'La Laguna', lugar: 'La Laguna', punto: [28.487, -16.316] },
+  norte: { ic: '🌿', nom: 'Norte', lugar: 'La Orotava', punto: [28.39, -16.52] },
+  teide: { ic: '🌋', nom: 'Teide y alrededores', lugar: 'Las Cañadas', punto: [28.22, -16.63] }
 };
 const TEIDE = [28.2724, -16.6425];
 const ZONA_MUNI = {
@@ -138,7 +140,7 @@ function tiempoHTML() {
   const fs = findesConTiempo(); if (!fs.length) return '<div class="card muted">Sin previsión para el finde todavía.</div>';
   if (findeTiempo >= fs.length) findeTiempo = 0;
   const F = fs[findeTiempo], dias = F.dias;
-  const filas = Object.entries(ZONAS).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.nom}</th>${dias.map(([f]) => {
+  const filas = Object.entries(ZONAS).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.lugar}${Z.nom !== Z.lugar ? `<small class="t-zona">${esc(Z.nom)}</small>` : ''}</th>${dias.map(([f]) => {
     const t = tiempoDe(z, f); if (!t) return '<td class="muted">—</td>';
     const [ic, txt] = cielo(t.c);
     return `<td title="${esc(txt)}"><span class="t-ic">${ic}</span> <b>${Math.round(t.max)}°</b><span class="muted">/${Math.round(t.min)}°</span>${t.p >= 20 ? `<div class="t-p">💧 ${t.p}%</div>` : ''}${t.v >= 40 ? `<div class="t-p">💨 ${Math.round(t.v)} km/h</div>` : ''}</td>`; }).join('')}</tr>`).join('');
@@ -157,7 +159,7 @@ function tiempoFindeMini(sab) {
   const llueve = x => x && (x.p >= 50 || (x.c >= 51 && x.c <= 99 && x.c !== 45 && x.c !== 48));
   const zonas = Object.entries(ZONAS).map(([z, Z]) => [Z, dias.filter(([f]) => llueve(tiempoDe(z, f))).map(([, n]) => n)]).filter(([, ds]) => ds.length);
   if (!zonas.length) return '';
-  return `<button class="t-lluvia" data-tab="tiempo">🌧️ Lluvia: ${zonas.map(([Z, ds]) => `${esc(Z.nom)} <small>(${ds.join(', ')})</small>`).join(' · ')}</button>`;
+  return `<button class="t-lluvia" data-tab="tiempo">🌧️ Lluvia: ${zonas.map(([Z, ds]) => `${esc(Z.lugar)} <small>(${ds.join(', ')})</small>`).join(' · ')}</button>`;
 }
 
 // ---------- 🌤️ pestaña Tiempo ----------
@@ -166,15 +168,15 @@ function proximosDiasHTML() {
   const dias = []; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() + i); dias.push(new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10)); }
   const ds = dias.filter(f => tiempoDe('norte', f)); if (!ds.length) return '';
   const cab = ds.map(f => { const d = new Date(f + 'T12:00'); return `<th class="${[0, 6].includes(d.getDay()) ? 'finde-dia' : ''}">${d.toLocaleDateString('es-ES', { weekday: 'narrow' }).toUpperCase()}<br><small>${d.getDate()}</small></th>`; }).join('');
-  return `<div class="card tiempo semana"><table><thead><tr><th></th>${cab}</tr></thead><tbody>${Object.entries(ZONAS).map(([z, Z]) => `<tr><th title="${esc(Z.nom)}">${Z.ic}</th>${ds.map(f => { const x = tiempoDe(z, f); if (!x) return '<td>—</td>'; const [ic, txt] = cielo(x.c);
+  return `<div class="card tiempo semana"><table><thead><tr><th></th>${cab}</tr></thead><tbody>${Object.entries(ZONAS).map(([z, Z]) => `<tr><th title="${esc(Z.lugar)}">${Z.ic}</th>${ds.map(f => { const x = tiempoDe(z, f); if (!x) return '<td>—</td>'; const [ic, txt] = cielo(x.c);
     return `<td title="${esc(txt)} · ${x.p}% lluvia"><span class="t-ic">${ic}</span><br><b>${Math.round(x.max)}°</b>${x.p >= 40 ? `<div class="t-p">💧${x.p}</div>` : ''}</td>`; }).join('')}</tr>`).join('')}</tbody></table>
-    <div class="leyenda">${Object.values(ZONAS).map(Z => `${Z.ic} ${Z.nom}`).join(' · ')}</div></div>`;
+    <div class="leyenda">${Object.values(ZONAS).map(Z => `${Z.ic} ${Z.lugar}`).join(' · ')}</div></div>`;
 }
 function viewTiempo() {
   pedirTiempo();
   return `<h2>🌤️ El fin de semana</h2>${tiempoHTML()}
     <h2>📆 Los próximos días</h2>${proximosDiasHTML() || '<div class="card muted">Sin previsión todavía.</div>'}
-    <p class="muted">Previsión de Open-Meteo para seis zonas de la isla (un punto de referencia por zona). En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
+    <p class="muted">Previsión de Open-Meteo en seis puntos de la isla, uno por zona: ${Object.values(ZONAS).map(Z => `${esc(Z.lugar)} (${esc(Z.nom)})`).join(', ')}. En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
 }
 // Resumen para Este finde: qué zonas tienen buen tiempo y cuáles no (viernes tarde a domingo).
 function tiempoResumenHTML() {
@@ -185,7 +187,7 @@ function tiempoResumenHTML() {
     const ts = F.dias.map(([f]) => tiempoDe(z, f)).filter(Boolean); if (!ts.length) continue;
     const malo = ts.some(x => x.p >= 50 || (x.c >= 51 && x.c !== 45 && x.c !== 48)) || (z === 'teide' && ts.some(x => x.v >= 60));
     const bueno = ts.every(x => x.c <= 2 && x.p < 30 && x.v < 40);
-    grupos[malo ? 'malo' : bueno ? 'bueno' : 'regular'].push(Z.nom);
+    grupos[malo ? 'malo' : bueno ? 'bueno' : 'regular'].push(Z.lugar);
   }
   const max = Math.max(...Object.keys(ZONAS).flatMap(z => F.dias.map(([f]) => (tiempoDe(z, f) || {}).max || -99)));
   const linea = (ic, txt, l) => l.length ? `<div class="tr-l">${ic} <b>${txt}:</b> ${esc(l.join(', '))}</div>` : '';

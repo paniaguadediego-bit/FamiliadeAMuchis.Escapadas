@@ -775,4 +775,5 @@ nav#tabs button { font-size: .58rem; } nav#tabs button span { font-size: 1.1rem;
 .mp-traza { position: absolute; left: 0; top: 0; pointer-events: none; }
 .mp-traza polyline { fill: none; stroke: #c2410c; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; opacity: .75; }
 .mp-traza.sel polyline { stroke-width: 5; opacity: .95; filter: drop-shadow(0 0 2px #fff); }
-:root { --css-ver: "v40"; }
+.t-zona { display: block; font-size: .62rem; font-weight: 500; color: var(--muted); }
+:root { --css-ver: "v41"; }
