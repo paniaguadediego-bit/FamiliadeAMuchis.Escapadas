@@ -428,3 +428,10 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Pestañas (7): 🏠 Planes · 🌤️ Tiempo · 🧭 Explorar · 🎟️ Eventos · 🎨 Cultura · 👥 Grupo · ☰ Más. Planes no muestra el tiempo.
 - `CULTURA = ['cine','teatro','musica']` (eventos.js): fuera de las categorías de Eventos; `viewCultura()` con `culSec` (esc.cultura).
 - Colecciones: solo 🌧️ Día de lluvia y 💦 Charcos (no repiten filtros), en la fila temática de los filtros con 🧸.
+
+## Senderos (v40, pedido del usuario: «la parte más interesante, sobre todo los circulares»)
+- Fuente: «Itinerarios de la isla de Tenerife» (datos.tenerife.es, CC BY). `herramientas/senderos_cabildo.py <csv> <geojson>`:
+  clase Sendero, modalidad Lineal/Circular → ids `sen-<matrícula>` con `km`, `desnivel` (subida), `circular`, `matricula`.
+  OJO: en el GeoJSON las propiedades vienen descolocadas; los datos se toman del CSV y del GeoJSON solo la línea.
+- `data/senderos.json`: trazados Douglas-Peucker (tol. 0,00025°) → `TRAZOS`; el mapa dibuja el del sitio elegido (o todos
+  los visibles si solo está el tipo Sendero y zoom ≥ 12). Iconos: 🔁 circular · ⛰️ desnivel.

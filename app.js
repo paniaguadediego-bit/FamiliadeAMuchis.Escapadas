@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v39';
+const VERSION = 'v40';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -48,6 +48,9 @@ fetch('data/sitios.json').then(r => r.json()).then(d => { BASE = Array.isArray(d
 let FOTOS = {};
 fetch('data/fotos.json').then(r => r.json()).then(d => { FOTOS = d || {}; render(); }).catch(() => {});
 // Agenda de Turismo de Tenerife (eventos.js): eventos con fecha y su foto.
+// Trazados de los senderos oficiales (data/senderos.json: {id: [[lat, lon], …]}), para dibujarlos en el mapa.
+let TRAZOS = {};
+fetch('data/senderos.json').then(r => r.json()).then(d => { TRAZOS = d || {}; if (tab === 'mapa') pintarMapa(); }).catch(() => {});
 fetch('data/cine.json').then(r => r.json()).then(d => { CINE = d; if (tab === 'eventos' || tab === 'finde') render(); }).catch(() => {});
 fetch('data/festivos.json').then(r => r.json()).then(d => { FESTIVOS = d; render(); }).catch(() => {});
 fetch('data/agenda.json').then(r => r.json()).then(d => { cargarAgenda(d); mezclarSitios(); render(); }).catch(() => {});
@@ -179,7 +182,7 @@ function subFicha(s) {
 }
 function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
-  const datos = [s.ninos && `🧸 Con niños: ${esc(s.ninos)}`, s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
+  const datos = [s.km && `🥾 ${String(s.km).replace('.', ',')} km · ⛰️ +${s.desnivel} m${s.circular ? ' · 🔁 circular' : ' · lineal'}`, s.ninos && `🧸 Con niños: ${esc(s.ninos)}`, s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
     <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 📍 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
@@ -256,7 +259,8 @@ function viewFinde() { return viewFindeS5(); }
 const COLECCIONES = {
   // (v38) Solo las que no repiten un filtro; están en la fila de «temáticas» de los filtros, junto a 🧸 Con niños.
   lluvia: ['🌧️', 'Día de lluvia', s => s.tipo === 'museo'],
-  charcos: ['💦', 'Charcos y piscinas', s => s.tipo === 'playa' && /charco|piscina/i.test(s.nombre + ' ' + s.desc)]
+  charcos: ['💦', 'Charcos y piscinas', s => s.tipo === 'playa' && /charco|piscina/i.test(s.nombre + ' ' + s.desc)],
+  circulares: ['🔁', 'Senderos circulares', s => !!s.circular]
 };
 let q = '', fTipo = '', fEst = '', fGrupo = '', fZona = '', fNinos = '', fCol = '', orden = load('esc.orden', 'municipio');
 const muniAbiertos = new Set();
@@ -441,6 +445,10 @@ function mpDibujar(el) {
   const ox = mpX(MP.c[1], z) - W / 2, oy = mpY(MP.c[0], z) - H / 2;
   const P = (lat, lon) => [mpX(lon, z) - ox, mpY(lat, z) - oy];
   let h = `<svg class="mp-isla" width="${W}" height="${H}"><path d="M${ISLA.map(([lo, la]) => P(la, lo).map(v => v.toFixed(1)).join(',')).join('L')}Z"/></svg>`;
+  // Trazado del sendero elegido (o de todos los visibles de tipo sendero si solo se ven senderos y hay zoom).
+  const trazar = id => { const t = TRAZOS[id]; return t ? `<polyline points="${t.map(([la, lo]) => P(la, lo).map(v => v.toFixed(1)).join(',')).join(' ')}"/>` : ''; };
+  const ids = MP.sel && TRAZOS[MP.sel] ? [MP.sel] : (mpTipos.size === 1 && mpTipos.has('sendero') && z >= 12 ? puntos().filter(s => TRAZOS[s.id]).map(s => s.id) : []);
+  if (ids.length) h += `<svg class="mp-traza ${MP.sel ? 'sel' : ''}" width="${W}" height="${H}">${ids.map(trazar).join('')}</svg>`;
   for (let tx = Math.floor(ox / MPT) - 1; tx <= Math.floor((ox + W) / MPT) + 1; tx++)
     for (let ty = Math.floor(oy / MPT) - 1; ty <= Math.floor((oy + H) / MPT) + 1; ty++) {
         if (ty < 0 || ty >= n) continue;
@@ -478,7 +486,7 @@ function mpDibujar(el) {
 function mpFicha(s) {
   const m = marca(s.id);
   return `<div class="mp-f">${FOTOS[s.id] ? `<div class="mp-f-foto">${fotoImg(s.id, '', true)}</div>` : ''}<div class="row"><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><button class="sec mini" data-mpcerrar aria-label="Cerrar">✕</button></div>
-    <div class="muted">${esc(s.municipio)}${m.estado ? ' · ' + ESTADOS[m.estado].join(' ') : ''}${m.estrellas ? ' · ' + '⭐'.repeat(m.estrellas) : ''}</div>
+    <div class="muted">${esc(s.municipio)}${s.km ? ` · 🥾 ${String(s.km).replace('.', ',')} km · ⛰️ +${s.desnivel} m${s.circular ? ' · 🔁' : ''}` : ''}${m.estado ? ' · ' + ESTADOS[m.estado].join(' ') : ''}${m.estrellas ? ' · ' + '⭐'.repeat(m.estrellas) : ''}</div>
     ${grupoEnFicha(s.id)}
     <div class="marcas mp-marcas">${Object.entries(ESTADOS).map(([k, [ic, n]]) => `<button class="${m.estado === k ? 'on' : ''}" data-est="${k}" data-id="${esc(s.id)}">${ic} ${n}</button>`).join('')}</div>
     ${s.verificar ? '<div class="ver">⚠️ VERIFICAR</div>' : ''}
@@ -522,7 +530,10 @@ document.addEventListener('click', e => {
   const el = $('#mapa');
   const t = e.target.closest('[data-mptipo]'); if (t) { const k = t.dataset.mptipo; if (!k) mpTipos.clear(); else if (mpTipos.has(k)) mpTipos.delete(k); else mpTipos.add(k); save('esc.mptipos', [...mpTipos]); MP.sel = null; render(); return; }
   const v = e.target.closest('[data-vermapa]');
-  if (v) { const s = sitio(v.dataset.vermapa); if (s) { MP.sel = s.id; MP.c = [s.lat, s.lon]; MP.z = Math.max(MP.z || 0, 15); if (!mpVe(s.tipo) || s.agenda) { mpTipos.clear(); if (s.agenda) mpTipos.add('evento'); save('esc.mptipos', [...mpTipos]); } ir('mapa'); } return; }
+  if (v) { const s = sitio(v.dataset.vermapa); if (s) { MP.sel = s.id; MP.c = [s.lat, s.lon]; MP.z = Math.max(MP.z || 0, 15);
+      const t = TRAZOS[s.id]; if (t) { const la = t.map(x => x[0]), lo = t.map(x => x[1]), W = Math.min(innerWidth - 40, 600), H = 380; let z = 16;
+        while (z > 10 && (mpX(Math.max(...lo), z) - mpX(Math.min(...lo), z) > W - 60 || mpY(Math.min(...la), z) - mpY(Math.max(...la), z) > H - 60)) z--;
+        MP.c = [(Math.min(...la) + Math.max(...la)) / 2, (Math.min(...lo) + Math.max(...lo)) / 2]; MP.z = z; } if (!mpVe(s.tipo) || s.agenda) { mpTipos.clear(); if (s.agenda) mpTipos.add('evento'); save('esc.mptipos', [...mpTipos]); } ir('mapa'); } return; }
   if (!el) return;
   if (e.target.closest('[data-mpz]')) mpZoom(el, +e.target.closest('[data-mpz]').dataset.mpz);
   else if (e.target.closest('[data-mpfit]')) { mpEncajar(el.clientWidth, el.clientHeight); mpDibujar(el); }

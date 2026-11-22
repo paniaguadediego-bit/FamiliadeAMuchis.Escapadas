@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v40 · Senderos oficiales (2026-11-22)
+- 139 senderos de la red oficial del Cabildo (datos abiertos, CC BY), 36 circulares: en la ficha, km, desnivel de subida
+  y si es circular; filtro «🔁 Senderos circulares»; en el mapa se dibuja el trazado (y se encuadra entero al abrirlo).
+  `herramientas/senderos_cabildo.py` → ids `sen-…` y `data/senderos.json` (trazados simplificados, 100 KB).
+- Prueba nueva: `node pruebas/senderos.js`.
+
 ## v39 · Pestaña Cultura (2026-11-22)
 - 🎨 Cultura: interruptor 🎬 Cine (cartelera) · 🎭 Teatro · 🎵 Música (próximos 4 meses por semanas plegables, por zona).
   Eventos se queda con fiestas, deporte, expos, ferias, niños y otros. Un concierto u obra se abre en Cultura.
