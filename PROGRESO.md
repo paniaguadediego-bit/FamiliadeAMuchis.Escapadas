@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v37 · Más eventos conocidos (2026-11-22)
+- 5 eventos anuales con fecha de su fuente (Wikipedia), buscados por el investigador y revisados: Corazones de Tejina
+  (destacado), Baile de Magos de Santa Cruz, Cristo de Tacoronte, Virgen del Carmen de Los Cristianos y San Isidro de
+  Granadilla. Descartados los repetidos con las fiestas del BOC y los que no dan día exacto.
+
 ## v36 · Tiempo como pestaña, Explorar más claro, municipios en el mapa y Eventos plegables (2026-11-22)
 - 🌤️ Tiempo vuelve a ser pestaña propia (6 pestañas).
 - Explorar: interruptor Lista ⇄ Mapa grande; colecciones en botones pequeños que caben sin deslizar.
