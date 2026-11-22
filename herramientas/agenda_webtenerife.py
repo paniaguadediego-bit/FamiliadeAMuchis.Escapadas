@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lee la agenda pública de Turismo de Tenerife (webtenerife.com) y deja los próximos eventos en data/agenda.json.
 
-- Qué lee: las páginas /agenda/AAAA/MM/<evento>/ (permitidas en su robots.txt) de este mes y los próximos 4,
+- Qué lee: las páginas /agenda/AAAA/MM/<evento>/ (permitidas en su robots.txt) de este mes y los próximos 12,
   sacadas de su sitemap y de la portada de la agenda. De cada una, los datos schema.org «Event» que publica:
   nombre, fechas, descripción, foto y dirección.
 - Qué guarda: nombre, fechas, lugar, municipio (deducido del texto; si no se puede, vacío), un extracto corto
@@ -16,8 +16,8 @@ import json, re, os, sys, time, html, datetime, urllib.request, urllib.error
 UA = "Mozilla/5.0 (compatible; EscapadasCatalogo/1.0; +https://github.com/paniaguadediego-bit/FamiliadeAMuchis.Escapadas)"
 BASE = "https://www.webtenerife.com"
 AQUI = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.dirname(AQUI)
-MESES_ADELANTE = 4
-MAX_PAGINAS = 260
+MESES_ADELANTE = 12   # (v42) un año: los conciertos se anuncian con muchos meses de antelación
+MAX_PAGINAS = 600
 
 MUNIS = ['Adeje', 'Arafo', 'Arico', 'Arona', 'Buenavista del Norte', 'Candelaria', 'El Rosario', 'El Sauzal', 'El Tanque', 'Fasnia',
          'Garachico', 'Granadilla de Abona', 'Guía de Isora', 'Güímar', 'Icod de los Vinos', 'La Guancha', 'La Matanza de Acentejo',
@@ -120,6 +120,13 @@ def main():
         if s['tipo'] == 'pueblo' or s['municipio'] not in centros:
             if s['municipio'] not in centros or s['tipo'] == 'pueblo':
                 centros[s['municipio']] = [s['lat'], s['lon']]
+    # «visto»: el día en que el lector encontró cada evento por primera vez (para las 🆕 Novedades de la app).
+    # Los que ya estaban antes de que existiera este campo quedan con '' (no se sabe cuándo aparecieron).
+    ruta = os.path.join(REPO, 'data', 'agenda.json'); previos = {}
+    if os.path.exists(ruta):
+        viejos = json.load(open(ruta)).get('eventos', [])
+        con_campo = any('visto' in e for e in viejos)
+        previos = {e['id']: (e.get('visto', '') if con_campo else '') for e in viejos}
     salida = []
     for u in urls_eventos(hoy):
         pag = get(u); time.sleep(1.5)
@@ -130,6 +137,7 @@ def main():
             continue  # exposiciones permanentes y similares: no son «de este finde»
         c = centros.get(e['municipio'])
         e['lat'], e['lon'], e['aprox'] = (c[0], c[1], True) if c else (None, None, False)
+        e['visto'] = previos.get(e['id'], hoy.isoformat())
         salida.append(e)
     salida.sort(key=lambda e: (e['desde'], e['nombre']))
     with open(os.path.join(REPO, 'data', 'agenda.json'), 'w') as f:

@@ -439,3 +439,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 ## Tiempo por lugar (v41)
 - `ZONAS[z].lugar`: Playa San Juan, Los Cristianos (antes Arona casco), Santa Cruz, La Laguna, La Orotava, Las Cañadas.
   El Tiempo y el aviso de lluvia muestran el lugar; los filtros de Sitios siguen usando la zona (`nom`).
+
+## Novedades (v42, pedido del usuario: enterarse de conciertos anunciados con meses de antelación)
+- `agenda_webtenerife.py`: `MESES_ADELANTE = 12`; cada evento lleva `visto` (día en que lo encontró por primera vez; los
+  anteriores a v42 quedaron con '').
+- App: `novedades(area)` (eventos | cultura) = agenda con `visto` en los últimos 21 días; contador 🆕 en la pestaña con lo
+  posterior a `esc.novvisto[area]` (se pone a hoy al abrirla). Notificaciones del móvil: descartadas por ahora (FCM).

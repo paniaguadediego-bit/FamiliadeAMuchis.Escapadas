@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v42 · 🆕 Novedades de la agenda (2026-11-22)
+- La agenda automática mira 12 meses por delante (antes 4) y guarda el día en que apareció cada evento (`visto`).
+- Contador rojo en las pestañas Eventos y Cultura con lo publicado desde tu última visita; arriba de cada una,
+  «🆕 Nuevo en la agenda» (3 últimas semanas) con «🎟️ Entradas e info» (la página del evento). Rango «Próximo año».
+- Prueba nueva: `node pruebas/novedades.js`.
+
 ## v41 · El tiempo con nombre de lugar (2026-11-22)
 - La pestaña Tiempo dice el sitio desde donde se calcula cada previsión: Playa San Juan, Los Cristianos, Santa Cruz,
   La Laguna, La Orotava y Las Cañadas (con la zona debajo). El punto del Sur pasa de Arona casco (≈ 600 m) a Los Cristianos.

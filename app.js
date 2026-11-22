@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v41';
+const VERSION = 'v42';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -123,7 +123,8 @@ let tab = load('esc.tab', 'finde');
 if (!VISTAS[tab]) tab = 'finde';
 function ir(t) { if (t === 'explorar') t = load('esc.explorar', 'sitios'); if (t === 'sitios' || t === 'mapa') save('esc.explorar', t); tab = t; save('esc.tab', t); window.scrollTo(0, 0); render(); }
 function pintarTabs() {
-  $('#tabs').innerHTML = TABS.map(([k, n, ic]) => `<button class="${k === pestañaDe(tab) ? 'on' : ''}" data-tab="${k}"><span>${ic}</span>${n}</button>`).join('');
+  const nov = k => (k === 'eventos' || k === 'cultura') && typeof novNuevas === 'function' && k !== tab ? novNuevas(k) : 0;
+  $('#tabs').innerHTML = TABS.map(([k, n, ic]) => { const c = nov(k); return `<button class="${k === pestañaDe(tab) ? 'on' : ''}" data-tab="${k}"><span>${ic}</span>${n}${c ? `<i class="badge" aria-label="${c} novedades">${c > 9 ? '9+' : c}</i>` : ''}</button>`; }).join('');
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) ir(b.dataset.tab); });
 $('#buscabtn').addEventListener('click', () => { ir('sitios'); const i = $('#q'); if (i) i.focus(); });
@@ -137,6 +138,7 @@ function render() {
   v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'cultura' ? viewCultura() : tab === 'sitios' ? conmutador() + viewSitios() : tab === 'mapa' ? conmutador() + viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
+  if ((tab === 'eventos' || tab === 'cultura') && typeof novMarcarVisto === 'function' && AGENDA_SITIOS.length) novMarcarVisto(tab);
   if ((tab === 'sitios' || tab === 'eventos' || tab === 'cultura') && irFicha) {
     // Directo a la ficha (también si las fotos de encima tardan en cargar y la empujan).
     const id = irFicha; irFicha = null; let y = null;
@@ -243,7 +245,7 @@ document.addEventListener('click', e => {
   const id = b.dataset.irficha, s = sitio(id); if (!s) return;
   // Los eventos tienen su pestaña.
   if (s.tipo === 'evento' && typeof CULTURA !== 'undefined' && CULTURA.includes(catDe(s))) { abiertas.add(id); irFicha = id; culSec = catDe(s); evZona = ''; evCerradas.clear(); ir('cultura'); return; }
-  if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; ponerCats(Object.keys(CAT_EV)); evZona = ''; evCerradas.clear(); evRango = 'todo'; ir('eventos'); return; }
+  if (s.tipo === 'evento') { abiertas.add(id); irFicha = id; ponerCats(catsEventos()); evRango = 'anio'; evZona = ''; evCerradas.clear(); ir('eventos'); return; }
   abiertas.add(id); muniAbiertos.add(s.municipio); irFicha = id; fTipo = fEst = fGrupo = fZona = fNinos = fCol = ''; q = ''; if (orden !== 'municipio') { orden = 'municipio'; save('esc.orden', orden); } ir('sitios');
 });
 

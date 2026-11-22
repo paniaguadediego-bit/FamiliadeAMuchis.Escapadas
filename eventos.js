@@ -90,7 +90,7 @@ function cargarAgenda(d) {
     if (e.foto) FOTOS_AG[e.id] = { src: e.foto, credito: 'Turismo de Tenerife', enlace: e.url };
     return { id: e.id, nombre: e.nombre, tipo: 'evento', municipio: e.municipio || '', lat: e.lat, lon: e.lon, aprox: !!e.aprox, agenda: true,
       categoria: e.categoria, lugar: e.lugar, desc: e.extracto || '', fuente: 'Agenda de Turismo de Tenerife', url: e.url,
-      cuando: { tipo: 'fechas', lista: [[e.desde, e.hasta]] } };
+      cuando: { tipo: 'fechas', lista: [[e.desde, e.hasta]] }, visto: e.visto || '' };
   });
 }
 
@@ -144,11 +144,11 @@ const CULTURA = ['cine', 'teatro', 'musica'];
 const catsEventos = () => Object.keys(CAT_EV).filter(k => !CULTURA.includes(k));
 const evCerradas = new Set(); // semanas plegadas (en esta visita)
 function ponerCats(ks) { evCats = new Set(ks); save('esc.evcats', [...evCats]); }
-const RANGOS = { finde: 'Este finde', siguiente: 'El finde que viene', mes: 'Próximo mes', todo: 'Próximos 4 meses' };
+const RANGOS = { finde: 'Este finde', siguiente: 'El finde que viene', mes: 'Próximo mes', todo: 'Próximos 4 meses', anio: 'Próximo año' };
 function viewEventos() {
   if (!SITIOS.length) return '<div class="vacio"><div class="grande">⏳</div>Cargando eventos…</div>';
   const sab = proximoSabado(), hoy = hoyISO();
-  const [a, b] = evRango === 'finde' ? [isoMas(sab, -1), isoMas(sab, 1)] : evRango === 'siguiente' ? [isoMas(sab, 6), isoMas(sab, 8)] : [hoy, isoMas(hoy, evRango === 'mes' ? 31 : 124)];
+  const [a, b] = evRango === 'finde' ? [isoMas(sab, -1), isoMas(sab, 1)] : evRango === 'siguiente' ? [isoMas(sab, 6), isoMas(sab, 8)] : [hoy, isoMas(hoy, evRango === 'mes' ? 31 : evRango === 'anio' ? 366 : 124)];
   leerCats();
   const lista = eventosEntre(a, b).filter(([s]) => evCats.has(catDe(s)) && (!evZona || (typeof zonaDe === 'function' && zonaDe(s) === evZona)));
   const nFinde = eventosEntre(isoMas(sab, -1), isoMas(sab, 1)).length;
@@ -157,7 +157,7 @@ function viewEventos() {
   lista.forEach(([s, f]) => { const ini = f[0] < a ? a : f[0], sb = typeof sabadoDe === 'function' ? sabadoDe(ini) : ini; (semanas[sb] = semanas[sb] || []).push([s, f]); });
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
-  return `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
+  return novedadesHTML('eventos') + `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
     <div class="ev-cats">${Object.entries(CAT_EV).filter(([k]) => !CULTURA.includes(k)).map(([k, [ic, n]]) => `<button class="fm ${evCats.has(k) ? 'on' : ''}" data-evcat="${k}" aria-pressed="${evCats.has(k)}">${ic} ${esc(n.replace(' y espectáculos', '').replace(' y mercados', ''))}</button>`).join('')}
       <div class="ev-cats-pie"><button class="enlace" data-evcats="todas">✓ Todas</button><button class="enlace" data-evcats="ninguna">✕ Ninguna</button><button class="enlace" data-tab="cultura">🎨 Cine, teatro y música ›</button></div></div>
     <div class="filtros-barra">
@@ -188,17 +188,45 @@ function viewCultura() {
   if (!culSec) culSec = load('esc.cultura', 'cine');
   const sw = `<div class="conmutador cultura" role="tablist">${[['cine', '🎬', 'Cine'], ['teatro', '🎭', 'Teatro'], ['musica', '🎵', 'Música']].map(([k, ic, n]) =>
     `<button class="${culSec === k ? 'on' : ''}" data-cul="${k}" role="tab"><span>${ic}</span>${n}</button>`).join('')}</div>`;
-  if (culSec === 'cine') return sw + carteleraHTML();
+  const nov = novedadesHTML('cultura');
+  if (culSec === 'cine') return sw + nov + carteleraHTML();
   if (!SITIOS.length) return sw + '<div class="vacio">⏳ Cargando…</div>';
-  const hoy = hoyISO(), lista = eventosEntre(hoy, isoMas(hoy, 124)).filter(([s]) => catDe(s) === culSec && (!evZona || (typeof zonaDe === 'function' && zonaDe(s) === evZona)));
+  const hoy = hoyISO(), lista = eventosEntre(hoy, isoMas(hoy, 366)).filter(([s]) => catDe(s) === culSec && (!evZona || (typeof zonaDe === 'function' && zonaDe(s) === evZona)));
   const sab = proximoSabado(), semanas = {};
   lista.forEach(([s, f]) => { const ini = f[0] < hoy ? hoy : f[0], sb = sabadoDe(ini); (semanas[sb] = semanas[sb] || []).push([s, f]); });
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+sb.slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const que = culSec === 'teatro' ? ['obra', 'obras', 'teatro y espectáculos'] : ['concierto', 'conciertos', 'música'];
-  return sw + `<div class="filtros-barra"><label class="orden-sel ancho"><span class="vh">Zona</span><select id="ev-zona"><option value="">🗺️ Toda la isla</option>${Object.entries(ZONAS).map(([k, z]) => `<option value="${k}" ${evZona === k ? 'selected' : ''}>${z.ic} ${esc(z.nom)}</option>`).join('')}</select></label></div>
-    <p class="muted cuenta-lista">${lista.length} ${lista.length === 1 ? que[0] : que[1]} en los próximos 4 meses</p>
+  return sw + nov + `<div class="filtros-barra"><label class="orden-sel ancho"><span class="vh">Zona</span><select id="ev-zona"><option value="">🗺️ Toda la isla</option>${Object.entries(ZONAS).map(([k, z]) => `<option value="${k}" ${evZona === k ? 'selected' : ''}>${z.ic} ${esc(z.nom)}</option>`).join('')}</select></label></div>
+    <p class="muted cuenta-lista">${lista.length} ${lista.length === 1 ? que[0] : que[1]} en el próximo año</p>
     ${lista.length ? Object.keys(semanas).sort().map(sb => { const k = culSec + ':' + sb; return `<details class="ev-sem" data-sem="${k}" ${evCerradas.has(k) ? '' : 'open'}><summary><span>📅 ${esc(titulo(sb))}</span><small>${semanas[sb].length}</small></summary>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}</details>`; }).join('')
       : `<div class="card muted">No hay ${que[2]} en la agenda para esa zona. La agenda de Turismo de Tenerife se actualiza dos veces por semana.</div>`}
     <p class="muted ag-nota">De la agenda de Turismo de Tenerife y de los eventos del grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-cul]'); if (b) { culSec = b.dataset.cul; save('esc.cultura', culSec); render(); } });
+
+// ---------- 🆕 Novedades (v42): eventos que la agenda encontró hace poco, aunque sean para dentro de meses ----------
+// `visto` = día en que el lector los encontró por primera vez. Por pestaña (Eventos / Cultura), lo nuevo desde tu última visita.
+const NOV_DIAS = 21;
+const novVisto = () => load('esc.novvisto', {});
+const novPrev = {}; // lo que había visto al entrar en la pestaña en esta visita (para resaltar lo nuevo)
+const areaDe = s => CULTURA.includes(catDe(s)) ? 'cultura' : 'eventos';
+function novedades(area) {
+  const desde = isoMas(hoyISO(), -NOV_DIAS);
+  return AGENDA_SITIOS.filter(s => s.visto && s.visto >= desde && areaDe(s) === area && proximaVez(s))
+    .sort((a, b) => b.visto.localeCompare(a.visto) || proximaVez(a)[0].localeCompare(proximaVez(b)[0]));
+}
+const novNuevas = area => { const v = novVisto()[area] || ''; return novedades(area).filter(s => s.visto > v).length; };
+function novedadesHTML(area) {
+  const l = novedades(area); if (!l.length) return '';
+  if (!(area in novPrev)) novPrev[area] = novVisto()[area] || '';
+  const nuevas = l.filter(s => s.visto > novPrev[area]).length, hoy = hoyISO();
+  const meses = f => { const d = Math.round((new Date(f + 'T12:00') - new Date(hoy + 'T12:00')) / 864e5); return d <= 0 ? 'ya' : d < 31 ? `en ${d} días` : `en ${Math.round(d / 30.4)} meses`; };
+  return `<details class="novedades" ${nuevas ? 'open' : ''}><summary>🆕 Nuevo en la agenda <small>${nuevas ? `<b>${nuevas} sin ver</b> · ` : ''}últimas 3 semanas · ${l.length}</small></summary>
+    ${l.slice(0, 25).map(s => { const f = proximaVez(s);
+      return `<div class="nov ${s.visto > novPrev[area] ? 'sin-ver' : ''}"><span class="nov-ic">${catIc(s)}</span><div class="nov-tx"><button class="enlace" data-irficha="${esc(s.id)}">${esc(s.nombre)}</button>
+        <small class="muted">${esc(fechaEventoTxt(f))} · ${meses(f[0])}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></div>
+        <a class="btn sec mini" href="${esc(s.url)}" target="_blank" rel="noopener">🎟️ Entradas e info</a></div>`; }).join('')}
+    <p class="muted mini-nota">Lo publicado en la agenda de Turismo de Tenerife en las últimas 3 semanas (se revisa lunes y jueves, hasta un año vista).</p></details>`;
+}
+// Al abrir la pestaña, lo de hoy queda visto (el contador se apaga; lo nuevo sigue resaltado hasta salir).
+function novMarcarVisto(area) { const v = novVisto(); if (v[area] !== hoyISO()) { v[area] = hoyISO(); save('esc.novvisto', v); } }
