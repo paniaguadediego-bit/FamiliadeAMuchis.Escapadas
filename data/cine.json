@@ -1,7 +1,7 @@
 {
 "fuente": "SensaCine · sensacine.com",
-"fecha": "2026-11-22",
-"actualizado": "2026-11-22T14:53Z",
+"fecha": "2026-11-23",
+"actualizado": "2026-11-23T18:43Z",
 "cines": [
 {
 "id": "E0627",
@@ -18,21 +18,16 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "VOSE"
-},
-{
 "h": "16:35",
 "v": "Doblada"
 },
 {
-"h": "21:40",
+"h": "21:35",
 "v": "Doblada"
 }
 ],
 "original": "Teenage Sex And Death At Camp Miasma",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/a1/bf/a1bf9be8f867dabc3697a2c94c940ef0.jpg",
 "estreno": true,
 "sinopsis": "Tras décadas de secuelas mediocres, una joven directora recibe la oportunidad de resucitar la franquicia slasher Campamento Miasma. Para hacerlo, busca a la actriz protagonista original, ahora recluida y rodeada de rumores, con la esperanza de descubrir la verdad detrás de la película que lo empezó todo. Pero su encuentro desencadena una ...",
 "notas": {
@@ -47,18 +42,6 @@
 "Suspense"
 ],
 "sesiones": [
-{
-"h": "11:00",
-"v": "Doblada"
-},
-{
-"h": "13:30",
-"v": "Doblada"
-},
-{
-"h": "15:55",
-"v": "Doblada"
-},
 {
 "h": "16:05",
 "v": "Doblada"
@@ -77,7 +60,8 @@
 "estreno": true,
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
-"prensa": 3.2
+"prensa": 3.2,
+"usuarios": 2.6
 }
 },
 {
@@ -88,30 +72,6 @@
 "Ciencia ficción"
 ],
 "sesiones": [
-{
-"h": "11:00",
-"v": "Doblada"
-},
-{
-"h": "12:00",
-"v": "Doblada"
-},
-{
-"h": "12:45",
-"v": "VOSE"
-},
-{
-"h": "13:05",
-"v": "Doblada"
-},
-{
-"h": "14:15",
-"v": "Doblada"
-},
-{
-"h": "15:15",
-"v": "Doblada"
-},
 {
 "h": "16:15",
 "v": "Doblada"
@@ -129,21 +89,16 @@
 "v": "Doblada"
 },
 {
-"h": "20:15",
+"h": "20:20",
 "v": "VOSE"
 },
 {
 "h": "20:45",
 "v": "Doblada"
-},
-{
-"h": "21:45",
-"v": "Doblada"
 }
 ],
 "original": "The Hunger Games: Sunrise On The Reaping",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/52/3f/523f751fb2907e78a48b2c0c02a04938.jpg",
 "estreno": true,
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
@@ -163,7 +118,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 18",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/pictures/16/02/09/13/22/028575.jpg",
 "estreno": true,
 "sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
 "notas": {
@@ -179,12 +133,11 @@
 ],
 "sesiones": [
 {
-"h": "21:50",
+"h": "21:40",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/d5/9b/d59b14aafe094bf46d7f4b8eef0e62d3.jpg",
 "sinopsis": "El prometedor actor Matt Hagen ve destruida su carrera en Gotham City cuando un gánster le desfigura gravemente el rostro. Al someterse a un tratamiento reconstructivo experimental, su cuerpo sufre una insólita reacción que lo transforma en una sustancia arcillosa y maleable.",
 "notas": {
 "prensa": 3.0,
@@ -200,10 +153,6 @@
 ],
 "sesiones": [
 {
-"h": "13:25",
-"v": "Doblada"
-},
-{
 "h": "19:00",
 "v": "Doblada"
 },
@@ -214,28 +163,11 @@
 ],
 "original": "How To Rob A Bank",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/2c/13/2c132649929b24082edf96619ddfdd66.jpg",
 "sinopsis": "Un grupo de astutos ladrones de bancos transmiten sus atracos en redes sociales, ganando fama mientras evaden a la policía. Su audacia desata una intensa persecución en plena era digital.",
 "notas": {
 "prensa": 2.8,
 "usuarios": 3.0
 }
-},
-{
-"titulo": "Diversión navideña con Peppa: La experiencia en cines",
-"generos": [
-"Animación"
-],
-"sesiones": [
-{
-"h": "15:00",
-"v": "Doblada"
-}
-],
-"original": "Festive Fun With Peppa Cinema Experience",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/63/08/630840ccb7e0fea770fedff8276f7f1b.jpg",
-"sinopsis": "Peppa Pig y su familia se preparan para celebrar la primera Navidad de la pequeña Evie mediante juegos en la nieve, la decoración del árbol y representaciones festivas. El especial proyecta siete episodios clásicos conectados con nuevos contenidos y cuatro canciones inéditas para cantar y bailar en familia."
 },
 {
 "titulo": "El gato con sombrero",
@@ -246,21 +178,12 @@
 ],
 "sesiones": [
 {
-"h": "11:05",
-"v": "Doblada"
-},
-{
-"h": "14:30",
-"v": "Doblada"
-},
-{
 "h": "16:50",
 "v": "Doblada"
 }
 ],
 "original": "The Cat In The Hat",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/fa/8f/fa8f7e075c00d52913e851c6e38cc266.jpg",
 "sinopsis": "Sally y Conrad Walden pasan un día solos hasta que aparece El Gato con Sombrero, un excéntrico personaje que les propone divertirse rompiendo sus rutinas. Sin embargo, su visita desata un caos inesperado que pondrá a prueba su comportamiento y responsabilidad.",
 "notas": {
 "prensa": 3.5,
@@ -275,13 +198,20 @@
 ],
 "sesiones": [
 {
-"h": "18:00",
+"h": "16:00",
+"v": "Doblada"
+},
+{
+"h": "18:10",
+"v": "Doblada"
+},
+{
+"h": "21:35",
 "v": "Doblada"
 }
 ],
 "original": "Heart Of The Beast",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/06/8b/068b23e941178cfd676278b44064f0e9.jpg",
 "sinopsis": "Un ex soldado herido y su perro militar luchan por sobrevivir en la naturaleza salvaje de Alaska. Enfrentando frío, soledad y peligros constantes, su vínculo será clave para regresar a casa.",
 "notas": {
 "prensa": 2.9,
@@ -289,48 +219,21 @@
 }
 },
 {
-"titulo": "Godzilla Minus Zero",
+"titulo": "Karateka",
 "generos": [
-"Ciencia ficción"
+"Biopic"
 ],
 "sesiones": [
 {
-"h": "13:15",
-"v": "VOSE"
-},
-{
-"h": "14:35",
-"v": "VOSE"
-}
-],
-"edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/8c/27/8c2771ddda56c2e58d3ed57957ac4632.jpg",
-"sinopsis": "Dos años después de la gran batalla anterior, una nueva amenaza devastadora emerge para poner en peligro la frágil paz de la humanidad. Ante el regreso del colosal monstruo en medio de una tormenta, antiguos personajes y nuevos aliados deberán unirse para combatir a una fuerza desconocida.",
-"notas": {
-"prensa": 2.9,
-"usuarios": 3.4
-}
-},
-{
-"titulo": "Hope",
-"generos": [
-"Acción",
-"Ciencia ficción",
-"Suspense"
-],
-"sesiones": [
-{
-"h": "21:35",
+"h": "16:05",
 "v": "Doblada"
 }
 ],
-"original": "Hopeu",
-"edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/13/a2/13a2fb348356175c95a1caba9e65bc4e.jpg",
-"sinopsis": "En el remoto pueblo de Hope Harbor, el jefe policial Bum-seok investiga los rumores sobre la aparición de un tigre cerca de la Zona Desmilitarizada. A medida que crece el pánico entre los habitantes, se enfrenta a una situación cada vez más difícil de explicar y controlar.",
+"edad": "Película no recomendada a menores de 12",
+"sinopsis": "Sandra Sánchez, superando el rechazo del sistema, se convierte en la mejor karateka de todos los tiempos. A los 39 años, con el apoyo de su entrenador y pareja, conquista el oro olímpico, desafiando las expectativas y dejando una huella imborrable en la historia del Karate.",
 "notas": {
-"prensa": 3.6,
-"usuarios": 3.0
+"prensa": 3.1,
+"usuarios": 3.4
 }
 },
 {
@@ -340,24 +243,15 @@
 ],
 "sesiones": [
 {
-"h": "13:15",
+"h": "16:05",
 "v": "Doblada"
 },
 {
-"h": "16:00",
-"v": "Doblada"
-},
-{
-"h": "16:30",
-"v": "Doblada"
-},
-{
-"h": "19:15",
+"h": "19:20",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/50/36/503680a28350a667b4b542fc43e21fce.jpg",
 "sinopsis": "Tres hombres en distintas épocas viven historias entrelazadas por el deseo, el dolor y la herencia emocional. Inspirada en una obra inacabada de Lorca, la película explora la identidad y el legado a lo largo del tiempo.",
 "notas": {
 "prensa": 3.7,
@@ -371,88 +265,15 @@
 ],
 "sesiones": [
 {
-"h": "22:30",
+"h": "21:45",
 "v": "Doblada"
 }
 ],
 "original": "Other Mommy",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/52/31/5231f1507e0a6fb9b6b2c0e4f49f9c41.jpg",
 "sinopsis": "La pequeña Bela es acechada en su propio hogar por una entidad malévola que se muestra cada vez más impaciente. La única salvación para la pequeña reside en el fuerte lazo de su familia, pero la relación entre sus padres empieza a desmoronarse en una profunda crisis.",
 "notas": {
 "usuarios": 2.5
-}
-},
-{
-"titulo": "La oveja Shaun: Misión calabaza",
-"generos": [
-"Animación",
-"Aventura",
-"Comedia"
-],
-"sesiones": [
-{
-"h": "11:20",
-"v": "Doblada"
-}
-],
-"original": "Shaun The Sheep: The Beast Of Mossy Bottom",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/77/32/77328d915fa6272e6401e05c084f02ba.jpg",
-"sinopsis": "La víspera de Halloween se complica en la Granja Mossy Bottom cuando el granjero arruina el huerto de calabazas y los experimentos de Shaun desatan una extraña criatura en el bosque. Shaun y sus amigos deberán salvar la noche más espeluznante del año.",
-"notas": {
-"prensa": 4.0
-}
-},
-{
-"titulo": "Ramayana: El nacimiento de una leyenda",
-"generos": [
-"Acción",
-"Aventura",
-"Fantasía"
-],
-"sesiones": [
-{
-"h": "11:10",
-"v": "VOSE"
-}
-],
-"original": "Ramayana: Rise Of A Legend",
-"edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/9d/24/9d24a039aaf5c3b642d4a0bb68bcf22a.jpg",
-"sinopsis": "La película explora la figura de Rama, un héroe que vive guiado por el deber, el sacrificio personal y la búsqueda del bien mayor por encima de sus propios deseos. Su inquebrantable legado busca inspirar a la humanidad y demostrar la bondad del espíritu humano para resolver cualquier conflicto y traer la paz al mundo.",
-"notas": {
-"prensa": 3.0
-}
-},
-{
-"titulo": "Ratones al ataque: Operación Navidad",
-"generos": [
-"Animación",
-"Comedia",
-"Familia"
-],
-"sesiones": [
-{
-"h": "11:00",
-"v": "Doblada"
-},
-{
-"h": "15:50",
-"v": "Doblada"
-},
-{
-"h": "16:10",
-"v": "Doblada"
-}
-],
-"original": "Hvis Ingen Går I Fella",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/8f/e8/8fe8b608ec20d98ec4e84941dece21dd.jpg",
-"sinopsis": "Una familia de ratones ve amenazada su Navidad perfecta cuando una familia humana irrumpe en su acogedora casa, desencadenando una épica batalla por el control del hogar. Para erradicar a los diminutos inquilinos, los humanos contratan a un ocurrente exterminador de plagas, convirtiendo la estancia en una disparatada contienda de ingenio y unión ...",
-"notas": {
-"prensa": 3.5,
-"usuarios": 3.0
 }
 },
 {
@@ -462,7 +283,7 @@
 ],
 "sesiones": [
 {
-"h": "16:00",
+"h": "15:55",
 "v": "Doblada"
 },
 {
@@ -471,7 +292,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/f8/e9/f8e994e056ddbc25020bdabd07f6e69d.jpg",
 "sinopsis": "Dos jóvenes de orígenes distintos se conocen en un internado para “reformar” a mujeres, donde enfrentan juntas la represión y el abuso del sistema. Su vínculo revela la crueldad de estas instituciones y el impacto que dejaron en miles de vidas.",
 "notas": {
 "prensa": 3.2,
@@ -487,23 +307,7 @@
 ],
 "sesiones": [
 {
-"h": "11:20",
-"v": "Doblada"
-},
-{
-"h": "13:50",
-"v": "Doblada"
-},
-{
-"h": "16:10",
-"v": "Doblada"
-},
-{
 "h": "16:25",
-"v": "Doblada"
-},
-{
-"h": "18:15",
 "v": "Doblada"
 },
 {
@@ -511,37 +315,16 @@
 "v": "Doblada"
 },
 {
-"h": "21:00",
+"h": "21:25",
 "v": "Doblada"
 }
 ],
 "original": "Ebenezer",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/f2/7c/f27c1c612e7d97f69ac023990337f87b.jpg",
 "sinopsis": "Una reimaginación del clásico literario sigue a un hombre atrapado en el Londres de Dickens, enfrentando su pasado, presente y futuro a través de encuentros sobrenaturales. Entre callejones oscuros y mansiones victorianas, lucha por redimirse y obtener una segunda oportunidad antes de que sea demasiado tarde.",
 "notas": {
 "prensa": 3.0,
 "usuarios": 3.2
-}
-},
-{
-"titulo": "SuperThings: La película",
-"generos": [
-"Animación",
-"Familia"
-],
-"sesiones": [
-{
-"h": "11:05",
-"v": "Doblada"
-}
-],
-"original": "SuperThings",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/bb/f6/bbf66052699284e0fd6b58ec45252c2f.jpg",
-"sinopsis": "Tres niños viajan a Kaboom City para impedir un complot y encontrar las seis piezas de Kazoom puro antes que los villanos. En el camino, enfrentan desafíos que fortalecen su amistad, ingenio y trabajo en equipo.",
-"notas": {
-"prensa": 2.8
 }
 },
 {
@@ -556,7 +339,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/50/d2/50d2cf49b7b405477b6b32630ecc3560.jpg",
 "sinopsis": "Antes del Golpe de Estado en Chile de 1973, dos agentes de la CIA son enviados a la Isla de Pascua, donde enfrentan conspiraciones y sus propios pasados. El vínculo de uno de ellos con dos jóvenes rebeldes pone en riesgo la misión y altera el rumbo de todos.",
 "notas": {
 "prensa": 4.0,
@@ -574,18 +356,13 @@
 {
 "h": "16:00",
 "v": "Doblada"
-},
-{
-"h": "16:05",
-"v": "Doblada"
 }
 ],
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/bb/9e/bb9e0b0fd1d0aa920597d9dc358b2688.jpg",
 "sinopsis": "Prue y Curtis se adentran en un bosque mágico para rescatar a Mac, secuestrado por cuervos al servicio de la enigmática Alexandra. En un mundo lleno de criaturas y peligros, deberán enfrentarse a la misteriosa líder antes de que el pequeño desaparezca para siempre.",
 "notas": {
 "prensa": 4.3,
-"usuarios": 4.0
+"usuarios": 4.1
 }
 }
 ]
@@ -598,38 +375,12 @@
 "url": "https://www.sensacine.com/cines/cine/E0284/",
 "peliculas": [
 {
-"titulo": "Bailar la muerte",
-"generos": [
-"Documental"
-],
-"sesiones": [
-{
-"h": "11:00",
-"v": "Doblada"
-},
-{
-"h": "15:45",
-"v": "Doblada"
-}
-],
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/6d/dc/6ddcabaeb78eebe5a4f4dd5589dcdd60.jpg",
-"estreno": true,
-"sinopsis": "A través de películas, grabaciones olvidadas y antiguos discos de pizarra, el documental rastrea el flamenco dividido entre la dictadura y el exilio tras la Guerra Civil. Frente a los intentos de apropiación del poder y en diálogo con la música actual, muestra una cultura popular que resistió sin someterse por completo.",
-"notas": {
-"prensa": 3.2
-}
-},
-{
 "titulo": "El director",
 "generos": [
 "Drama",
 "Suspense"
 ],
 "sesiones": [
-{
-"h": "11:00",
-"v": "Doblada"
-},
 {
 "h": "16:00",
 "v": "Doblada"
@@ -644,7 +395,8 @@
 "estreno": true,
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
-"prensa": 3.2
+"prensa": 3.2,
+"usuarios": 2.6
 }
 },
 {
@@ -653,14 +405,6 @@
 "Comedia dramática"
 ],
 "sesiones": [
-{
-"h": "11:00",
-"v": "Doblada"
-},
-{
-"h": "15:30",
-"v": "Doblada"
-},
 {
 "h": "18:00",
 "v": "Doblada"
@@ -671,7 +415,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/10/eb/10ebc28d3aed75c58c3211f77de5fd8a.jpg",
 "estreno": true,
 "sinopsis": "Santiago Balmes, un célebre escritor distanciado de sus tres hijos desde hace años, los reúne antes de Navidad en la casa costera de su infancia para proponerles pasar unos días juntos. La invitación se convertirá en la oportunidad de confrontar viejas heridas familiares y reencontrarse.",
 "notas": {
@@ -686,16 +429,11 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "Doblada"
-},
-{
 "h": "16:00",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 18",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/db/0d/db0da6528c093b76c99fdaf7e3a88e4a.png",
 "estreno": true,
 "sinopsis": "Mauro, un asesino en serie que busca a su próxima víctima en un bar de carretera, cree haber encontrado la presa perfecta en la joven Amaranta. Sin embargo, las apariencias engañan y los roles de verdugo y víctima se invierten en un peligroso juego.",
 "notas": {
@@ -709,16 +447,11 @@
 ],
 "sesiones": [
 {
-"h": "18:00",
-"v": "Doblada"
-},
-{
 "h": "21:30",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/0d/20/0d2067cb59b87d740195c9c472aac0dd.jpg",
 "estreno": true,
 "sinopsis": "Obligadas a trabajar juntas en una legaltech tras el colapso de sus carreras, dos hermanas abogadas distanciadas por antiguos conflictos familiares (Amaia Salamanca y Marta Hazas) deberán aparcar sus diferencias para derrotar en los tribunales a un poderoso bufete con el que ambas tienen cuentas pendientes.",
 "notas": {
@@ -734,10 +467,6 @@
 ],
 "sesiones": [
 {
-"h": "10:45",
-"v": "Doblada"
-},
-{
 "h": "15:30",
 "v": "Doblada"
 },
@@ -752,7 +481,6 @@
 ],
 "original": "The Hunger Games: Sunrise On The Reaping",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/52/3f/523f751fb2907e78a48b2c0c02a04938.jpg",
 "estreno": true,
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
@@ -772,7 +500,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/55/97/559779590fd9411de3ce3a09590ae256.jpg",
 "estreno": true,
 "sinopsis": "La arqueóloga Laura Muñoz investiga fosas comunes de la Guerra Civil española para recuperar las historias de mujeres asesinadas y silenciadas. Su búsqueda revela cómo el cuerpo femenino ha sido usado como campo de batalla y cómo ese silencio sobre la violencia persiste hasta hoy."
 },
@@ -793,7 +520,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/6d/77/6d770d2094f80b2eefb91feb39f6fbf0.jpg",
 "estreno": true,
 "sinopsis": "En la Alemania de comienzos del siglo XVII, un soldado marcado por una cicatriz llega a una aldea protestante y asegura ser heredero de una granja abandonada, mostrando papeles que despiertan sospechas. Con trabajo, fe y disciplina logra integrarse y ganarse la confianza de la comunidad. Pero su identidad es falsa: en realidad es una estafadora que ...",
 "notas": {
@@ -813,7 +539,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 18",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/pictures/16/02/09/13/22/028575.jpg",
 "estreno": true,
 "sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
 "notas": {
@@ -829,21 +554,12 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
 "h": "15:30",
-"v": "Doblada"
-},
-{
-"h": "21:15",
 "v": "Doblada"
 }
 ],
 "original": "How To Rob A Bank",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/2c/13/2c132649929b24082edf96619ddfdd66.jpg",
 "sinopsis": "Un grupo de astutos ladrones de bancos transmiten sus atracos en redes sociales, ganando fama mientras evaden a la policía. Su audacia desata una intensa persecución en plena era digital.",
 "notas": {
 "prensa": 2.8,
@@ -859,10 +575,6 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
 "h": "15:30",
 "v": "Doblada"
 },
@@ -873,7 +585,6 @@
 ],
 "original": "The Cat In The Hat",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/fa/8f/fa8f7e075c00d52913e851c6e38cc266.jpg",
 "sinopsis": "Sally y Conrad Walden pasan un día solos hasta que aparece El Gato con Sombrero, un excéntrico personaje que les propone divertirse rompiendo sus rutinas. Sin embargo, su visita desata un caos inesperado que pondrá a prueba su comportamiento y responsabilidad.",
 "notas": {
 "prensa": 3.5,
@@ -894,7 +605,6 @@
 ],
 "original": "Heart Of The Beast",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/06/8b/068b23e941178cfd676278b44064f0e9.jpg",
 "sinopsis": "Un ex soldado herido y su perro militar luchan por sobrevivir en la naturaleza salvaje de Alaska. Enfrentando frío, soledad y peligros constantes, su vínculo será clave para regresar a casa.",
 "notas": {
 "prensa": 2.9,
@@ -913,7 +623,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/8c/27/8c2771ddda56c2e58d3ed57957ac4632.jpg",
 "sinopsis": "Dos años después de la gran batalla anterior, una nueva amenaza devastadora emerge para poner en peligro la frágil paz de la humanidad. Ante el regreso del colosal monstruo en medio de una tormenta, antiguos personajes y nuevos aliados deberán unirse para combatir a una fuerza desconocida.",
 "notas": {
 "prensa": 2.9,
@@ -936,7 +645,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/50/36/503680a28350a667b4b542fc43e21fce.jpg",
 "sinopsis": "Tres hombres en distintas épocas viven historias entrelazadas por el deseo, el dolor y la herencia emocional. Inspirada en una obra inacabada de Lorca, la película explora la identidad y el legado a lo largo del tiempo.",
 "notas": {
 "prensa": 3.7,
@@ -952,17 +660,12 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
 "h": "15:30",
 "v": "Doblada"
 }
 ],
 "original": "Forgotten Island",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/ee/16/ee161d327f52a9e974075b7c17d32d10.jpg",
 "sinopsis": "Un grupo de personajes se encuentra en una isla mágica de la mitología filipina que había permanecido olvidada durante mucho tiempo.",
 "notas": {
 "prensa": 3.2,
@@ -987,7 +690,6 @@
 ],
 "original": "The Rivals of Amziah King",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/0a/56/0a56a794ff1434cfe2c5c3b65a20647a.jpg",
 "sinopsis": "Matthew McConaughey protagonizará The Rivals of Amziah King, un thriller criminal dirigido por Andrew Patterson. Aunque no se sabe si interpretará a un investigador o al criminal, la trama sigue siendo un misterio. La película se desarrollará en zonas remotas de Oklahoma, evocando el ambiente de True Detective.",
 "notas": {
 "prensa": 3.1,
@@ -1005,7 +707,6 @@
 "v": "Doblada"
 }
 ],
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/b1/04/b104cb6b90b92de19360cf59f935e544.webp",
 "sinopsis": "Tras revolucionar la literatura española a los 23 años con 'Nada', Carmen Laforet pareció caer con el tiempo en el silencio creativo. Esta obra le otorga la palabra a la propia autora para exponer la historia de una escritora rebelde que pagó su libertad e independencia con el ostracismo.",
 "notas": {
 "prensa": 3.2
@@ -1020,17 +721,12 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
 "h": "16:00",
 "v": "Doblada"
 }
 ],
 "original": "Hvis Ingen Går I Fella",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/8f/e8/8fe8b608ec20d98ec4e84941dece21dd.jpg",
 "sinopsis": "Una familia de ratones ve amenazada su Navidad perfecta cuando una familia humana irrumpe en su acogedora casa, desencadenando una épica batalla por el control del hogar. Para erradicar a los diminutos inquilinos, los humanos contratan a un ocurrente exterminador de plagas, convirtiendo la estancia en una disparatada contienda de ingenio y unión ...",
 "notas": {
 "prensa": 3.5,
@@ -1053,7 +749,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/f8/e9/f8e994e056ddbc25020bdabd07f6e69d.jpg",
 "sinopsis": "Dos jóvenes de orígenes distintos se conocen en un internado para “reformar” a mujeres, donde enfrentan juntas la represión y el abuso del sistema. Su vínculo revela la crueldad de estas instituciones y el impacto que dejaron en miles de vidas.",
 "notas": {
 "prensa": 3.2,
@@ -1069,10 +764,6 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
 "h": "15:30",
 "v": "Doblada"
 },
@@ -1083,7 +774,6 @@
 ],
 "original": "Ebenezer",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/f2/7c/f27c1c612e7d97f69ac023990337f87b.jpg",
 "sinopsis": "Una reimaginación del clásico literario sigue a un hombre atrapado en el Londres de Dickens, enfrentando su pasado, presente y futuro a través de encuentros sobrenaturales. Entre callejones oscuros y mansiones victorianas, lucha por redimirse y obtener una segunda oportunidad antes de que sea demasiado tarde.",
 "notas": {
 "prensa": 3.0,
@@ -1098,7 +788,7 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
+"h": "15:30",
 "v": "Doblada"
 },
 {
@@ -1107,7 +797,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/d1/e5/d1e5f1f4509e27eecbfe74e3b4f8ff14.jpg",
 "sinopsis": "Legendary produce esta nueva versión de acción real de Street Fighter, una de las sagas más icónicas e influyentes de la historia de los videojuegos. La historia gira en torno a un torneo internacional de artes marciales.",
 "notas": {
 "prensa": 2.8,
@@ -1123,20 +812,35 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
 "h": "15:45",
 "v": "Doblada"
 }
 ],
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/fc/10/fc10c8292f7da73bf3b3b234d7a50539.jpg",
 "sinopsis": "Tadeo y Sara deben impedir que Momia, celoso de haber perdido protagonismo, altere la historia tras viajar al pasado. Su aventura los lleva desde Londres hasta Paititi, Grecia y la cueva de Alí Babá, para devolver al grupo a su época.",
 "notas": {
 "prensa": 3.1,
 "usuarios": 3.5
+}
+},
+{
+"titulo": "Tomates verdes fritos",
+"generos": [
+"Comedia",
+"Comedia dramática",
+"Drama"
+],
+"sesiones": [
+{
+"h": "18:00",
+"v": "Doblada"
+}
+],
+"original": "Fried Green Tomatoes",
+"edad": "Película no recomendada a menores de 13",
+"sinopsis": "Un ama de casa que no está contenta con su vida se hace amiga de Ninny, una anciana que vive en un asilo. Cada día Ninny le cuenta la historia de la apasionante vida de dos mujeres, Idgie y Ruth, que transcurrío en un pequeño pueblo en Alabama.",
+"notas": {
+"usuarios": 4.0
 }
 },
 {
@@ -1154,7 +858,6 @@
 ],
 "original": "Young Washington",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/33/81/33815ccc202302404ed7ac62c5cf2b6d.jpg",
 "sinopsis": "A los 22 años, el joven soldado George Washington comete un error que lo catapulta al estallido de la Guerra Franco-India, poniendo a prueba su supervivencia y honor. En medio del conflicto en la frontera, deberá enfrentar a sus enemigos y a sí mismo para descubrir el liderazgo que definirá el destino de su nación.",
 "notas": {
 "prensa": 2.7
@@ -1176,7 +879,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/50/d2/50d2cf49b7b405477b6b32630ecc3560.jpg",
 "sinopsis": "Antes del Golpe de Estado en Chile de 1973, dos agentes de la CIA son enviados a la Isla de Pascua, donde enfrentan conspiraciones y sus propios pasados. El vínculo de uno de ellos con dos jóvenes rebeldes pone en riesgo la misión y altera el rumbo de todos.",
 "notas": {
 "prensa": 4.0,
@@ -1197,11 +899,10 @@
 }
 ],
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/bb/9e/bb9e0b0fd1d0aa920597d9dc358b2688.jpg",
 "sinopsis": "Prue y Curtis se adentran en un bosque mágico para rescatar a Mac, secuestrado por cuervos al servicio de la enigmática Alexandra. En un mundo lleno de criaturas y peligros, deberán enfrentarse a la misteriosa líder antes de que el pequeño desaparezca para siempre.",
 "notas": {
 "prensa": 4.3,
-"usuarios": 4.0
+"usuarios": 4.1
 }
 }
 ]
@@ -1225,13 +926,16 @@
 "v": "Doblada"
 },
 {
+"h": "19:00",
+"v": "VOSE"
+},
+{
 "h": "21:45",
 "v": "Doblada"
 }
 ],
 "original": "Teenage Sex And Death At Camp Miasma",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/a1/bf/a1bf9be8f867dabc3697a2c94c940ef0.jpg",
 "estreno": true,
 "sinopsis": "Tras décadas de secuelas mediocres, una joven directora recibe la oportunidad de resucitar la franquicia slasher Campamento Miasma. Para hacerlo, busca a la actriz protagonista original, ahora recluida y rodeada de rumores, con la esperanza de descubrir la verdad detrás de la película que lo empezó todo. Pero su encuentro desencadena una ...",
 "notas": {
@@ -1256,7 +960,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/8a/14/8a142c17f96c96e085e009d2f79f0256.jpg",
 "estreno": true,
 "sinopsis": "En Sant Jordi, Barcelona se llena de libros, rosas y amores posibles, también para quienes buscan una conexión especial. Citas entrelaza cuatro historias sobre relaciones actuales en el día más romántico de la ciudad. Infidelidades, citas a ciegas, flechazos y poliamor dibujan un mosaico del amor contemporáneo.",
 "notas": {
@@ -1285,11 +988,11 @@
 }
 ],
 "edad": "Película no recomendada a menores de 7",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/ef/c2/efc27aaefa171eb6e27ffd7968d598dd.jpg",
 "estreno": true,
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
-"prensa": 3.2
+"prensa": 3.2,
+"usuarios": 2.6
 }
 },
 {
@@ -1308,7 +1011,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/10/eb/10ebc28d3aed75c58c3211f77de5fd8a.jpg",
 "estreno": true,
 "sinopsis": "Santiago Balmes, un célebre escritor distanciado de sus tres hijos desde hace años, los reúne antes de Navidad en la casa costera de su infancia para proponerles pasar unos días juntos. La invitación se convertirá en la oportunidad de confrontar viejas heridas familiares y reencontrarse.",
 "notas": {
@@ -1330,7 +1032,6 @@
 ],
 "original": "Le Corset",
 "edad": "Película no recomendada a menores de 7",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/67/a6/67a6e1495c8144d726593d1fee72b9fd.jpg",
 "estreno": true,
 "sinopsis": "En plena campiña francesa, Christophe, un niño de 11 años, afronta los desafíos de su crecimiento mientras su familia atraviesa dificultades en la granja. La música y su amistad con Clara le ayudarán a descubrir nuevas razones para mirar al futuro con esperanza.",
 "notas": {
@@ -1345,10 +1046,6 @@
 "Ciencia ficción"
 ],
 "sesiones": [
-{
-"h": "15:15",
-"v": "Doblada"
-},
 {
 "h": "16:15",
 "v": "Doblada"
@@ -1396,7 +1093,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 18",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/pictures/16/02/09/13/22/028575.jpg",
 "estreno": true,
 "sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
 "notas": {
@@ -1417,32 +1113,10 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/d5/9b/d59b14aafe094bf46d7f4b8eef0e62d3.jpg",
 "sinopsis": "El prometedor actor Matt Hagen ve destruida su carrera en Gotham City cuando un gánster le desfigura gravemente el rostro. Al someterse a un tratamiento reconstructivo experimental, su cuerpo sufre una insólita reacción que lo transforma en una sustancia arcillosa y maleable.",
 "notas": {
 "prensa": 3.0,
 "usuarios": 3.6
-}
-},
-{
-"titulo": "Coyote vs. ACME",
-"generos": [
-"Animación",
-"Aventura",
-"Comedia"
-],
-"sesiones": [
-{
-"h": "15:05",
-"v": "Doblada"
-}
-],
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/18/4e/184e275eb73de363b01c7c3637407fcd.jpg",
-"sinopsis": "Cansado de que los productos defectuosos de Acme arruinen sus planes, el Coyote contrata a un abogado para demandar a la corporación, ahora dirigida por un despiadado exjefe de su defensor. Juntos forjarán una inesperada amistad mientras luchan en los tribunales.",
-"notas": {
-"prensa": 3.9,
-"usuarios": 3.7
 }
 },
 {
@@ -1460,28 +1134,11 @@
 ],
 "original": "How To Rob A Bank",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/2c/13/2c132649929b24082edf96619ddfdd66.jpg",
 "sinopsis": "Un grupo de astutos ladrones de bancos transmiten sus atracos en redes sociales, ganando fama mientras evaden a la policía. Su audacia desata una intensa persecución en plena era digital.",
 "notas": {
 "prensa": 2.8,
 "usuarios": 3.0
 }
-},
-{
-"titulo": "Diversión navideña con Peppa: La experiencia en cines",
-"generos": [
-"Animación"
-],
-"sesiones": [
-{
-"h": "15:00",
-"v": "Doblada"
-}
-],
-"original": "Festive Fun With Peppa Cinema Experience",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/63/08/630840ccb7e0fea770fedff8276f7f1b.jpg",
-"sinopsis": "Peppa Pig y su familia se preparan para celebrar la primera Navidad de la pequeña Evie mediante juegos en la nieve, la decoración del árbol y representaciones festivas. El especial proyecta siete episodios clásicos conectados con nuevos contenidos y cuatro canciones inéditas para cantar y bailar en familia."
 },
 {
 "titulo": "El gato con sombrero",
@@ -1492,17 +1149,12 @@
 ],
 "sesiones": [
 {
-"h": "14:45",
-"v": "Doblada"
-},
-{
 "h": "17:00",
 "v": "Doblada"
 }
 ],
 "original": "The Cat In The Hat",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/fa/8f/fa8f7e075c00d52913e851c6e38cc266.jpg",
 "sinopsis": "Sally y Conrad Walden pasan un día solos hasta que aparece El Gato con Sombrero, un excéntrico personaje que les propone divertirse rompiendo sus rutinas. Sin embargo, su visita desata un caos inesperado que pondrá a prueba su comportamiento y responsabilidad.",
 "notas": {
 "prensa": 3.5,
@@ -1517,25 +1169,20 @@
 ],
 "sesiones": [
 {
-"h": "15:20",
-"v": "Doblada"
-},
-{
 "h": "16:20",
 "v": "Doblada"
 },
 {
-"h": "19:20",
+"h": "19:25",
 "v": "Doblada"
 },
 {
-"h": "21:30",
+"h": "21:45",
 "v": "Doblada"
 }
 ],
 "original": "Heart Of The Beast",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/06/8b/068b23e941178cfd676278b44064f0e9.jpg",
 "sinopsis": "Un ex soldado herido y su perro militar luchan por sobrevivir en la naturaleza salvaje de Alaska. Enfrentando frío, soledad y peligros constantes, su vínculo será clave para regresar a casa.",
 "notas": {
 "prensa": 2.9,
@@ -1549,12 +1196,11 @@
 ],
 "sesiones": [
 {
-"h": "17:50",
+"h": "17:55",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/06/b4/06b49b331f56b60d6cfd5971c9af4820.jpg",
 "sinopsis": "Sandra Sánchez, superando el rechazo del sistema, se convierte en la mejor karateka de todos los tiempos. A los 39 años, con el apoyo de su entrenador y pareja, conquista el oro olímpico, desafiando las expectativas y dejando una huella imborrable en la historia del Karate.",
 "notas": {
 "prensa": 3.1,
@@ -1577,7 +1223,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/50/36/503680a28350a667b4b542fc43e21fce.jpg",
 "sinopsis": "Tres hombres en distintas épocas viven historias entrelazadas por el deseo, el dolor y la herencia emocional. Inspirada en una obra inacabada de Lorca, la película explora la identidad y el legado a lo largo del tiempo.",
 "notas": {
 "prensa": 3.7,
@@ -1593,17 +1238,12 @@
 ],
 "sesiones": [
 {
-"h": "15:50",
-"v": "Doblada"
-},
-{
 "h": "16:05",
 "v": "Doblada"
 }
 ],
 "original": "Hvis Ingen Går I Fella",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/8f/e8/8fe8b608ec20d98ec4e84941dece21dd.jpg",
 "sinopsis": "Una familia de ratones ve amenazada su Navidad perfecta cuando una familia humana irrumpe en su acogedora casa, desencadenando una épica batalla por el control del hogar. Para erradicar a los diminutos inquilinos, los humanos contratan a un ocurrente exterminador de plagas, convirtiendo la estancia en una disparatada contienda de ingenio y unión ...",
 "notas": {
 "prensa": 3.5,
@@ -1621,12 +1261,11 @@
 "v": "Doblada"
 },
 {
-"h": "18:20",
+"h": "18:50",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/f8/e9/f8e994e056ddbc25020bdabd07f6e69d.jpg",
 "sinopsis": "Dos jóvenes de orígenes distintos se conocen en un internado para “reformar” a mujeres, donde enfrentan juntas la represión y el abuso del sistema. Su vínculo revela la crueldad de estas instituciones y el impacto que dejaron en miles de vidas.",
 "notas": {
 "prensa": 3.2,
@@ -1650,58 +1289,20 @@
 "v": "Doblada"
 },
 {
+"h": "18:40",
+"v": "VOSE"
+},
+{
 "h": "21:10",
 "v": "Doblada"
 }
 ],
 "original": "Ebenezer",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/f2/7c/f27c1c612e7d97f69ac023990337f87b.jpg",
 "sinopsis": "Una reimaginación del clásico literario sigue a un hombre atrapado en el Londres de Dickens, enfrentando su pasado, presente y futuro a través de encuentros sobrenaturales. Entre callejones oscuros y mansiones victorianas, lucha por redimirse y obtener una segunda oportunidad antes de que sea demasiado tarde.",
 "notas": {
 "prensa": 3.0,
 "usuarios": 3.2
-}
-},
-{
-"titulo": "SuperThings: La película",
-"generos": [
-"Animación",
-"Familia"
-],
-"sesiones": [
-{
-"h": "14:50",
-"v": "Doblada"
-}
-],
-"original": "SuperThings",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/bb/f6/bbf66052699284e0fd6b58ec45252c2f.jpg",
-"sinopsis": "Tres niños viajan a Kaboom City para impedir un complot y encontrar las seis piezas de Kazoom puro antes que los villanos. En el camino, enfrentan desafíos que fortalecen su amistad, ingenio y trabajo en equipo.",
-"notas": {
-"prensa": 2.8
-}
-},
-{
-"titulo": "Wildwood",
-"generos": [
-"Animación",
-"Aventura",
-"Familia"
-],
-"sesiones": [
-{
-"h": "15:40",
-"v": "Doblada"
-}
-],
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/bb/9e/bb9e0b0fd1d0aa920597d9dc358b2688.jpg",
-"sinopsis": "Prue y Curtis se adentran en un bosque mágico para rescatar a Mac, secuestrado por cuervos al servicio de la enigmática Alexandra. En un mundo lleno de criaturas y peligros, deberán enfrentarse a la misteriosa líder antes de que el pequeño desaparezca para siempre.",
-"notas": {
-"prensa": 4.3,
-"usuarios": 4.0
 }
 },
 {
@@ -1711,12 +1312,11 @@
 ],
 "sesiones": [
 {
-"h": "21:05",
+"h": "21:35",
 "v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/00/cc/00cc300ed53a479fb58e9e62c4fcc976.jpg",
 "sinopsis": "En el Madrid de 1992, acuciado por las deudas y abandonado por su mujer, Pepe toma una decisión drástica hasta que sus amigos logran detenerlo. Para rescatarlo a él y a su deteriorada taberna en Chueca, le proponen transformar el local en un pub de ambiente gay en plena España preolímpica."
 }
 ]
@@ -1952,7 +1552,7 @@
 "sinopsis": "Un ex soldado herido y su perro militar luchan por sobrevivir en la naturaleza salvaje de Alaska. Enfrentando frío, soledad y peligros constantes, su vínculo será clave para regresar a casa.",
 "notas": {
 "prensa": 2.9,
-"usuarios": 3.6
+"usuarios": 3.5
 }
 },
 {
@@ -2226,10 +1826,6 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "Doblada"
-},
-{
 "h": "15:45",
 "v": "Doblada"
 },
@@ -2271,7 +1867,6 @@
 ],
 "original": "How To Rob A Bank",
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/2c/13/2c132649929b24082edf96619ddfdd66.jpg",
 "sinopsis": "Un grupo de astutos ladrones de bancos transmiten sus atracos en redes sociales, ganando fama mientras evaden a la policía. Su audacia desata una intensa persecución en plena era digital.",
 "notas": {
 "prensa": 2.8,
@@ -2293,7 +1888,6 @@
 ],
 "original": "The Cat In The Hat",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/fa/8f/fa8f7e075c00d52913e851c6e38cc266.jpg",
 "sinopsis": "Sally y Conrad Walden pasan un día solos hasta que aparece El Gato con Sombrero, un excéntrico personaje que les propone divertirse rompiendo sus rutinas. Sin embargo, su visita desata un caos inesperado que pondrá a prueba su comportamiento y responsabilidad.",
 "notas": {
 "prensa": 3.5,
@@ -2309,10 +1903,6 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "Doblada"
-},
-{
 "h": "15:45",
 "v": "Doblada"
 },
@@ -2323,7 +1913,6 @@
 ],
 "original": "Hvis Ingen Går I Fella",
 "edad": "Todos los publicos",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/8f/e8/8fe8b608ec20d98ec4e84941dece21dd.jpg",
 "sinopsis": "Una familia de ratones ve amenazada su Navidad perfecta cuando una familia humana irrumpe en su acogedora casa, desencadenando una épica batalla por el control del hogar. Para erradicar a los diminutos inquilinos, los humanos contratan a un ocurrente exterminador de plagas, convirtiendo la estancia en una disparatada contienda de ingenio y unión ...",
 "notas": {
 "prensa": 3.5,
@@ -2337,10 +1926,6 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "Doblada"
-},
-{
 "h": "17:45",
 "v": "Doblada"
 },
@@ -2350,7 +1935,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 16",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/f8/e9/f8e994e056ddbc25020bdabd07f6e69d.jpg",
 "sinopsis": "Dos jóvenes de orígenes distintos se conocen en un internado para “reformar” a mujeres, donde enfrentan juntas la represión y el abuso del sistema. Su vínculo revela la crueldad de estas instituciones y el impacto que dejaron en miles de vidas.",
 "notas": {
 "prensa": 3.2,
@@ -2366,17 +1950,12 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "Doblada"
-},
-{
 "h": "20:30",
 "v": "Doblada"
 }
 ],
 "original": "Ebenezer",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/f2/7c/f27c1c612e7d97f69ac023990337f87b.jpg",
 "sinopsis": "Una reimaginación del clásico literario sigue a un hombre atrapado en el Londres de Dickens, enfrentando su pasado, presente y futuro a través de encuentros sobrenaturales. Entre callejones oscuros y mansiones victorianas, lucha por redimirse y obtener una segunda oportunidad antes de que sea demasiado tarde.",
 "notas": {
 "prensa": 3.0,
