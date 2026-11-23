@@ -1,6 +1,6 @@
 {
 "fuente": "Turismo de Tenerife · webtenerife.com/agenda",
-"actualizado": "2026-11-22T08:35Z",
+"actualizado": "2026-11-23T15:01Z",
 "eventos": [
 {
 "id": "ag-mientras-seamos-salvajes",
@@ -15,54 +15,6 @@
 "url": "https://www.webtenerife.com/agenda/2026/12/mientras-seamos-salvajes/",
 "lat": 28.56154,
 "lon": -16.21826,
-"aprox": true,
-"visto": ""
-},
-{
-"id": "ag-deka-tenerife-2026",
-"nombre": "DEKA TENERIFE 2026",
-"desde": "2026-11-21",
-"hasta": "2026-11-22",
-"lugar": "",
-"municipio": "",
-"categoria": "deporte",
-"extracto": "DEKA Tenerife 2026 se celebrará los días 21 y 22 de noviembre con diferentes pruebas de fitness competitivo. El evento combina ejercicios funcionales y carrera a través de",
-"foto": "https://www.webtenerife.com/-/media/files/events/2026/11/deka_tenerife_2026_96dpi1.png",
-"url": "https://www.webtenerife.com/agenda/2026/11/deka-tenerife-2026/",
-"lat": null,
-"lon": null,
-"aprox": false,
-"visto": ""
-},
-{
-"id": "ag-el-viaje-de-coclea",
-"nombre": "El viaje de Cóclea",
-"desde": "2026-11-21",
-"hasta": "2026-11-22",
-"lugar": "Auditorio de Tenerife, Avenida de la Constitucion, 1, , 38003 Santa Cruz de Tenerife",
-"municipio": "Santa Cruz de Tenerife",
-"categoria": "musica",
-"extracto": "La Sinfónica de Tenerife presenta El viaje de Cóclea los días 21 y 22 de noviembre en la Sala de Cámara del Auditorio de Tenerife. La propuesta está especialmente",
-"foto": "https://www.webtenerife.com/-/media/files/events/2026/11/el_viaje_de_coclea_96dpi1.png",
-"url": "https://www.webtenerife.com/agenda/2026/11/el-viaje-de-coclea/",
-"lat": 28.56154,
-"lon": -16.21826,
-"aprox": true,
-"visto": ""
-},
-{
-"id": "ag-festival-mar-abierto-sole-gimenez",
-"nombre": "Festival Mar Abierto - Sole Giménez",
-"desde": "2026-11-22",
-"hasta": "2026-11-22",
-"lugar": "C. Obispo Rey Redondo, 50, 38201 La Laguna, Santa Cruz de Tenerife",
-"municipio": "San Cristóbal de La Laguna",
-"categoria": "musica",
-"extracto": "Sole Giménez llega al Teatro Leal de La Laguna el próximo 22 de noviembre dentro de la programación del Festival Mar Abierto. La artista presenta su nuevo proyecto SER HUMANO,",
-"foto": "https://www.webtenerife.com/-/media/files/events/2026/11/sole_gimenezteatro_leal_96dpi1.png",
-"url": "https://www.webtenerife.com/agenda/2026/11/festival-mar-abierto-sole-gimenez/",
-"lat": 28.56861,
-"lon": -16.32528,
 "aprox": true,
 "visto": ""
 },
