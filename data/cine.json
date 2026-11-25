@@ -1,7 +1,7 @@
 {
 "fuente": "SensaCine · sensacine.com",
-"fecha": "2026-11-24",
-"actualizado": "2026-11-24T18:16Z",
+"fecha": "2026-11-25",
+"actualizado": "2026-11-25T17:36Z",
 "cines": [
 {
 "id": "E0627",
@@ -23,7 +23,7 @@
 },
 {
 "h": "21:35",
-"v": "VOSE"
+"v": "Doblada"
 }
 ],
 "original": "Teenage Sex And Death At Camp Miasma",
@@ -36,27 +36,6 @@
 }
 },
 {
-"titulo": "Dune",
-"generos": [
-"Acción",
-"Ciencia ficción",
-"Fantasía"
-],
-"sesiones": [
-{
-"h": "18:30",
-"v": "Doblada"
-}
-],
-"edad": "Película no recomendada a menores de 12",
-"estreno": true,
-"sinopsis": "En un futuro remoto, la noble Casa Atreides es enviada a gobernar el desértico y codiciado planeta Arrakis. La misión resulta ser una trampa mortal orquestada por el Emperador para aniquilar por completo a la familia. Tras el asesinato de sus padres, el joven Paul sobrevive, encaminándose a cumplir una antigua profecía mesiánica.",
-"notas": {
-"prensa": 2.1,
-"usuarios": 2.5
-}
-},
-{
 "titulo": "El director",
 "generos": [
 "Drama",
@@ -65,6 +44,10 @@
 "sesiones": [
 {
 "h": "16:05",
+"v": "Doblada"
+},
+{
+"h": "16:10",
 "v": "Doblada"
 },
 {
@@ -82,7 +65,7 @@
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
 "prensa": 3.2,
-"usuarios": 2.6
+"usuarios": 2.7
 }
 },
 {
@@ -98,6 +81,10 @@
 "v": "Doblada"
 },
 {
+"h": "16:20",
+"v": "Doblada"
+},
+{
 "h": "17:30",
 "v": "Doblada"
 },
@@ -107,11 +94,11 @@
 },
 {
 "h": "19:30",
-"v": "VOSE"
+"v": "Doblada"
 },
 {
-"h": "20:15",
-"v": "Doblada"
+"h": "20:20",
+"v": "VOSE"
 },
 {
 "h": "20:45",
@@ -124,7 +111,7 @@
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
 "prensa": 2.8,
-"usuarios": 3.7
+"usuarios": 3.8
 }
 },
 {
@@ -133,10 +120,6 @@
 "Suspense"
 ],
 "sesiones": [
-{
-"h": "18:45",
-"v": "Doblada"
-},
 {
 "h": "19:10",
 "v": "Doblada"
@@ -158,7 +141,7 @@
 ],
 "sesiones": [
 {
-"h": "21:30",
+"h": "21:40",
 "v": "Doblada"
 }
 ],
@@ -182,7 +165,7 @@
 "v": "Doblada"
 },
 {
-"h": "21:30",
+"h": "21:25",
 "v": "Doblada"
 }
 ],
@@ -202,10 +185,6 @@
 "Comedia"
 ],
 "sesiones": [
-{
-"h": "16:30",
-"v": "Doblada"
-},
 {
 "h": "16:50",
 "v": "Doblada"
@@ -235,7 +214,7 @@
 "v": "Doblada"
 },
 {
-"h": "21:05",
+"h": "21:35",
 "v": "Doblada"
 }
 ],
@@ -294,7 +273,7 @@
 ],
 "sesiones": [
 {
-"h": "21:05",
+"h": "21:45",
 "v": "Doblada"
 }
 ],
@@ -313,6 +292,10 @@
 "sesiones": [
 {
 "h": "15:55",
+"v": "Doblada"
+},
+{
+"h": "16:00",
 "v": "Doblada"
 },
 {
@@ -340,12 +323,12 @@
 "v": "Doblada"
 },
 {
-"h": "18:55",
+"h": "18:30",
 "v": "Doblada"
 },
 {
 "h": "18:55",
-"v": "VOSE"
+"v": "Doblada"
 },
 {
 "h": "21:25",
@@ -367,6 +350,10 @@
 ],
 "sesiones": [
 {
+"h": "16:45",
+"v": "Doblada"
+},
+{
 "h": "18:55",
 "v": "Doblada"
 }
@@ -387,11 +374,7 @@
 ],
 "sesiones": [
 {
-"h": "16:00",
-"v": "Doblada"
-},
-{
-"h": "16:35",
+"h": "16:15",
 "v": "Doblada"
 }
 ],
@@ -428,12 +411,11 @@
 }
 ],
 "edad": "Película no recomendada a menores de 7",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/ef/c2/efc27aaefa171eb6e27ffd7968d598dd.jpg",
 "estreno": true,
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
 "prensa": 3.2,
-"usuarios": 2.6
+"usuarios": 2.7
 }
 },
 {
@@ -522,11 +504,12 @@
 ],
 "original": "The Hunger Games: Sunrise On The Reaping",
 "edad": "Película no recomendada a menores de 12",
+"cartel": "https://es.web.img3.acsta.net/c_160_213/img/52/3f/523f751fb2907e78a48b2c0c02a04938.jpg",
 "estreno": true,
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
 "prensa": 2.8,
-"usuarios": 3.7
+"usuarios": 3.8
 }
 },
 {
@@ -565,7 +548,7 @@
 "sinopsis": "En la Alemania de comienzos del siglo XVII, un soldado marcado por una cicatriz llega a una aldea protestante y asegura ser heredero de una granja abandonada, mostrando papeles que despiertan sospechas. Con trabajo, fe y disciplina logra integrarse y ganarse la confianza de la comunidad. Pero su identidad es falsa: en realidad es una estafadora que ...",
 "notas": {
 "prensa": 3.7,
-"usuarios": 3.1
+"usuarios": 3.2
 }
 },
 {
@@ -678,6 +661,10 @@
 "sesiones": [
 {
 "h": "18:00",
+"v": "Doblada"
+},
+{
+"h": "20:40",
 "v": "Doblada"
 }
 ],
@@ -825,6 +812,10 @@
 ],
 "sesiones": [
 {
+"h": "15:30",
+"v": "Doblada"
+},
+{
 "h": "15:45",
 "v": "Doblada"
 }
@@ -854,26 +845,6 @@
 "notas": {
 "prensa": 3.1,
 "usuarios": 3.5
-}
-},
-{
-"titulo": "Tomates verdes fritos",
-"generos": [
-"Comedia",
-"Comedia dramática",
-"Drama"
-],
-"sesiones": [
-{
-"h": "18:00",
-"v": "Doblada"
-}
-],
-"original": "Fried Green Tomatoes",
-"edad": "Película no recomendada a menores de 13",
-"sinopsis": "Un ama de casa que no está contenta con su vida se hace amiga de Ninny, una anciana que vive en un asilo. Cada día Ninny le cuenta la historia de la apasionante vida de dos mujeres, Idgie y Ruth, que transcurrío en un pequeño pueblo en Alabama.",
-"notas": {
-"usuarios": 4.0
 }
 },
 {
@@ -959,10 +930,6 @@
 "v": "Doblada"
 },
 {
-"h": "19:00",
-"v": "VOSE"
-},
-{
 "h": "21:45",
 "v": "Doblada"
 }
@@ -1025,7 +992,7 @@
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
 "prensa": 3.2,
-"usuarios": 2.6
+"usuarios": 2.7
 }
 },
 {
@@ -1098,10 +1065,6 @@
 {
 "h": "20:15",
 "v": "Doblada"
-},
-{
-"h": "20:15",
-"v": "VOSE"
 },
 {
 "h": "20:45",
@@ -1326,10 +1289,6 @@
 "v": "Doblada"
 },
 {
-"h": "18:40",
-"v": "VOSE"
-},
-{
 "h": "21:10",
 "v": "Doblada"
 }
@@ -1378,12 +1337,20 @@
 "v": "Doblada"
 },
 {
+"h": "15:45",
+"v": "VOSE"
+},
+{
 "h": "16:40",
 "v": "Doblada"
 },
 {
 "h": "18:00",
 "v": "Doblada"
+},
+{
+"h": "19:00",
+"v": "VOSE"
 },
 {
 "h": "19:30",
@@ -1401,7 +1368,7 @@
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
 "prensa": 2.8,
-"usuarios": 3.7
+"usuarios": 3.8
 }
 },
 {
@@ -1413,7 +1380,11 @@
 ],
 "sesiones": [
 {
-"h": "21:15",
+"h": "15:30",
+"v": "Doblada"
+},
+{
+"h": "19:35",
 "v": "Doblada"
 }
 ],
@@ -1433,7 +1404,7 @@
 ],
 "sesiones": [
 {
-"h": "17:10",
+"h": "18:10",
 "v": "Doblada"
 },
 {
@@ -1471,25 +1442,6 @@
 }
 },
 {
-"titulo": "El precio de la red",
-"generos": [
-"Drama"
-],
-"sesiones": [
-{
-"h": "17:25",
-"v": "Doblada"
-}
-],
-"original": "The Social Reckoning",
-"edad": "Película no recomendada a menores de 12",
-"sinopsis": "Se basa en \"The Facebook Files\", que revelan los secretos y controversias internas de Facebook. La película explora cómo estas revelaciones afectan a la compañía y a la sociedad.",
-"notas": {
-"prensa": 2.7,
-"usuarios": 3.3
-}
-},
-{
 "titulo": "En el corazón de la bestia",
 "generos": [
 "Acción",
@@ -1497,11 +1449,7 @@
 ],
 "sesiones": [
 {
-"h": "16:30",
-"v": "VOSE"
-},
-{
-"h": "18:10",
+"h": "17:10",
 "v": "Doblada"
 }
 ],
@@ -1538,7 +1486,7 @@
 ],
 "sesiones": [
 {
-"h": "18:25",
+"h": "18:35",
 "v": "Doblada"
 }
 ],
@@ -1550,21 +1498,22 @@
 }
 },
 {
-"titulo": "La otra madre",
+"titulo": "La invitación",
 "generos": [
-"Terror"
+"Comedia"
 ],
 "sesiones": [
 {
-"h": "21:25",
+"h": "17:35",
 "v": "Doblada"
 }
 ],
-"original": "Other Mommy",
+"original": "The Invite",
 "edad": "Película no recomendada a menores de 16",
-"sinopsis": "La pequeña Bela es acechada en su propio hogar por una entidad malévola que se muestra cada vez más impaciente. La única salvación para la pequeña reside en el fuerte lazo de su familia, pero la relación entre sus padres empieza a desmoronarse en una profunda crisis.",
+"sinopsis": "Una cena entre vecinos desencadena una noche de revelaciones, donde afloran deseos reprimidos y tensiones emocionales. La historia explora con intensidad las complejidades y fragilidades de las relaciones contemporáneas.",
 "notas": {
-"usuarios": 2.5
+"prensa": 3.2,
+"usuarios": 3.4
 }
 },
 {
@@ -1576,7 +1525,7 @@
 ],
 "sesiones": [
 {
-"h": "20:15",
+"h": "20:25",
 "v": "Doblada"
 }
 ],
@@ -1613,6 +1562,26 @@
 }
 },
 {
+"titulo": "Resident Evil",
+"generos": [
+"Ciencia ficción",
+"Suspense",
+"Terror"
+],
+"sesiones": [
+{
+"h": "21:50",
+"v": "Doblada"
+}
+],
+"edad": "Película no recomendada a menores de 16",
+"sinopsis": "Bryan, un mensajero médico, se ve atrapado inesperadamente en una noche de caos en la que la ciudad empieza a colapsar por una amenaza desconocida. Obligado a sobrevivir, deberá enfrentarse a una peligrosa carrera llena de acción mientras intenta escapar del horror que se desata a su alrededor.",
+"notas": {
+"prensa": 4.3,
+"usuarios": 3.6
+}
+},
+{
 "titulo": "Scrooge y los fantasmas de la Navidad",
 "generos": [
 "Aventura",
@@ -1625,12 +1594,12 @@
 "v": "Doblada"
 },
 {
-"h": "19:10",
-"v": "Doblada"
+"h": "16:30",
+"v": "VOSE"
 },
 {
-"h": "19:20",
-"v": "VOSE"
+"h": "19:10",
+"v": "Doblada"
 },
 {
 "h": "21:20",
@@ -1646,6 +1615,27 @@
 }
 },
 {
+"titulo": "Verity: La sombra de un engaño",
+"generos": [
+"Drama",
+"Romántico",
+"Suspense"
+],
+"sesiones": [
+{
+"h": "15:30",
+"v": "Doblada"
+}
+],
+"original": "Verity",
+"edad": "Película no recomendada a menores de 16",
+"sinopsis": "Lowen Ashleigh, una escritora en crisis, es contratada para continuar la obra de Verity Crawford, una autora incapacitada tras un accidente. Al vivir en su casa, descubre una inquietante autobiografía que revela oscuros secretos familiares.",
+"notas": {
+"prensa": 2.8,
+"usuarios": 3.1
+}
+},
+{
 "titulo": "Whalefall",
 "generos": [
 "Drama",
@@ -1653,11 +1643,7 @@
 ],
 "sesiones": [
 {
-"h": "15:30",
-"v": "Doblada"
-},
-{
-"h": "19:30",
+"h": "21:35",
 "v": "Doblada"
 }
 ],
@@ -1705,7 +1691,7 @@
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
 "prensa": 2.8,
-"usuarios": 3.7
+"usuarios": 3.8
 }
 },
 {
