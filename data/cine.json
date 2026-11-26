@@ -1,7 +1,7 @@
 {
 "fuente": "SensaCine · sensacine.com",
-"fecha": "2026-11-25",
-"actualizado": "2026-11-25T17:36Z",
+"fecha": "2026-11-26",
+"actualizado": "2026-11-26T17:18Z",
 "cines": [
 {
 "id": "E0627",
@@ -47,10 +47,6 @@
 "v": "Doblada"
 },
 {
-"h": "16:10",
-"v": "Doblada"
-},
-{
 "h": "18:40",
 "v": "Doblada"
 },
@@ -60,7 +56,6 @@
 }
 ],
 "edad": "Película no recomendada a menores de 7",
-"cartel": "https://es.web.img2.acsta.net/c_160_213/img/ef/c2/efc27aaefa171eb6e27ffd7968d598dd.jpg",
 "estreno": true,
 "sinopsis": "Tras dos décadas como corresponsal de guerra, David Jiménez asume la dirección de un gran periódico, donde deberá luchar a contracorriente frente a los intereses ocultos de su editor. Un 'thriller' político que narra una batalla al límite por preservar la integridad y la verdad en el periodismo.",
 "notas": {
@@ -81,15 +76,7 @@
 "v": "Doblada"
 },
 {
-"h": "16:20",
-"v": "Doblada"
-},
-{
 "h": "17:30",
-"v": "Doblada"
-},
-{
-"h": "18:30",
 "v": "Doblada"
 },
 {
@@ -112,24 +99,6 @@
 "notas": {
 "prensa": 2.8,
 "usuarios": 3.8
-}
-},
-{
-"titulo": "Tesis",
-"generos": [
-"Suspense"
-],
-"sesiones": [
-{
-"h": "19:10",
-"v": "Doblada"
-}
-],
-"edad": "Película no recomendada a menores de 18",
-"estreno": true,
-"sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
-"notas": {
-"usuarios": 4.1
 }
 },
 {
@@ -165,7 +134,7 @@
 "v": "Doblada"
 },
 {
-"h": "21:25",
+"h": "21:15",
 "v": "Doblada"
 }
 ],
@@ -267,22 +236,20 @@
 }
 },
 {
-"titulo": "La otra madre",
+"titulo": "Puedes verlo todo",
 "generos": [
-"Terror"
+"Documental"
 ],
 "sesiones": [
 {
-"h": "21:45",
-"v": "Doblada"
+"h": "19:00",
+"v": "VOSE"
 }
 ],
-"original": "Other Mommy",
-"edad": "Película no recomendada a menores de 16",
-"sinopsis": "La pequeña Bela es acechada en su propio hogar por una entidad malévola que se muestra cada vez más impaciente. La única salvación para la pequeña reside en el fuerte lazo de su familia, pero la relación entre sus padres empieza a desmoronarse en una profunda crisis.",
-"notas": {
-"usuarios": 2.4
-}
+"original": "You Can See Everything",
+"edad": "Película no recomendada a menores de 12",
+"cartel": "https://es.web.img2.acsta.net/c_160_213/img/5a/8c/5a8c0ea7b69982e4a4f75a04a545bbfc.jpg",
+"sinopsis": "Apenas treinta y cuatro días antes de ingresar en prisión, la polémica fundadora de Silicon Valley, Elizabeth Holmes, toma la decisión de permitir que un equipo de cámaras grabe sus últimos momentos de libertad. Lo que se inicia como el retrato de una convicta se transforma pronto en un viaje de 3 años."
 },
 {
 "titulo": "Ruega por nosotras",
@@ -292,10 +259,6 @@
 "sesiones": [
 {
 "h": "15:55",
-"v": "Doblada"
-},
-{
-"h": "16:00",
 "v": "Doblada"
 },
 {
@@ -327,11 +290,7 @@
 "v": "Doblada"
 },
 {
-"h": "18:55",
-"v": "Doblada"
-},
-{
-"h": "21:25",
+"h": "21:00",
 "v": "Doblada"
 }
 ],
@@ -344,6 +303,23 @@
 }
 },
 {
+"titulo": "Tesis",
+"generos": [
+"Suspense"
+],
+"sesiones": [
+{
+"h": "19:10",
+"v": "Doblada"
+}
+],
+"edad": "Película no recomendada a menores de 18",
+"sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
+"notas": {
+"usuarios": 4.1
+}
+},
+{
 "titulo": "Wild Horse Nine",
 "generos": [
 "Suspense"
@@ -352,10 +328,6 @@
 {
 "h": "16:45",
 "v": "Doblada"
-},
-{
-"h": "18:55",
-"v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
@@ -363,26 +335,6 @@
 "notas": {
 "prensa": 4.0,
 "usuarios": 3.3
-}
-},
-{
-"titulo": "Wildwood",
-"generos": [
-"Animación",
-"Aventura",
-"Familia"
-],
-"sesiones": [
-{
-"h": "16:15",
-"v": "Doblada"
-}
-],
-"edad": "Todos los publicos",
-"sinopsis": "Prue y Curtis se adentran en un bosque mágico para rescatar a Mac, secuestrado por cuervos al servicio de la enigmática Alexandra. En un mundo lleno de criaturas y peligros, deberán enfrentarse a la misteriosa líder antes de que el pequeño desaparezca para siempre.",
-"notas": {
-"prensa": 4.3,
-"usuarios": 4.1
 }
 }
 ]
@@ -395,12 +347,39 @@
 "url": "https://www.sensacine.com/cines/cine/E0284/",
 "peliculas": [
 {
+"titulo": "Ahora los suegros son ellos",
+"generos": [
+"Comedia"
+],
+"sesiones": [
+{
+"h": "15:30",
+"v": "Doblada"
+},
+{
+"h": "17:45",
+"v": "Doblada"
+}
+],
+"original": "Focker In-Law",
+"edad": "Película no recomendada a menores de 12",
+"estreno": true,
+"sinopsis": "Los hijos ya adultos de Greg y Pam afrontan nuevas tensiones familiares cuando uno de ellos anuncia su boda con Olivia, una joven que despierta desconfianza desde el primer momento. La familia deberá enfrentarse a secretos y diferencias mientras se acerca el gran día.",
+"notas": {
+"usuarios": 3.0
+}
+},
+{
 "titulo": "El director",
 "generos": [
 "Drama",
 "Suspense"
 ],
 "sesiones": [
+{
+"h": "15:30",
+"v": "Doblada"
+},
 {
 "h": "16:00",
 "v": "Doblada"
@@ -464,6 +443,27 @@
 }
 },
 {
+"titulo": "Hechizo: Bienvenidos a Hexe",
+"generos": [
+"Animación",
+"Aventura",
+"Comedia"
+],
+"sesiones": [
+{
+"h": "15:30",
+"v": "Doblada"
+},
+{
+"h": "17:45",
+"v": "Doblada"
+}
+],
+"original": "Disney's Hexed",
+"estreno": true,
+"sinopsis": "Tras descubrir sus poderes mágicos, la adolescente Billie Doe es catapultada al peligroso reino de Hexe junto a un peculiar gato de tres ojos. Obligada a aliarse con su cautelosa madre Alice, ambas deberán desentrañar ocultos misterios familiares para salvar el mundo de las brujas."
+},
+{
 "titulo": "Hechos probados",
 "generos": [
 "Judicial"
@@ -480,6 +480,25 @@
 "notas": {
 "prensa": 2.5
 }
+},
+{
+"titulo": "Hermanas",
+"generos": [
+"Drama"
+],
+"sesiones": [
+{
+"h": "16:00",
+"v": "Doblada"
+},
+{
+"h": "18:15",
+"v": "Doblada"
+}
+],
+"edad": "Película no recomendada a menores de 16",
+"estreno": true,
+"sinopsis": "Chelo y Marta ven sus vidas alteradas cuando Lucas, hijo de Marta, es acusado de agredir a su prima. La denuncia rompe lazos familiares y enfrenta pasado, justicia y lealtades difíciles de conciliar."
 },
 {
 "titulo": "Los Juegos del Hambre: Amanecer en la cosecha",
@@ -504,12 +523,31 @@
 ],
 "original": "The Hunger Games: Sunrise On The Reaping",
 "edad": "Película no recomendada a menores de 12",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/52/3f/523f751fb2907e78a48b2c0c02a04938.jpg",
 "estreno": true,
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
 "prensa": 2.8,
 "usuarios": 3.8
+}
+},
+{
+"titulo": "Oro sin ley",
+"generos": [
+"Acción",
+"Aventura",
+"Suspense"
+],
+"sesiones": [
+{
+"h": "18:00",
+"v": "Doblada"
+}
+],
+"original": "The Weight",
+"estreno": true,
+"sinopsis": "En Oregón 1933, un padre viudo es separado de su hija y enviado a un brutal campo de trabajo donde la supervivencia es un desafío. Al involucrarse en un arriesgado contrabando de oro tendrá que enfrentarse a traiciones y peligros mientras lucha por reunirse con ella.",
+"notas": {
+"usuarios": 3.1
 }
 },
 {
@@ -535,10 +573,6 @@
 ],
 "sesiones": [
 {
-"h": "17:00",
-"v": "Doblada"
-},
-{
 "h": "19:00",
 "v": "Doblada"
 }
@@ -552,22 +586,39 @@
 }
 },
 {
-"titulo": "Tesis",
+"titulo": "Sanguine (Spieces)",
 "generos": [
-"Suspense"
+"Terror"
 ],
 "sesiones": [
 {
-"h": "20:30",
+"h": "17:00",
 "v": "Doblada"
 }
 ],
-"edad": "Película no recomendada a menores de 18",
+"original": "Sanguine",
+"edad": "Película no recomendada a menores de 16",
 "estreno": true,
-"sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
-"notas": {
-"usuarios": 4.1
+"sinopsis": "Durante su residencia en urgencias, Margot atiende a varios jóvenes afectados por extraños síntomas que nadie logra explicar. Cuando empieza a sufrir en su propio cuerpo señales similares, la médica se verá atrapada en una inquietante espiral entre la ciencia y lo desconocido."
+},
+{
+"titulo": "Un hombre en un puente",
+"generos": [
+"Drama"
+],
+"sesiones": [
+{
+"h": "16:00",
+"v": "Doblada"
+},
+{
+"h": "18:15",
+"v": "Doblada"
 }
+],
+"edad": "Película no recomendada a menores de 16",
+"estreno": true,
+"sinopsis": "Andrés se refugia en un coche de lujo para escapar de un virus que se propaga rápidamente. Al regresar a su pueblo natal, enfrenta su pasado y encuentra la oportunidad de reconciliarse consigo mismo."
 },
 {
 "titulo": "Cómo robar un banco",
@@ -662,10 +713,6 @@
 {
 "h": "18:00",
 "v": "Doblada"
-},
-{
-"h": "20:40",
-"v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
@@ -723,7 +770,7 @@
 {
 "titulo": "Por qué no escribo nada",
 "generos": [
-"Diverso"
+"Documental"
 ],
 "sesiones": [
 {
@@ -731,10 +778,27 @@
 "v": "Doblada"
 }
 ],
+"edad": "Todos los publicos",
 "sinopsis": "Tras revolucionar la literatura española a los 23 años con 'Nada', Carmen Laforet pareció caer con el tiempo en el silencio creativo. Esta obra le otorga la palabra a la propia autora para exponer la historia de una escritora rebelde que pagó su libertad e independencia con el ostracismo.",
 "notas": {
 "prensa": 3.2
 }
+},
+{
+"titulo": "Puedes verlo todo",
+"generos": [
+"Documental"
+],
+"sesiones": [
+{
+"h": "18:00",
+"v": "Doblada"
+}
+],
+"original": "You Can See Everything",
+"edad": "Película no recomendada a menores de 12",
+"cartel": "https://es.web.img2.acsta.net/c_160_213/img/5a/8c/5a8c0ea7b69982e4a4f75a04a545bbfc.jpg",
+"sinopsis": "Apenas treinta y cuatro días antes de ingresar en prisión, la polémica fundadora de Silicon Valley, Elizabeth Holmes, toma la decisión de permitir que un equipo de cámaras grabe sus últimos momentos de libertad. Lo que se inicia como el retrato de una convicta se transforma pronto en un viaje de 3 años."
 },
 {
 "titulo": "Ratones al ataque: Operación Navidad",
@@ -765,6 +829,10 @@
 "sesiones": [
 {
 "h": "17:45",
+"v": "Doblada"
+},
+{
+"h": "18:00",
 "v": "Doblada"
 },
 {
@@ -805,6 +873,25 @@
 }
 },
 {
+"titulo": "Solo una vez",
+"generos": [
+"Drama",
+"Suspense"
+],
+"sesiones": [
+{
+"h": "18:00",
+"v": "Doblada"
+}
+],
+"edad": "Película no recomendada a menores de 16",
+"sinopsis": "Laura, una psicóloga que trabaja con mujeres que sufren violencia de género, comienza a ser acosada por el esposo de una de sus pacientes. Mientras lidia como puede con esta situación, debe tratar una pareja que nunca había tenido que acudir un centro de este tipo: Eva y Pablo. Por una serie de malentendidos él ha recibido una denuncia, pero ...",
+"notas": {
+"prensa": 2.7,
+"usuarios": 2.8
+}
+},
+{
 "titulo": "Street Fighter",
 "generos": [
 "Acción",
@@ -813,10 +900,6 @@
 "sesiones": [
 {
 "h": "15:30",
-"v": "Doblada"
-},
-{
-"h": "15:45",
 "v": "Doblada"
 }
 ],
@@ -848,6 +931,23 @@
 }
 },
 {
+"titulo": "Tesis",
+"generos": [
+"Suspense"
+],
+"sesiones": [
+{
+"h": "20:30",
+"v": "Doblada"
+}
+],
+"edad": "Película no recomendada a menores de 18",
+"sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
+"notas": {
+"usuarios": 4.1
+}
+},
+{
 "titulo": "Washington. El origen de un líder",
 "generos": [
 "Acción",
@@ -874,7 +974,7 @@
 ],
 "sesiones": [
 {
-"h": "18:10",
+"h": "15:30",
 "v": "Doblada"
 },
 {
@@ -944,6 +1044,29 @@
 }
 },
 {
+"titulo": "Ahora los suegros son ellos",
+"generos": [
+"Comedia"
+],
+"sesiones": [
+{
+"h": "17:00",
+"v": "Doblada"
+},
+{
+"h": "19:15",
+"v": "Doblada"
+}
+],
+"original": "Focker In-Law",
+"edad": "Película no recomendada a menores de 12",
+"estreno": true,
+"sinopsis": "Los hijos ya adultos de Greg y Pam afrontan nuevas tensiones familiares cuando uno de ellos anuncia su boda con Olivia, una joven que despierta desconfianza desde el primer momento. La familia deberá enfrentarse a secretos y diferencias mientras se acerca el gran día.",
+"notas": {
+"usuarios": 3.0
+}
+},
+{
 "titulo": "Citas: La película",
 "generos": [
 "Comedia",
@@ -979,6 +1102,10 @@
 "v": "Doblada"
 },
 {
+"h": "18:20",
+"v": "Doblada"
+},
+{
 "h": "18:55",
 "v": "Doblada"
 },
@@ -1002,6 +1129,10 @@
 ],
 "sesiones": [
 {
+"h": "16:05",
+"v": "Doblada"
+},
+{
 "h": "16:35",
 "v": "Doblada"
 },
@@ -1017,6 +1148,31 @@
 "prensa": 3.1,
 "usuarios": 3.1
 }
+},
+{
+"titulo": "Hechizo: Bienvenidos a Hexe",
+"generos": [
+"Animación",
+"Aventura",
+"Comedia"
+],
+"sesiones": [
+{
+"h": "16:15",
+"v": "Doblada"
+},
+{
+"h": "17:30",
+"v": "Doblada"
+},
+{
+"h": "18:40",
+"v": "Doblada"
+}
+],
+"original": "Disney's Hexed",
+"estreno": true,
+"sinopsis": "Tras descubrir sus poderes mágicos, la adolescente Billie Doe es catapultada al peligroso reino de Hexe junto a un peculiar gato de tres ojos. Obligada a aliarse con su cautelosa madre Alice, ambas deberán desentrañar ocultos misterios familiares para salvar el mundo de las brujas."
 },
 {
 "titulo": "Iron Boy",
@@ -1051,7 +1207,15 @@
 "v": "Doblada"
 },
 {
+"h": "16:35",
+"v": "Doblada"
+},
+{
 "h": "17:30",
+"v": "Doblada"
+},
+{
+"h": "17:35",
 "v": "Doblada"
 },
 {
@@ -1078,26 +1242,62 @@
 "sinopsis": "La historia regresa a Panem 24 años antes de Katniss, durante el brutal Segundo Vasallaje de los Veinticinco, donde se duplica el número de tributos. En medio del miedo y la opresión, se revelan las tensiones y orígenes de la resistencia contra el Capitolio.",
 "notas": {
 "prensa": 2.8,
-"usuarios": 3.7
+"usuarios": 3.8
 }
 },
 {
-"titulo": "Tesis",
+"titulo": "Oro sin ley",
 "generos": [
+"Acción",
+"Aventura",
 "Suspense"
 ],
 "sesiones": [
 {
-"h": "19:15",
+"h": "19:00",
 "v": "Doblada"
 }
 ],
-"edad": "Película no recomendada a menores de 18",
+"original": "The Weight",
 "estreno": true,
-"sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
+"sinopsis": "En Oregón 1933, un padre viudo es separado de su hija y enviado a un brutal campo de trabajo donde la supervivencia es un desafío. Al involucrarse en un arriesgado contrabando de oro tendrá que enfrentarse a traiciones y peligros mientras lucha por reunirse con ella.",
 "notas": {
-"usuarios": 4.1
+"usuarios": 3.1
 }
+},
+{
+"titulo": "Puella Magi Madoka Magica la película. La noche de Walpurgis: El ascenso",
+"generos": [
+"Animación",
+"Drama",
+"Fantasía"
+],
+"sesiones": [
+{
+"h": "17:00",
+"v": "VOSE"
+}
+],
+"original": "Gekijoban Maho Shojo Madoka Magica: Walpurgis no Kaiten",
+"edad": "Película no recomendada a menores de 7",
+"estreno": true,
+"sinopsis": "Esta película es la secuela directa de Rebellion y explora el nuevo mundo creado por Homura tras su impactante final. Con un tono oscuro y psicológico, marca un nuevo comienzo para la saga centrado en el enigmático fenómeno de Walpurgisnacht."
+},
+{
+"titulo": "Sanguine (Spieces)",
+"generos": [
+"Terror"
+],
+"sesiones": [
+{
+"h": "19:10",
+"v": "Doblada"
+}
+],
+"original": "Sanguine",
+"edad": "Película no recomendada a menores de 16",
+"estreno": true,
+"sinopsis": "Durante su residencia en urgencias, Margot atiende a varios jóvenes afectados por extraños síntomas que nadie logra explicar. Cuando empieza a sufrir en su propio cuerpo señales similares, la médica se verá atrapada en una inquietante espiral entre la ciencia y lo desconocido."
 },
 {
 "titulo": "Clayface",
@@ -1149,6 +1349,10 @@
 ],
 "sesiones": [
 {
+"h": "16:00",
+"v": "Doblada"
+},
+{
 "h": "17:00",
 "v": "Doblada"
 }
@@ -1170,6 +1374,10 @@
 "sesiones": [
 {
 "h": "16:20",
+"v": "Doblada"
+},
+{
+"h": "16:50",
 "v": "Doblada"
 },
 {
@@ -1218,6 +1426,10 @@
 "v": "Doblada"
 },
 {
+"h": "17:20",
+"v": "Doblada"
+},
+{
 "h": "19:55",
 "v": "Doblada"
 }
@@ -1261,6 +1473,10 @@
 "v": "Doblada"
 },
 {
+"h": "16:25",
+"v": "Doblada"
+},
+{
 "h": "18:50",
 "v": "Doblada"
 }
@@ -1285,7 +1501,15 @@
 "v": "Doblada"
 },
 {
+"h": "16:10",
+"v": "Doblada"
+},
+{
 "h": "18:40",
+"v": "Doblada"
+},
+{
+"h": "18:50",
 "v": "Doblada"
 },
 {
@@ -1299,6 +1523,23 @@
 "notas": {
 "prensa": 3.0,
 "usuarios": 3.2
+}
+},
+{
+"titulo": "Tesis",
+"generos": [
+"Suspense"
+],
+"sesiones": [
+{
+"h": "19:15",
+"v": "Doblada"
+}
+],
+"edad": "Película no recomendada a menores de 18",
+"sinopsis": "Una joven estudiante de Comunicación Audiovisual, Ángela, prepara una tesis sobre la violencia audiovisual. Su profesor le propone ayudarla a buscar películas extremadamente violentas en la videoteca de la facultad. Sin emabargo, un extraño suceso tiene lugar y, al día siguiente, es encontrado muerto en una sala de proyección. Junto a ...",
+"notas": {
+"usuarios": 4.1
 }
 },
 {
@@ -1349,10 +1590,6 @@
 "v": "Doblada"
 },
 {
-"h": "19:00",
-"v": "VOSE"
-},
-{
 "h": "19:30",
 "v": "Doblada"
 },
@@ -1382,10 +1619,6 @@
 {
 "h": "15:30",
 "v": "Doblada"
-},
-{
-"h": "19:35",
-"v": "Doblada"
 }
 ],
 "edad": "Película no recomendada a menores de 16",
@@ -1403,10 +1636,6 @@
 "Suspense"
 ],
 "sesiones": [
-{
-"h": "18:10",
-"v": "Doblada"
-},
 {
 "h": "21:25",
 "v": "Doblada"
@@ -1450,6 +1679,14 @@
 "sesiones": [
 {
 "h": "17:10",
+"v": "Doblada"
+},
+{
+"h": "18:10",
+"v": "Doblada"
+},
+{
+"h": "21:20",
 "v": "Doblada"
 }
 ],
@@ -1498,22 +1735,21 @@
 }
 },
 {
-"titulo": "La invitación",
+"titulo": "La otra madre",
 "generos": [
-"Comedia"
+"Terror"
 ],
 "sesiones": [
 {
-"h": "17:35",
+"h": "21:35",
 "v": "Doblada"
 }
 ],
-"original": "The Invite",
+"original": "Other Mommy",
 "edad": "Película no recomendada a menores de 16",
-"sinopsis": "Una cena entre vecinos desencadena una noche de revelaciones, donde afloran deseos reprimidos y tensiones emocionales. La historia explora con intensidad las complejidades y fragilidades de las relaciones contemporáneas.",
+"sinopsis": "La pequeña Bela es acechada en su propio hogar por una entidad malévola que se muestra cada vez más impaciente. La única salvación para la pequeña reside en el fuerte lazo de su familia, pero la relación entre sus padres empieza a desmoronarse en una profunda crisis.",
 "notas": {
-"prensa": 3.2,
-"usuarios": 3.4
+"usuarios": 2.4
 }
 },
 {
@@ -1525,7 +1761,7 @@
 ],
 "sesiones": [
 {
-"h": "20:25",
+"h": "20:15",
 "v": "Doblada"
 }
 ],
@@ -1562,26 +1798,6 @@
 }
 },
 {
-"titulo": "Resident Evil",
-"generos": [
-"Ciencia ficción",
-"Suspense",
-"Terror"
-],
-"sesiones": [
-{
-"h": "21:50",
-"v": "Doblada"
-}
-],
-"edad": "Película no recomendada a menores de 16",
-"sinopsis": "Bryan, un mensajero médico, se ve atrapado inesperadamente en una noche de caos en la que la ciudad empieza a colapsar por una amenaza desconocida. Obligado a sobrevivir, deberá enfrentarse a una peligrosa carrera llena de acción mientras intenta escapar del horror que se desata a su alrededor.",
-"notas": {
-"prensa": 4.3,
-"usuarios": 3.6
-}
-},
-{
 "titulo": "Scrooge y los fantasmas de la Navidad",
 "generos": [
 "Aventura",
@@ -1594,12 +1810,12 @@
 "v": "Doblada"
 },
 {
-"h": "16:30",
-"v": "VOSE"
-},
-{
 "h": "19:10",
 "v": "Doblada"
+},
+{
+"h": "19:20",
+"v": "VOSE"
 },
 {
 "h": "21:20",
@@ -1623,7 +1839,7 @@
 ],
 "sesiones": [
 {
-"h": "15:30",
+"h": "19:25",
 "v": "Doblada"
 }
 ],
@@ -1643,7 +1859,7 @@
 ],
 "sesiones": [
 {
-"h": "21:35",
+"h": "17:30",
 "v": "Doblada"
 }
 ],
@@ -1663,6 +1879,50 @@
 "zona": "sur",
 "url": "https://www.sensacine.com/cines/cine/E0541/",
 "peliculas": [
+{
+"titulo": "Ahora los suegros son ellos",
+"generos": [
+"Comedia"
+],
+"sesiones": [
+{
+"h": "15:30",
+"v": "Doblada"
+},
+{
+"h": "17:45",
+"v": "Doblada"
+}
+],
+"original": "Focker In-Law",
+"edad": "Película no recomendada a menores de 12",
+"estreno": true,
+"sinopsis": "Los hijos ya adultos de Greg y Pam afrontan nuevas tensiones familiares cuando uno de ellos anuncia su boda con Olivia, una joven que despierta desconfianza desde el primer momento. La familia deberá enfrentarse a secretos y diferencias mientras se acerca el gran día.",
+"notas": {
+"usuarios": 3.0
+}
+},
+{
+"titulo": "Hechizo: Bienvenidos a Hexe",
+"generos": [
+"Animación",
+"Aventura",
+"Comedia"
+],
+"sesiones": [
+{
+"h": "15:30",
+"v": "Doblada"
+},
+{
+"h": "17:50",
+"v": "Doblada"
+}
+],
+"original": "Disney's Hexed",
+"estreno": true,
+"sinopsis": "Tras descubrir sus poderes mágicos, la adolescente Billie Doe es catapultada al peligroso reino de Hexe junto a un peculiar gato de tres ojos. Obligada a aliarse con su cautelosa madre Alice, ambas deberán desentrañar ocultos misterios familiares para salvar el mundo de las brujas."
+},
 {
 "titulo": "Los Juegos del Hambre: Amanecer en la cosecha",
 "generos": [
@@ -1749,6 +2009,10 @@
 ],
 "sesiones": [
 {
+"h": "15:15",
+"v": "Doblada"
+},
+{
 "h": "15:45",
 "v": "Doblada"
 },
@@ -1771,6 +2035,10 @@
 "Drama"
 ],
 "sesiones": [
+{
+"h": "17:15",
+"v": "Doblada"
+},
 {
 "h": "17:45",
 "v": "Doblada"
