@@ -1,7 +1,23 @@
 {
 "fuente": "Auditorio de Tenerife · auditoriodetenerife.com",
-"actualizado": "2026-11-23T15:10Z",
+"actualizado": "2026-11-26T14:14Z",
 "eventos": [
+{
+"id": "au-sombras-por-supuesto",
+"nombre": "Sombras, por supuesto",
+"desde": "2026-10-26",
+"hasta": "2027-10-24",
+"lugar": "Auditorio de Tenerife (La Salita)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "teatro",
+"extracto": "Teatro/La Salita · 24 oct 19:30 h - 26 oct 12:00 h. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2025/07/AF_RRSS-SOMBRAS-POR-SUPUESTO_WEB.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/sombras-por-supuesto/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
 {
 "id": "au-cuarta-de-chaikovski",
 "nombre": "Cuarta de Chaikovski",
@@ -13,22 +29,6 @@
 "extracto": "Música/Sinfónica de Tenerife · 27 nov 19:30. ",
 "foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/05/A6_Sidorova_credit-Kaupo-Kikkas_2-BW-min-1200x630.jpg",
 "url": "https://www.auditoriodetenerife.com/es/evento/cuarta-de-chaikovski/",
-"lat": 28.5685,
-"lon": -16.15798,
-"aprox": true,
-"visto": ""
-},
-{
-"id": "au-rafal-blechacz-y-bomsori",
-"nombre": "Rafal Blechacz y Bomsori",
-"desde": "2026-11-27",
-"hasta": "2026-11-27",
-"lugar": "Auditorio de Tenerife (Sala de Cámara)",
-"municipio": "Santa Cruz de Tenerife",
-"categoria": "musica",
-"extracto": "Música/Ciclo de Cámara · 27 nov 19:30. ",
-"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2025/08/RRSS_Rafal_Bomsori_WEB.jpg",
-"url": "https://www.auditoriodetenerife.com/es/evento/rafal-blechacz-y-bomsori/",
 "lat": 28.5685,
 "lon": -16.15798,
 "aprox": true,
@@ -123,7 +123,7 @@
 "municipio": "Santa Cruz de Tenerife",
 "categoria": "ninos",
 "extracto": "Familias/Educativa y Social · 05 dic 11:30. ",
-"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/corocanguro-1200x630.jpeg",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/CORO_CANGURO_CONCIERTO_WEB.jpg",
 "url": "https://www.auditoriodetenerife.com/es/evento/concierto-coro-canguro/",
 "lat": 28.5685,
 "lon": -16.15798,
@@ -323,6 +323,22 @@
 "visto": ""
 },
 {
+"id": "au-43o-fimc-orquesta-de-camara-de-europa",
+"nombre": "43º FIMC: Orquesta de Cámara de Europa",
+"desde": "2027-01-10",
+"hasta": "2027-01-10",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 10 ene 19:00. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/web2-Chamber-Orchestra-of-Europe_2023%C2%A9JuliaWesely-1831-FINAL-1-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-orquesta-de-camara-de-europa/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
+{
 "id": "au-42o-fimc-orquesta-sinfonica-de-la-radio-de-baviera-ii",
 "nombre": "42º FIMC: Orquesta Sinfónica de la Radio de Baviera II",
 "desde": "2027-01-11",
@@ -337,6 +353,22 @@
 "lon": -16.15798,
 "aprox": true,
 "visto": ""
+},
+{
+"id": "au-43o-fimc-orquesta-sinfonica-de-tenerife",
+"nombre": "43º FIMC: Orquesta Sinfónica de Tenerife",
+"desde": "2027-01-12",
+"hasta": "2027-01-12",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 12 ene 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/web-Sinfonica-Tenerife_-NUEVAS3.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-orquesta-sinfonica-de-tenerife/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
 },
 {
 "id": "au-acido-folclorico",
@@ -403,6 +435,22 @@
 "visto": ""
 },
 {
+"id": "au-43o-fimc-orquesta-sinfonica-de-viena",
+"nombre": "43º FIMC: Orquesta Sinfónica de Viena",
+"desde": "2027-01-24",
+"hasta": "2027-01-24",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 24 ene 19:00. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/Sinfonica-de-Viena-Copyright-Peter-Rigaud-004-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-orquesta-sinfonica-de-viena/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
+{
 "id": "au-42o-fimc-orquesta-filarmonica-de-gran-canaria",
 "nombre": "42º FIMC: Orquesta Filarmónica de Gran Canaria",
 "desde": "2027-01-25",
@@ -433,6 +481,22 @@
 "lon": -16.15798,
 "aprox": true,
 "visto": ""
+},
+{
+"id": "au-43o-fimc-orquesta-filarmonica-de-gran-canaria",
+"nombre": "43º FIMC: Orquesta Filarmónica de Gran Canaria",
+"desde": "2027-01-27",
+"hasta": "2027-01-27",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 27 ene 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/OFGC-24-25-002-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-orquesta-filarmonica-de-gran-canaria/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
 },
 {
 "id": "au-42o-fimc-orquesta-sinfonica-de-bamberg",
@@ -467,6 +531,22 @@
 "visto": ""
 },
 {
+"id": "au-43o-fimc-orquesta-filarmonica-de-londres",
+"nombre": "43º FIMC: Orquesta Filarmónica de Londres",
+"desde": "2027-01-30",
+"hasta": "2027-01-30",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 30 ene 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/london_phil_con_karina_canellakis_foto2_de_mark_allan-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-orquesta-filarmonica-de-londres/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
+{
 "id": "au-orfeo-y-euridice-un-viaje-para-decir-adios",
 "nombre": "Orfeo y Eurídice: Un viaje para decir adiós",
 "desde": "2027-01-31",
@@ -483,6 +563,22 @@
 "visto": ""
 },
 {
+"id": "au-43o-fimc-orchestre-de-lopera-royal-du-chateau-de-versail",
+"nombre": "43º FIMC: Orchestre de L’Opéra Royal du Château de Versailles",
+"desde": "2027-02-01",
+"hasta": "2027-02-01",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 01 feb 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/Portrait-Orchestre-Royal-de-lOpera-de-Versailles-Credit-Edouard-Brane_WEB-HD-2-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-orchestre-de-lopera-royal-du-chateau-de-versailles/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
+{
 "id": "au-concierto-para-clown-y-orquesta",
 "nombre": "Allegro, concierto para clown y orquesta",
 "desde": "2027-02-02",
@@ -497,6 +593,38 @@
 "lon": -16.15798,
 "aprox": true,
 "visto": ""
+},
+{
+"id": "au-43o-fimc-royal-concertgebouw-de-amsterdam-i",
+"nombre": "43º FIMC: Royal Concertgebouw de Ámsterdam I",
+"desde": "2027-02-03",
+"hasta": "2027-02-03",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 03 feb 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/ROYAL-CONCERTGEBOUW-AMSTERDAM_klaus_makela_085_foto_eduardus_lee-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-royal-concertgebouw-de-amsterdam-i/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
+{
+"id": "au-43o-fimc-royal-concertgebouw-de-amsterdam-ii",
+"nombre": "43º FIMC: Royal Concertgebouw de Ámsterdam II",
+"desde": "2027-02-04",
+"hasta": "2027-02-04",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/FIMC · 04 feb 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/11/ROYAL-CONCERTGEBOUW-AMSTERDAM_klaus_makela_058_foto_eduardus_lee-2-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/43o-fimc-royal-concertgebouw-de-amsterdam-ii/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
 },
 {
 "id": "au-42o-fimc-arcadi-volodos",
@@ -1713,6 +1841,38 @@
 "lon": -16.15798,
 "aprox": true,
 "visto": ""
+},
+{
+"id": "au-el-brote-26",
+"nombre": "El brote",
+"desde": "2027-10-23",
+"hasta": "2027-10-25",
+"lugar": "Auditorio de Tenerife (La Salita)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "teatro",
+"extracto": "Teatro/La Salita · 23 oct 19:30 h - 25 oct 12:00 h. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/09/RRSS-EL-BROTE_WEB-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/el-brote-26/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
+},
+{
+"id": "au-finlandia",
+"nombre": "Finlandia",
+"desde": "2027-10-23",
+"hasta": "2027-10-23",
+"lugar": "Auditorio de Tenerife (Sala Sinfónica)",
+"municipio": "Santa Cruz de Tenerife",
+"categoria": "musica",
+"extracto": "Música/Sinfónica de Tenerife · 23 oct 19:30. ",
+"foto": "https://www.auditoriodetenerife.com/wp-content/uploads/2026/05/A4_ColinCurrie007-credit-Marco-Borggreve-scaled-e1780668175373-1200x630.jpg",
+"url": "https://www.auditoriodetenerife.com/es/evento/finlandia/",
+"lat": 28.5685,
+"lon": -16.15798,
+"aprox": true,
+"visto": "2026-11-26"
 }
 ]
 }
