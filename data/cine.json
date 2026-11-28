@@ -1,7 +1,7 @@
 {
 "fuente": "SensaCine · sensacine.com",
 "fecha": "2026-11-28",
-"actualizado": "2026-11-28T13:30Z",
+"actualizado": "2026-11-28T15:49Z",
 "cines": [
 {
 "id": "E0627",
@@ -17,11 +17,11 @@
 ],
 "sesiones": [
 {
-"h": "11:45",
-"v": "VOSE"
+"h": "14:45",
+"v": "Doblada"
 },
 {
-"h": "14:45",
+"h": "16:55",
 "v": "Doblada"
 },
 {
@@ -56,18 +56,6 @@
 ],
 "sesiones": [
 {
-"h": "11:00",
-"v": "Doblada"
-},
-{
-"h": "12:00",
-"v": "VOSE"
-},
-{
-"h": "13:25",
-"v": "Doblada"
-},
-{
 "h": "15:00",
 "v": "Doblada"
 },
@@ -97,7 +85,6 @@
 }
 ],
 "original": "Disney's Hexed",
-"edad": "Película no recomendada a menores de 7",
 "cartel": "https://es.web.img3.acsta.net/c_160_213/img/25/ea/25eacd4cd3c339c005e709c5fa4d92c3.jpg",
 "estreno": true,
 "sinopsis": "Tras descubrir sus poderes mágicos, la adolescente Billie Doe es catapultada al peligroso reino de Hexe junto a un peculiar gato de tres ojos. Obligada a aliarse con su cautelosa madre Alice, ambas deberán desentrañar ocultos misterios familiares para salvar el mundo de las brujas.",
@@ -113,10 +100,6 @@
 "Fantasía"
 ],
 "sesiones": [
-{
-"h": "11:00",
-"v": "VOSE"
-},
 {
 "h": "17:00",
 "v": "VOSE"
@@ -164,7 +147,7 @@
 ],
 "sesiones": [
 {
-"h": "19:05",
+"h": "18:20",
 "v": "Doblada"
 }
 ],
@@ -184,6 +167,10 @@
 "Comedia"
 ],
 "sesiones": [
+{
+"h": "16:05",
+"v": "Doblada"
+},
 {
 "h": "16:50",
 "v": "Doblada"
@@ -210,7 +197,7 @@
 "v": "Doblada"
 },
 {
-"h": "21:35",
+"h": "20:50",
 "v": "Doblada"
 }
 ],
@@ -229,10 +216,6 @@
 "Drama"
 ],
 "sesiones": [
-{
-"h": "11:20",
-"v": "Doblada"
-},
 {
 "h": "16:30",
 "v": "Doblada"
@@ -259,22 +242,6 @@
 ],
 "sesiones": [
 {
-"h": "11:15",
-"v": "Doblada"
-},
-{
-"h": "11:40",
-"v": "VOSE"
-},
-{
-"h": "12:10",
-"v": "Doblada"
-},
-{
-"h": "13:20",
-"v": "Doblada"
-},
-{
 "h": "15:20",
 "v": "Doblada"
 },
@@ -295,7 +262,7 @@
 "v": "Doblada"
 },
 {
-"h": "20:25",
+"h": "20:00",
 "v": "VOSE"
 },
 {
@@ -345,6 +312,10 @@
 ],
 "sesiones": [
 {
+"h": "16:50",
+"v": "Doblada"
+},
+{
 "h": "17:25",
 "v": "Doblada"
 }
@@ -365,14 +336,6 @@
 "Fantasía"
 ],
 "sesiones": [
-{
-"h": "11:05",
-"v": "Doblada"
-},
-{
-"h": "13:35",
-"v": "VOSE"
-},
 {
 "h": "16:00",
 "v": "Doblada"
@@ -396,23 +359,22 @@
 }
 },
 {
-"titulo": "SuperThings: La película",
+"titulo": "Wild Horse Nine",
 "generos": [
-"Animación",
-"Familia"
+"Suspense"
 ],
 "sesiones": [
 {
-"h": "11:10",
+"h": "16:10",
 "v": "Doblada"
 }
 ],
-"original": "SuperThings",
-"edad": "Todos los publicos",
-"cartel": "https://es.web.img3.acsta.net/c_160_213/img/bb/f6/bbf66052699284e0fd6b58ec45252c2f.jpg",
-"sinopsis": "Tres niños viajan a Kaboom City para impedir un complot y encontrar las seis piezas de Kazoom puro antes que los villanos. En el camino, enfrentan desafíos que fortalecen su amistad, ingenio y trabajo en equipo.",
+"edad": "Película no recomendada a menores de 16",
+"cartel": "https://es.web.img3.acsta.net/c_160_213/img/50/d2/50d2cf49b7b405477b6b32630ecc3560.jpg",
+"sinopsis": "Antes del Golpe de Estado en Chile de 1973, dos agentes de la CIA son enviados a la Isla de Pascua, donde enfrentan conspiraciones y sus propios pasados. El vínculo de uno de ellos con dos jóvenes rebeldes pone en riesgo la misión y altera el rumbo de todos.",
 "notas": {
-"prensa": 2.8
+"prensa": 4.0,
+"usuarios": 3.3
 }
 },
 {
