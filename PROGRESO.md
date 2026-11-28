@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v67 · Foto de la sala en cada tarjeta (2026-11-28)
+- Obras y conciertos: cada tarjeta lleva de fondo, muy suave y difuminada hacia la izquierda, la foto de SU sala (Auditorio de
+  Tenerife, Teatro Leal o Teatro Guimerá; fotos de sus fichas, Wikimedia Commons) según el lugar de la agenda. 91 de 97
+  conciertos y 28 de 36 obras; el resto, sin foto.
+- Películas: no hay fotos libres de los cines en Wikimedia Commons (y no se usan fotos con derechos ni de otros cines): cada
+  tarjeta lleva un telón rojo dibujado, muy suave. Fuera el fondo grande detrás de la lista.
+
 ## v66 · Tiempo con pestaña, fondos visibles y categorías más finas (2026-11-28)
 - 🌤️ Tiempo vuelve a ser pestaña, entre Cultura y Grupo (8 pestañas), con el mapita por zonas arriba; sale de Planes.
 - Fondo de foto que ahora sí se ve: capa fija detrás de la lista mientras bajas (antes la foto se estiraba por toda la lista

@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v66';
+const VERSION = 'v67';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -194,7 +194,8 @@ function subFicha(s) {
 function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
   const datos = [s.km && `🥾 ${String(s.km).replace('.', ',')} km · ⛰️ +${s.desnivel} m${s.circular ? ' · 🔁 circular' : ' · lineal'}`, s.ninos && `🧸 Con niños: ${esc(s.ninos)}`, s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
-  return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
+  const sala = s.tipo === 'evento' && typeof salaFoto === 'function' ? salaFoto(s) : ''; // (v67) foto de su sala, muy suave
+  return `<details class="ficha ${e ? 'e-' + e : ''}${sala ? ' con-sala' : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}${sala ? ` style="--sala:url('${esc(sala)}')"` : ''}>
     <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${s.tipo === 'evento' ? favIc(s) : ''}${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 📍 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">

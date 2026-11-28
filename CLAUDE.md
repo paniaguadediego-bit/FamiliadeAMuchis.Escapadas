@@ -523,3 +523,5 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Fondos: `.lista-fondo` (capa `position: sticky` con `--fondo`) dentro de `.cine-lista`; `cineFondo(c)` (municipio del cine) y `culFondo()`
   (teatro-guimera / auditorio). Tarjetas al 66 % de opacidad dentro.
 - Categorías de Eventos: tarjetas con icono en círculo y `.on` con tinte, borde y ✓. ¿Algo más?: el botón no se mueve al abrir su panel.
+- (v67) `SALAS` + `salaFoto(s)` (eventos.js): foto de la sala (teatro-leal, teatro-guimera, auditorio) en la ficha del evento (`.ficha.con-sala`,
+  `--sala`, opacidad 0,17 con máscara). Cines: sin fotos libres en Commons → `.peli-d::before` con telón dibujado. `.lista-fondo` ya no se usa.
