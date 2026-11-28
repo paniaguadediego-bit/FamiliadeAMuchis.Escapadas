@@ -851,4 +851,5 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .fav-ban { margin-left: 6px; font-size: 1.05rem; padding: 2px 4px; cursor: pointer; }
 .fav-cine { font-size: .78rem; margin-left: 6px; }
 .fav-ic { margin-right: 4px; }
-:root { --css-ver: "v51"; }
+.rev-sinf-caja { margin-top: 14px; opacity: .92; }
+:root { --css-ver: "v52"; }

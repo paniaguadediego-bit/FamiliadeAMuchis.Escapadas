@@ -485,3 +485,5 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - (v51) Áreas favoritas `esc.favareas`: claves de `ZONAS` y `AREAS_EXTRA` (metro = Santa Cruz + La Laguna). `favMuni(m)` = municipio
   marcado o dentro de un área marcada (`favs().enArea`). `favIc(s)`: 💛 delante del nombre de los eventos (fichaHTML), en la rueda y
   en Por revisar.
+- (v52) `relativa(texto, publicado)` («este sábado»…) y fechas con coma o dd/mm/aaaa. Bandeja de arriba = solo con fecha
+  (`esc.revabierta`); `sinFechaHTML()` al final de Eventos, cerrado (`esc.sinfabierta`), con pendientes y añadidos.

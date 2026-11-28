@@ -83,7 +83,8 @@ def dia(d, mes, anio=None):
 def fechas(s, futuras=False):
     """Día o rango claro del texto → (desde, hasta) ISO, o ('', '') si no hay. Con futuras=True, el primero que no ha
     pasado (en las noticias, la primera fecha suele ser la de publicación)."""
-    s = s.replace('|', ' ')
+    s = re.sub(r'(\d{1,2} de ' + M + r'),? (\d{4})', r'\1 de \3', s.replace('|', ' '), flags=re.I)  # «28 de noviembre, 2026»
+    s = re.sub(r'\b(\d{1,2})/(\d{1,2})/(20\d\d)\b', lambda m: f"{int(m.group(1))} de {list(MESES)[int(m.group(2)) - 1]} de {m.group(3)}" if 1 <= int(m.group(2)) <= 12 else m.group(0), s)
     hallados = []
     for m in re.finditer(r'del? (\d{1,2})(?: de ' + M + r')?(?: de (\d{4}))? al? (\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I):
         a2 = m.group(6); b = dia(m.group(4), m.group(5), a2)
@@ -107,6 +108,22 @@ def fechas(s, futuras=False):
     return '', ''
 
 
+DIAS_SEM = {'lunes': 0, 'martes': 1, 'miercoles': 2, 'miércoles': 2, 'jueves': 3, 'viernes': 4, 'sabado': 5, 'sábado': 5, 'domingo': 6}
+
+
+def relativa(s, publicado):
+    """«este sábado», «el próximo viernes», «mañana» → día, contando desde la fecha de publicación de la noticia."""
+    if not publicado:
+        return ''
+    m = re.search(r'\b(?:este|esta|el pr[oó]ximo|este pr[oó]ximo|pr[oó]ximo)\s+(lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b', s, re.I)
+    if m:
+        n = (DIAS_SEM[m.group(1).lower()] - publicado.weekday()) % 7 or 7
+        return (publicado + datetime.timedelta(days=n)).isoformat()
+    if re.search(r'\bma[ñn]ana\b', s[:400], re.I):
+        return (publicado + datetime.timedelta(days=1)).isoformat()
+    return ''
+
+
 def aviso(muni, clase, id_, titulo, url, desde='', hasta='', lugar='', extracto='', foto='', lat=None, lon=None):
     ex = limpia(extracto)
     ex = ex if len(ex) <= 240 else ex[:240].rsplit(' ', 1)[0] + '…'
@@ -119,14 +136,23 @@ def es_evento(titulo):
     return bool(EVENTO.search(titulo)) and not NO_EVENTO.search(titulo)
 
 
-def de_noticia(muni, pref, id_, titulo, url, cuerpo=''):
-    """Noticia con pinta de evento: fecha del titular o, si no, del comienzo del texto."""
+def de_noticia(muni, pref, id_, titulo, url, cuerpo='', publicado=None, pagina=False):
+    """Noticia con pinta de evento: fecha del titular, del texto o («este sábado») desde el día de publicación.
+    Con pagina=True, si el resumen no trae fecha se lee la noticia entera."""
     if not es_evento(titulo):
         return None
     d, h = fechas(titulo, True)
     tx = texto(cuerpo)[:2500] if cuerpo else ''
     if not d and tx:
         d, h = fechas(tx, True)
+    if not d and pagina:
+        pag = get(url); time.sleep(1)
+        cuerpo = (re.search(r'<article.*?</article>', pag, re.S) or [None])[0] or pag
+        tx = texto(cuerpo)[:6000]; d, h = fechas(tx, True)
+    if not d:
+        r = relativa(titulo + ' ' + tx, publicado)
+        if r and r >= HOY.isoformat():
+            d = h = r
     if not d and (fechas(titulo)[0] or fechas(tx)[0] or re.search(r'\b(hoy|ayer|este (viernes|s[aá]bado|domingo)|celebr[oó]|reuni[oó]|cerr[oó]|despide)\b', titulo + ' ' + tx[:300], re.I)):
         return None  # solo trae fechas ya pasadas (o habla de algo que ya ocurre/ocurrió): no es un aviso útil
     return aviso(muni, 'noticia', f'rv-{pref}-{id_}', titulo, url, d, h, extracto=texto(cuerpo)[:600] if cuerpo else '')
@@ -145,8 +171,10 @@ def arona():
     rss = get('https://www.arona.org/DesktopModules/Noticias/Feed.ashx?format=rss')
     for it in re.findall(r'<item>(.*?)</item>', rss, re.S)[:60]:
         g = lambda p: (re.search(p, it, re.S) or [None, ''])[1]
+        pub = g(r'<pubDate>[A-Za-z]{3}, (\d{1,2} [A-Za-z]{3} \d{4})')
+        pub = datetime.datetime.strptime(pub, '%d %b %Y').date() if pub else None
         n = de_noticia('Arona', 'aron', g(r'Noticias/(\d+)</guid>'), html.unescape(g(r'<title>(.*?)</title>')),
-                       html.unescape(g(r'<link>(.*?)</link>')), html.unescape(g(r'<description>(.*?)</description>')))
+                       html.unescape(g(r'<link>(.*?)</link>')), html.unescape(g(r'<description>(.*?)</description>')), pub, pagina=True)
         if n:
             out.append(n)
     return out
@@ -177,7 +205,10 @@ def orotava():
         pag = get(base + u); time.sleep(1)
         og = lambda k: html.unescape((re.search(r'<meta property="og:%s" content="([^"]*)"' % k, pag) or [None, ''])[1])
         s = texto(pag); m = re.search(r'Fechas?: ([^|]{6,120})', s)
-        d, h = fechas(m.group(1)) if m else fechas(texto((re.search(r'<article.*?</article>', pag, re.S) or [''])[0])[:3000], True)
+        cuerpo = texto((re.search(r'<article.*?</article>', pag, re.S) or [''])[0])[:3000]
+        d, h = fechas(m.group(1)) if m else fechas(cuerpo, True)
+        if not m and not d and fechas(cuerpo)[0]:
+            continue  # solo fechas ya pasadas
         tit = og('title') or limpia((re.search(r'<h1[^>]*>(.*?)</h1>', pag, re.S) or [None, ''])[1]) or limpia((re.search(r'<title>(.*?)</title>', pag, re.S) or [None, ''])[1])
         out.append(aviso('La Orotava', 'agenda', 'rv-oro-' + slug(u.split('/')[-1])[:50], re.sub(r'\s*\|.*$', '', tit), base + u, d, h,
                          extracto=og('description'), foto=og('image')))
@@ -203,7 +234,8 @@ def puerto():
         posts = []
     for p in posts:
         n = de_noticia('Puerto de la Cruz', 'pue', str(p['id']), limpia(p['title']['rendered']), p['link'],
-                       p.get('content', {}).get('rendered', '') or p.get('excerpt', {}).get('rendered', ''))
+                       p.get('content', {}).get('rendered', '') or p.get('excerpt', {}).get('rendered', ''),
+                       datetime.date.fromisoformat(p['date'][:10]) if p.get('date') else None)
         if n:
             out.append(n)
     return out

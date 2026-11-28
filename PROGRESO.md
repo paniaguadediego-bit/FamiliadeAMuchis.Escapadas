@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v52 · Por revisar: más fechas y los sin fecha abajo (2026-11-28)
+- El lector saca más fechas: lee la noticia entera si el resumen no trae día, entiende «28 de noviembre, 2026» y 28/11/2026,
+  y calcula «este sábado», «el próximo viernes» o «mañana» desde el día de publicación (Arona y Puerto de la Cruz). Las agendas
+  que solo traen fechas pasadas se descartan. Resultado: 52 avisos, 3 sin fecha (antes 5 de 50).
+- En Eventos, la bandeja de arriba solo lleva avisos con fecha. Los sin fecha (por revisar y añadidos) van en «📰 Sin fecha»,
+  cerrado, al final de la página.
+- Santa Cruz tampoco responde desde GitHub Actions: sigue fuera.
+
 ## v51 · 💛 Áreas favoritas y eventos marcados (2026-11-28)
 - En ☰ Más → «💛 Mis lugares y cines» se pueden marcar áreas: 🏙️ Santa Cruz – La Laguna (las dos juntas) y las 6 zonas,
   además de municipios sueltos y cines.

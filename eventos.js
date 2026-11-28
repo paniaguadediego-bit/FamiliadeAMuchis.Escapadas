@@ -188,8 +188,8 @@ function viewEventos() {
     ${evSoloCine() ? carteleraHTML() + (lista.length ? '<h2>🎟️ Otros eventos de cine</h2>' : '') : CINE && false ? `<button class="card ev-enlace" data-evcats="cine">🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del día'}: ${CINE.cines.filter(c => c.peliculas.length).length} cines${CINE.cines.some(c => c.peliculas.some(p => p.sesiones.some(s => s.v !== 'Doblada'))) ? ', con VOSE' : ''} · <span class="tr-ver">Ver ›</span></button>` : ''}
     ${evSoloCine() && !lista.length ? '' : lista.length ? Object.keys(semanas).sort().map(sb => `<details class="ev-sem" data-sem="${sb}" ${evCerradas.has(sb) ? '' : 'open'}><summary><span>📅 ${esc(titulo(sb))}</span><small>${semanas[sb].length} evento${semanas[sb].length === 1 ? '' : 's'}</small></summary>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}</details>`).join('')
       : `<div class="card muted">${evCats.size ? 'Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.' : 'No hay ninguna categoría marcada: toca las que quieras ver o «✓ Todas».'}</div>`}
-    ${sinFechaHTML()}
-    <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), del Auditorio, de lo que el grupo acepta de las webs de los ayuntamientos (📰), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
+    <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), del Auditorio, de lo que el grupo acepta de las webs de los ayuntamientos (📰), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>
+    ${sinFechaHTML()}`;
 }
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-evcat]'); if (c) { leerCats(); const k = c.dataset.evcat; if (evCats.has(k)) evCats.delete(k); else evCats.add(k); ponerCats(evCats); render(); return; }
@@ -282,30 +282,37 @@ function seguirRevision(gid) {
     NUBE.revision = r; aplicarRevision(); mezclarSitios(); refrescarVista();
   }, () => {});
 }
+const revFm = m => typeof favMuni === 'function' && favMuni(m);
+function revItemHTML(a, acciones) {
+  return `<div class="rev-item"><div class="rev-tx"><small>${esc(a.municipio.replace('San Cristóbal de ', ''))} · ${a.clase === 'agenda' ? 'Agenda' : 'Noticia'}${a.desde ? ` · <b>${esc(revFechaTxt(a))}</b>` : ''}</small>
+      <a href="${esc(a.url)}" target="_blank" rel="noopener">${revFm(a.municipio) ? '💛 ' : ''}${catIc(a)} ${esc(a.titulo)}</a>${a.lugar ? `<small class="muted">📍 ${esc(a.lugar)}</small>` : ''}${a.extracto ? `<p class="muted">${esc(a.extracto)}</p>` : ''}</div>
+    <div class="rev-acc">${acciones}</div></div>`;
+}
+const revBotones = a => `<button class="mini" data-rev="si" data-id="${esc(a.id)}">➕ Añadir</button><button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Descartar</button>`;
+// Arriba, solo los que tienen fecha; los que no, en «Sin fecha» al final de la página (v52: «que no molesten»).
 function revisionHTML() {
   if (!REVISION) return '';
-  const fm = m => typeof favMuni === 'function' && favMuni(m);
-  const pend = (REVISION.avisos || []).filter(a => !revEstado(a.id)).sort((a, b) => fm(b.municipio) - fm(a.municipio)); // 💛 primero
+  const pend = (REVISION.avisos || []).filter(a => a.desde && !revEstado(a.id)).sort((a, b) => revFm(b.municipio) - revFm(a.municipio) || a.desde.localeCompare(b.desde));
   if (!pend.length) return '';
   const MAX = 8, ver = revVerTodo ? pend : pend.slice(0, MAX);
-  return `<details class="card rev" ${load('esc.revabierta', true) ? 'open' : ''} data-revcaja><summary>📰 Por revisar <b>${pend.length}</b> <small class="muted">· de las webs de los ayuntamientos</small></summary>
-    <p class="muted rev-ayuda">Lo que anuncian los ayuntamientos (agendas y noticias). «➕ Añadir» lo lleva a Eventos${typeof enGrupo === 'function' && enGrupo() ? ' para todo el grupo' : ''}; si no trae fecha, va a «Anunciados sin fecha».</p>
-    ${ver.map(a => `<div class="rev-item"><div class="rev-tx"><small>${esc(a.municipio.replace('San Cristóbal de ', ''))} · ${a.clase === 'agenda' ? 'Agenda' : 'Noticia'} · <b class="${a.desde ? '' : 'rev-sinf'}">${esc(revFechaTxt(a))}</b></small>
-        <a href="${esc(a.url)}" target="_blank" rel="noopener">${fm(a.municipio) ? '💛 ' : ''}${catIc(a)} ${esc(a.titulo)}</a>${a.lugar ? `<small class="muted">📍 ${esc(a.lugar)}</small>` : ''}${a.extracto ? `<p class="muted">${esc(a.extracto)}</p>` : ''}</div>
-      <div class="rev-acc"><button class="mini" data-rev="si" data-id="${esc(a.id)}">➕ Añadir</button><button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Descartar</button></div></div>`).join('')}
+  return `<details class="card rev" ${load('esc.revabierta', true) ? 'open' : ''} data-revcaja="esc.revabierta"><summary>📰 Por revisar <b>${pend.length}</b> <small class="muted">· de las webs de los ayuntamientos</small></summary>
+    <p class="muted rev-ayuda">Lo que anuncian los ayuntamientos (agendas y noticias). «➕ Añadir» lo lleva a Eventos${typeof enGrupo === 'function' && enGrupo() ? ' para todo el grupo' : ''}. Los que no traen fecha están al final de la página.</p>
+    ${ver.map(a => revItemHTML(a, revBotones(a))).join('')}
     ${pend.length > MAX ? `<button class="enlace" data-revtodo>${revVerTodo ? '▴ Ver menos' : `▾ Ver los ${pend.length}`}</button>` : ''}
     ${(REVISION.notas || []).length ? `<p class="muted rev-ayuda">⚠️ ${REVISION.notas.map(esc).join(' · ')}</p>` : ''}</details>`;
 }
+// Al final de Eventos, cerrado: los avisos sin fecha (por revisar y los ya añadidos).
 function sinFechaHTML() {
   if (!REVISION) return '';
-  const l = (REVISION.avisos || []).filter(a => !a.desde && revEstado(a.id) === 'si');
-  if (!l.length) return '';
-  return `<details class="ev-sem" open><summary><span>📰 Anunciados sin fecha</span><small>${l.length}</small></summary>
-    ${l.map(a => `<div class="card rev-item"><div class="rev-tx"><small>${esc(a.municipio.replace('San Cristóbal de ', ''))} · ⚠️ Sin fecha: mira la noticia</small><a href="${esc(a.url)}" target="_blank" rel="noopener">${catIc(a)} ${esc(a.titulo)}</a></div>
-      <div class="rev-acc"><button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Quitar</button></div></div>`).join('')}</details>`;
+  const sin = (REVISION.avisos || []).filter(a => !a.desde), pend = sin.filter(a => !revEstado(a.id)), ok = sin.filter(a => revEstado(a.id) === 'si');
+  if (!pend.length && !ok.length) return '';
+  return `<details class="card rev rev-sinf-caja" ${load('esc.sinfabierta', false) ? 'open' : ''} data-revcaja="esc.sinfabierta"><summary>📰 Sin fecha <b>${pend.length + ok.length}</b> <small class="muted">· avisos de los ayuntamientos sin día concreto</small></summary>
+    <p class="muted rev-ayuda">No traen un día claro (programas, rutas, concursos…): mira la web antes de ir.</p>
+    ${pend.map(a => revItemHTML(a, revBotones(a))).join('')}
+    ${ok.length ? `<p class="rev-ayuda"><b>Añadidos</b></p>${ok.map(a => revItemHTML(a, `<button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Quitar</button>`)).join('')}` : ''}</details>`;
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-rev]'); if (b) { decidirRevision(b.dataset.id, b.dataset.rev); return; }
   if (e.target.closest('[data-revtodo]')) { revVerTodo = !revVerTodo; render(); }
 });
-document.addEventListener('toggle', e => { if (e.target.dataset && 'revcaja' in e.target.dataset) save('esc.revabierta', e.target.open); }, true);
+document.addEventListener('toggle', e => { if (e.target.dataset && e.target.dataset.revcaja) save(e.target.dataset.revcaja, e.target.open); }, true);
