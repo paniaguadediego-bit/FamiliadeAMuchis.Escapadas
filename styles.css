@@ -935,4 +935,21 @@ button.pantalla.on { background: radial-gradient(ellipse at 50% 0%, #fff7d6 0%, 
 /* v64: ruleta de cines más fluida (perspectiva en el contenedor, sin transiciones; el color cambia al instante) */
 .cine-rueda { perspective: 700px; -webkit-overflow-scrolling: touch; }
 button.pantalla { transition: background .15s, color .15s, box-shadow .15s; }
-:root { --css-ver: "v64"; }
+/* v65: secciones de Planes en paneles con franja de color; rueda algo más grande; ⤢ Ver todos / ⤡ Rueda */
+.pl-sec { position: relative; margin: 16px 0; padding: 14px 10px 12px; border-radius: 20px; background: color-mix(in srgb, var(--pri) 4%, var(--card, #fff));
+  border: 1px solid var(--line); box-shadow: var(--sombra); overflow: hidden; }
+.pl-sec::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: var(--franja, var(--pri)); }
+.pl-sec > h2:first-child, .pl-sec .car-cab h2 { margin-top: 2px; }
+.pl-findes { --franja: linear-gradient(90deg, #f59e0b, #ef4444); }
+.pl-cal { --franja: linear-gradient(90deg, #0768A9, #38bdf8); }
+.pl-ganas { --franja: linear-gradient(90deg, #db2777, #f472b6); }
+.pl-mas { --franja: linear-gradient(90deg, #16a34a, #84cc16); }
+.pl-sec .findes-pager { margin: 0 -10px; } .pl-sec .finde-pag { padding: 0 10px; }
+.planes > .tiempo-caja { margin-top: 16px; border-top: 5px solid #0ea5e9; }
+.rueda { height: 19.5rem; padding: 7rem 0; }
+.rueda button.ev-ban, .rueda button.ev-ban:first-child { min-height: 5.3rem; }
+.rueda-btn { position: absolute; top: -0.75rem; left: 10px; z-index: 2; margin: 0; min-height: 0; width: auto; padding: 3px 10px; font-size: .74rem; font-weight: 700;
+  border-radius: 999px; background: var(--card, #fff); color: var(--pri); border: 1.5px solid color-mix(in srgb, var(--pri) 45%, transparent); box-shadow: var(--sombra); }
+.rueda-marco.exp { padding: 18px 8px 8px; }
+.rueda-marco.exp .ev-lista button.ev-ban { min-height: 5.3rem; }
+:root { --css-ver: "v65"; }

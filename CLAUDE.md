@@ -516,3 +516,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   `cineFondo(c)` = foto de `portadaDe(municipio)` en `.cine-lista::before` (opacidad 0,16). Novedades arriba, plegadas (`esc.novabierta`).
   Eventos sin la tarjeta «Este finde hay…».
 - (v64) `girarCines()`: `.on` según la más centrada en cada fotograma; al parar, `[data-cinecuerpo]` se sustituye (sin `render()`).
+- (v65) Planes: `sec(k, html)` → `<section class="pl-sec pl-<k>">` con `--franja`. Rueda 19,5 rem; `[data-ruedaexp]` alterna rueda / cascada (`.rueda-marco.exp`).

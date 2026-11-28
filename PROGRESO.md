@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v65 · Secciones de Planes y rueda ampliable (2026-11-28)
+- Planes: cada sección en su panel con una franja de color arriba (findes naranja, calendario azul, con ganas rosa, ¿algo más?
+  verde, tiempo celeste) y más espacio entre ellas: se nota al pasar de una a otra.
+- Rueda algo más grande (19,5 rem, tarjetas de 5,3 rem). Botón «⤢ Ver todos» arriba a la izquierda del recuadro: los eventos en
+  cascada; «⤡ Rueda» vuelve. Se recuerda (`esc.ruedaexp`) y la página no salta.
+
 ## v64 · Ruleta de cines fluida (2026-11-28)
 - La pantalla del centro se enciende en amarillo mientras deslizas (antes, al pararse y repintar todo).
 - Al parar (evento «scrollend» o 140 ms sin moverse) solo se cambia la lista de películas, no toda la pestaña.

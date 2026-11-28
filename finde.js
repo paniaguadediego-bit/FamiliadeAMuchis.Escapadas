@@ -365,15 +365,17 @@ function viewFindeS5() {
   const grupoQuiere = typeof enGrupo === 'function' && enGrupo()
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
   const ganas = [...quiero, ...grupoQuiere];
+  // (v65) Cada sección en su panel, con una franja de color arriba: se nota al pasar de una a otra.
+  const sec = (k, html) => html && html.trim() ? `<section class="pl-sec pl-${k}">${html}</section>` : '';
   return `<div class="planes">${typeof selectorGruposHTML === 'function' ? selectorGruposHTML('en-planes') : ''}${portadaHTML()}
-    ${paginadorFindes()}
-    ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : ''}
-    <h2>🔖 Con ganas de ir</h2>
+    ${sec('findes', paginadorFindes())}
+    ${sec('cal', typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : '')}
+    <section class="pl-sec pl-ganas"><h2>🔖 Con ganas de ir</h2>
     ${ganas.length ? `<div class="ev-carrusel ganas">${ganas.map(s => `<div class="ev-tarjeta"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">${marca(s.id).estado === 'quiero' ? '🔖 Tú' : `🔖 ${otrosEn(s.id).quiero.map(([u]) => esc(perfilDe(u).emoji)).join('')}`}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}</small></span></span></button></div>`).join('')}</div>`
       : '<div class="card muted centro">Todavía nada. En 🧭 Explorar, abre una ficha y toca «🔖 Quiero ir».</div>'}
-    ${cuentaHTML()}
-    ${rapidosHTML()}
+    ${cuentaHTML()}</section>
+    ${sec('mas', rapidosHTML())}
     ${tiempoPlegadoHTML()}</div>`;
 }
 addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });
