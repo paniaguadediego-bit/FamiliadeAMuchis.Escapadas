@@ -312,7 +312,7 @@ function viewFindeS5() {
   const grupoQuiere = typeof enGrupo === 'function' && enGrupo()
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
   const ganas = [...quiero, ...grupoQuiere];
-  return `<div class="planes">${portadaHTML()}
+  return `<div class="planes">${typeof selectorGruposHTML === 'function' ? selectorGruposHTML('en-planes') : ''}${portadaHTML()}
     ${paginadorFindes()}
     ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : ''}
     <h2>🔖 Con ganas de ir</h2>

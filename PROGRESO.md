@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v53 · Varios grupos y Más ordenado (2026-11-28)
+- Puedes estar en varios grupos (p. ej. la familia y los hermanos) y cambiar cuando quieras: chips con tus grupos arriba de
+  Planes y en la pestaña Grupo. Cada grupo guarda sus planes, disponibilidad, comentarios, sitios y avisos revisados; al
+  cambiar no se pierde nada. Tus marcas se suben también al grupo al que entras.
+- Grupo: «➕ Unirme a otro grupo o crear uno» (código o nombre nuevo); «Salir de «…»» pasa al siguiente grupo que tengas.
+- Más: cada utilidad en su botón (se abre debajo, una a la vez); la letra, siempre a la vista; el tema ya no está (se cambia
+  arriba con 🌓). Prueba: `node pruebas/grupos.js`.
+
 ## v52 · Por revisar: más fechas y los sin fecha abajo (2026-11-28)
 - El lector saca más fechas: lee la noticia entera si el resumen no trae día, entiende «28 de noviembre, 2026» y 28/11/2026,
   y calcula «este sábado», «el próximo viernes» o «mañana» desde el día de publicación (Arona y Puerto de la Cruz). Las agendas

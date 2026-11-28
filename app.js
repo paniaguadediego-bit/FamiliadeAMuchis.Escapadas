@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v52';
+const VERSION = 'v53';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -591,38 +591,34 @@ addEventListener('resize', () => { if (tab === 'mapa') pintarMapa(); });
 function viewGrupo() { return viewNube(); }
 
 // ---------- ☰ Más ----------
+// (v53) Cada utilidad en su botón (se abre debajo; una a la vez). La letra, siempre a la vista. El tema se cambia arriba (🌓).
+let masSec = '';
 function viewMas() {
-  const t = load(K_THEME, 'auto');
-  return `<h2>🎨 Tema</h2>
-    <div class="chips">${Object.entries(TEMAS).map(([k, [ic, n]]) => `<button class="chip ${t === k ? 'on' : ''}" data-settema="${k}">${ic} ${n}</button>`).join('')}</div>
-    <h2>🔠 Letra</h2>
-    <div class="chips">${Object.entries(LETRAS).map(([k, n]) => `<button class="chip ${load('esc.letra', 'compacta') === k ? 'on' : ''}" data-setletra="${k}" style="font-size:${k === 'compacta' ? '.78rem' : k === 'normal' ? '.88rem' : '1rem'}">Aa ${n}</button>`).join('')}</div>
-    ${!enGrupo() ? pasaporteHTML() : ''}
-    <h2>💛 Mis lugares y cines</h2>
-    ${favoritosHTML()}
-    <h2>🎉 Festivos</h2>
-    ${festivosHTML()}
-    <h2>📷 Fotos sin conexión</h2>
-    <div class="card"><p class="muted">Las fotos que ves se quedan en el móvil. Para tenerlas todas antes de ir a una zona sin cobertura (unos 15 MB, mejor con wifi):</p>
-      <button class="sec" data-fotosdl>⬇️ Descargar todas las fotos</button></div>
-    <h2>💾 Copia de mis marcas</h2>
-    <div class="card"><p class="muted">Tus marcas viven en este móvil. Guarda una copia por si cambias de móvil o borras datos del navegador.</p>
-      <div class="row"><button class="sec" data-exportar>⬇️ Exportar</button><button class="sec" data-importar>⬆️ Importar</button></div></div>
-    <h2>📲 Instalar en el móvil</h2>
-    <div class="card"><ol class="pasos"><li><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».</li>
+  const secs = [
+    !enGrupo() && ['pasaporte', '🛂', 'Pasaporte de municipios', () => pasaporteHTML()],
+    ['favoritos', '💛', 'Mis lugares y cines', () => favoritosHTML()],
+    ['festivos', '🎉', 'Festivos', () => festivosHTML()],
+    ['diario', '📔', 'Mi diario', () => diarioHTML()],
+    ['resumen', '🖨️', 'Resumen del año', () => resumenBotonesHTML()],
+    ['fotos', '📷', 'Fotos sin conexión', () => `<div class="card"><p class="muted">Las fotos que ves se quedan en el móvil. Para tenerlas todas antes de ir a una zona sin cobertura (unos 15 MB, mejor con wifi):</p>
+      <button class="sec" data-fotosdl>⬇️ Descargar todas las fotos</button></div>`],
+    ['copia', '💾', 'Copia de mis marcas', () => `<div class="card"><p class="muted">Tus marcas viven en este móvil. Guarda una copia por si cambias de móvil o borras datos del navegador.</p>
+      <div class="row"><button class="sec" data-exportar>⬇️ Exportar</button><button class="sec" data-importar>⬆️ Importar</button></div></div>`],
+    ['instalar', '📲', 'Instalar en el móvil', () => `<div class="card"><ol class="pasos"><li><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».</li>
       <li><b>iPhone (Safari):</b> botón Compartir → «Añadir a pantalla de inicio».</li>
-      <li>Ábrela una vez con conexión: desde entonces funciona sin ella (las calles del mapa, solo las zonas que hayas visto).</li></ol></div>
-    <h2>📚 Sobre los datos</h2>
-    <div class="card"><p>Cada sitio lleva su fuente. Lo marcado con <span class="ver">⚠️ VERIFICAR</span> está pendiente de comprobar (coordenadas, horarios, precios o accesos): confírmalo antes de ir.</p>
-      <p class="muted">Mapa © colaboradores de OpenStreetMap.</p></div>
-    <h2>📔 Mi diario</h2>
-    ${diarioHTML()}
-    <h2>🖨️ Resumen del año</h2>
-    ${resumenBotonesHTML()}
-    <h2>🧹 Borrar</h2>
-    <button class="danger" data-borrar>Borrar todas mis marcas de este móvil</button>
+      <li>Ábrela una vez con conexión: desde entonces funciona sin ella (las calles del mapa, solo las zonas que hayas visto).</li></ol></div>`],
+    ['datos', '📚', 'Sobre los datos', () => `<div class="card"><p>Cada sitio lleva su fuente. Lo marcado con <span class="ver">⚠️ VERIFICAR</span> está pendiente de comprobar (coordenadas, horarios, precios o accesos): confírmalo antes de ir.</p>
+      <p class="muted">Mapa © colaboradores de OpenStreetMap.</p></div>`],
+    ['borrar', '🧹', 'Borrar mis marcas', () => `<div class="card"><p class="muted">Borra todas tus marcas de este móvil (no se puede deshacer, salvo con una copia).</p><button class="danger" data-borrar>Borrar todas mis marcas de este móvil</button></div>`],
+  ].filter(Boolean);
+  return `<h2>🔠 Letra</h2>
+    <div class="chips">${Object.entries(LETRAS).map(([k, n]) => `<button class="chip ${load('esc.letra', 'compacta') === k ? 'on' : ''}" data-setletra="${k}" style="font-size:${k === 'compacta' ? '.78rem' : k === 'normal' ? '.88rem' : '1rem'}">Aa ${n}</button>`).join('')}</div>
+    <div class="mas-lista">${secs.map(([k, ic, n, f]) => `<div class="mas-item ${masSec === k ? 'on' : ''}"><button class="mas-btn" data-massec="${k}" aria-expanded="${masSec === k}"><span class="mas-ic">${ic}</span><span>${esc(n)}</span><i>${masSec === k ? '▴' : '▾'}</i></button>
+      ${masSec === k ? `<div class="mas-panel">${f()}</div>` : ''}</div>`).join('')}</div>
     <p class="muted" style="text-align:center">Escapadas · Familia de A Muchis · ${VERSION}</p>`;
 }
+document.addEventListener('click', e => { const b = e.target.closest('[data-massec]'); if (!b) return; masSec = masSec === b.dataset.massec ? '' : b.dataset.massec; render();
+  if (masSec) setTimeout(() => { const x = document.querySelector('.mas-item.on'); if (x) x.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 40); });
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-settema]'); if (t) { save(K_THEME, t.dataset.settema); applyTheme(); render(); return; }
   const lt = e.target.closest('[data-setletra]'); if (lt) { save('esc.letra', lt.dataset.setletra); applyLetra(); render(); if (tab === 'mapa') pintarMapa(); return; }

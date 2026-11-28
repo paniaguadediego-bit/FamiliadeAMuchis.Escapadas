@@ -487,3 +487,10 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   en Por revisar.
 - (v52) `relativa(texto, publicado)` («este sábado»…) y fechas con coma o dd/mm/aaaa. Bandeja de arriba = solo con fecha
   (`esc.revabierta`); `sinFechaHTML()` al final de Eventos, cerrado (`esc.sinfabierta`), con pendientes y añadidos.
+
+## Varios grupos y Más (v53, pedido del usuario)
+- `NUBE.misGrupos` [{id, nombre, n}] con `seguirMisGrupos()` (where miembros array-contains, al momento). `cambiarGrupo(gid)`:
+  deja de escuchar el actual (`dejarMarcas` también corta comentarios y revisión), `seguirGrupo(gid)`; `esc.grupo` = el último.
+  `selectorGruposHTML()` en Planes y Grupo (solo con 2 o más). Unirse con un código de un grupo tuyo = cambiar a él.
+  Los datos ya iban por grupo (`grupos/{gid}/…`): no hubo que tocar reglas.
+- Más: `masSec` (un panel abierto a la vez), botones `data-massec`; la letra fuera de los botones; sin tema (🌓 arriba).

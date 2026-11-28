@@ -2,7 +2,7 @@
 const P = require('./comun');
 (async () => {
   const { p, errores, cerrar } = await P.abrir();
-  await P.tab(p, 'mas'); await p.waitForTimeout(200);
+  await P.tab(p, 'mas'); await p.waitForTimeout(200); await p.click('[data-massec="favoritos"]'); await p.waitForTimeout(150);
   await p.click('[data-fav="esc.favmunis"][data-v="Garachico"]'); await p.waitForTimeout(150);
   await p.click('[data-fav="esc.favcines"][data-v="E0622"]'); await p.waitForTimeout(150);
   console.log('Guardado:', await p.evaluate(() => JSON.stringify([load('esc.favmunis', []), load('esc.favcines', [])])));
@@ -20,7 +20,7 @@ const P = require('./comun');
   const orden = await p.evaluate(() => [...document.querySelector('.planes').children].map(x => x.className || x.tagName).join(' > '));
   console.log('Botones al final de Planes:', /rapidos/.test(orden.split(' > ').slice(-3).join(' ')));
   // Área Santa Cruz – La Laguna: sus eventos llevan 💛 en Eventos y Cultura
-  await P.tab(p, 'mas'); await p.click('[data-fav="esc.favareas"][data-v="metro"]'); await p.waitForTimeout(150);
+  await P.tab(p, 'mas'); if (!(await p.locator('[data-fav="esc.favareas"]').count())) await p.click('[data-massec="favoritos"]'); await p.click('[data-fav="esc.favareas"][data-v="metro"]'); await p.waitForTimeout(150);
   console.log('Área metro: La Laguna y Santa Cruz favoritos:', await p.evaluate(() => favMuni('San Cristóbal de La Laguna') && favMuni('Santa Cruz de Tenerife')), '| Arafo no:', await p.evaluate(() => !favMuni('Arafo')));
   await P.tab(p, 'eventos'); await p.waitForTimeout(300);
   const ev = await p.evaluate(() => [...document.querySelectorAll('details.ficha')].map(d => [!!d.querySelector('.fav-ic'), (SITIOS.find(s => s.id === d.dataset.ficha) || {}).municipio]));

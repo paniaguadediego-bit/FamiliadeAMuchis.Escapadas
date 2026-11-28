@@ -61,6 +61,7 @@ async function entrarGoogle() {
 async function salirCuenta() {
   if (!confirm('¿Cerrar sesión en este móvil? Tus marcas del móvil se quedan.')) return;
   try { localStorage.removeItem(K_GRUPO); } catch {}
+  if (NUBE.offMisGrupos) { NUBE.offMisGrupos(); NUBE.offMisGrupos = null; } NUBE.misGrupos = [];
   await NUBE.auth.signOut();
 }
 
@@ -104,11 +105,36 @@ async function buscarGrupo() {
   try {
     const q = await NUBE.db.collection('grupos').where('miembros', 'array-contains', NUBE.user.uid).get();
     const ids = q.docs.map(d => d.id);
+    NUBE.misGrupos = q.docs.map(d => ({ id: d.id, nombre: d.data().nombre || 'Grupo', n: (d.data().miembros || []).length }));
     let gid = null; try { gid = localStorage.getItem(K_GRUPO); } catch {}
     if (!ids.includes(gid)) gid = ids[0] || null;
     if (gid) seguirGrupo(gid);
+    seguirMisGrupos();
   } catch (e) { NUBE.msg = 'No se pudieron leer tus grupos (' + (e.code || e.message) + ').'; }
 }
+// (v53) Varios grupos (p. ej. la familia y los hermanos): la lista de los tuyos, al momento.
+function seguirMisGrupos() {
+  if (NUBE.offMisGrupos) NUBE.offMisGrupos();
+  NUBE.offMisGrupos = NUBE.db.collection('grupos').where('miembros', 'array-contains', NUBE.user.uid).onSnapshot(q => {
+    NUBE.misGrupos = q.docs.map(d => ({ id: d.id, nombre: d.data().nombre || 'Grupo', n: (d.data().miembros || []).length })).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    repintarNube(); refrescarVista();
+  }, () => {});
+}
+// Cambiar de grupo: se deja de escuchar el actual y se escucha el otro. Cada grupo guarda sus planes, disponibilidad y
+// comentarios; tus marcas se suben también al grupo al que entras (gana la más reciente, como siempre).
+function cambiarGrupo(gid) {
+  if (!gid || (NUBE.grupo && NUBE.grupo.id === gid)) return;
+  if (NUBE.offGrupo) { NUBE.offGrupo(); NUBE.offGrupo = null; }
+  dejarMarcas(); NUBE.grupo = null;
+  if (typeof planForm !== 'undefined') planForm = null;
+  seguirGrupo(gid); refrescarVista(); repintarNube();
+}
+function selectorGruposHTML(donde) {
+  const l = NUBE.misGrupos || [];
+  if (l.length < 2 || !NUBE.grupo) return '';
+  return `<div class="grupos-sel ${donde}" role="tablist" aria-label="Tus grupos">${l.map(g => `<button class="chip ${g.id === NUBE.grupo.id ? 'on' : ''}" data-cambiagrupo="${g.id}" role="tab" aria-selected="${g.id === NUBE.grupo.id}">👥 ${esc(g.nombre)}</button>`).join('')}</div>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-cambiagrupo]'); if (b) cambiarGrupo(b.dataset.cambiagrupo); });
 // Escucha el grupo al momento: si entra alguien, aparece sin recargar.
 function seguirGrupo(gid) {
   try { localStorage.setItem(K_GRUPO, gid); } catch {}
@@ -129,22 +155,23 @@ async function cargarMiembros() {
   }));
 }
 async function crearGrupo(nombre) {
-  nombre = String(nombre || '').trim().slice(0, 60) || 'Familia de A Muchis';
+  nombre = String(nombre || '').trim().slice(0, 60) || (NUBE.grupo ? 'Grupo nuevo' : 'Familia de A Muchis');
   const gid = nuevoCodigo();
   NUBE.ocupado = true; repintarNube();
   try {
     await NUBE.db.collection('grupos').doc(gid).set({ nombre, codigoInvitacion: gid, miembros: [NUBE.user.uid], creadoPor: NUBE.user.uid, creado: firebase.firestore.FieldValue.serverTimestamp() });
-    NUBE.msg = ''; seguirGrupo(gid);
+    NUBE.msg = ''; NUBE.abrirOtro = false; cambiarGrupo(gid);
   } catch (e) { NUBE.msg = 'No se pudo crear el grupo (' + (e.code || e.message) + '). ¿Están publicadas las reglas?'; }
   NUBE.ocupado = false; repintarNube();
 }
 async function unirseGrupo(texto) {
   const gid = limpiarCodigo(texto);
   if (gid.length !== 8) return avisoNube('El código tiene 8 letras y números (por ejemplo ABCD-2345).');
+  if ((NUBE.misGrupos || []).some(g => g.id === gid)) { NUBE.msg = ''; return cambiarGrupo(gid); } // ya estás: solo cambiar
   NUBE.ocupado = true; repintarNube();
   try {
     await NUBE.db.collection('grupos').doc(gid).update({ miembros: firebase.firestore.FieldValue.arrayUnion(NUBE.user.uid) });
-    NUBE.msg = ''; seguirGrupo(gid);
+    NUBE.msg = ''; NUBE.abrirOtro = false; cambiarGrupo(gid);
   } catch (e) { NUBE.msg = e.code === 'unavailable' ? 'Sin conexión: prueba cuando tengas internet.' : 'Ese código no existe. Revísalo con quien te lo pasó.'; }
   NUBE.ocupado = false; repintarNube();
 }
@@ -153,7 +180,9 @@ async function salirGrupo() {
   const gid = NUBE.grupo.id;
   try { await NUBE.db.collection('grupos').doc(gid).update({ miembros: firebase.firestore.FieldValue.arrayRemove(NUBE.user.uid) }); } catch {}
   if (NUBE.offGrupo) { NUBE.offGrupo(); NUBE.offGrupo = null; }
-  dejarMarcas(); NUBE.grupo = null; NUBE.miembros = {}; try { localStorage.removeItem(K_GRUPO); } catch {}
+  dejarMarcas(); NUBE.grupo = null; try { localStorage.removeItem(K_GRUPO); } catch {}
+  const otro = (NUBE.misGrupos || []).find(x => x.id !== gid);
+  if (otro) seguirGrupo(otro.id);
   refrescarVista();
   repintarNube();
 }
@@ -203,8 +232,10 @@ function dejarMarcas() {
   if (NUBE.offMarcas) { NUBE.offMarcas(); NUBE.offMarcas = null; }
   if (NUBE.offPlanes) { NUBE.offPlanes(); NUBE.offPlanes = null; }
   if (NUBE.offDispo) { NUBE.offDispo(); NUBE.offDispo = null; }
+  if (NUBE.offComent) { NUBE.offComent(); NUBE.offComent = null; }
+  if (NUBE.offRevision) { NUBE.offRevision(); NUBE.offRevision = null; }
   dejarPropios();
-  NUBE.dispo = {}; NUBE.coment = {};
+  NUBE.dispo = {}; NUBE.coment = {}; NUBE.revision = {}; if (typeof aplicarRevision === 'function') aplicarRevision();
   NUBE.planes = [];
   NUBE.marcasGrupo = {}; NUBE.recientes = []; NUBE.sincronizado = false;
 }
@@ -314,14 +345,23 @@ function viewNube() {
       <input id="nombre-grupo" value="Familia de A Muchis" maxlength="60">
       <button class="sec" data-nube="crear" ${NUBE.ocupado ? 'disabled' : ''}>Crear grupo</button></div>`;
   const g = NUBE.grupo, ms = (g.miembros || []).map(id => [id, NUBE.miembros[id]]);
+  const mis = NUBE.misGrupos || [];
+  const otros = `<details class="card otro-grupo" ${NUBE.abrirOtro ? 'open' : ''}><summary>➕ Unirme a otro grupo o crear uno</summary>
+      <p class="muted">Puedes estar en varios (la familia, los hermanos…) y cambiar cuando quieras: cada grupo guarda sus planes.</p>
+      <input id="codigo" placeholder="ABCD-2345" autocapitalize="characters" autocomplete="off" maxlength="12">
+      <button data-nube="unirse" ${NUBE.ocupado ? 'disabled' : ''}>Unirme con código</button>
+      <input id="nombre-grupo" placeholder="Nombre del grupo nuevo (p. ej. Hermanos)" maxlength="60">
+      <button class="sec" data-nube="crear" ${NUBE.ocupado ? 'disabled' : ''}>Crear grupo</button></details>`;
   return `${yo}${aviso}
+    ${mis.length > 1 ? `<h2>👥 Tus grupos</h2>${selectorGruposHTML('en-grupo')}<p class="muted grupos-ayuda">Toca uno para cambiar: Planes, calendario y marcas del grupo pasan a ser los de ese.</p>` : ''}
     <h2>👥 ${esc(g.nombre)}</h2>
     <div class="card"><div class="muted">Código para invitar</div><div class="codigo">${esc(codigoBonito(g.id))}</div>
       <button class="sec" data-nube="compartir">📤 Pasar el código</button></div>
     <div class="card">${ms.map(([id, m]) => `<div class="row miembro">${carita(m)}<span>${esc((m && m.nombre) || '…')}${id === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span></div>`).join('')}</div>
     ${typeof pasaporteHTML === 'function' ? pasaporteHTML() : ''}
     ${resumenGrupoHTML()}
-    <div class="row"><button class="sec" data-nube="salirgrupo">Salir del grupo</button><button class="sec" data-nube="salir">Cerrar sesión</button></div>`;
+    ${otros}
+    <div class="row"><button class="sec" data-nube="salirgrupo">Salir de «${esc(g.nombre)}»</button><button class="sec" data-nube="salir">Cerrar sesión</button></div>`;
 }
 document.addEventListener('click', e => {
   const em = e.target.closest('[data-pfemoji]'), co = e.target.closest('[data-pfcolor]');

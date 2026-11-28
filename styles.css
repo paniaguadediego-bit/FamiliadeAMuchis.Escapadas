@@ -852,4 +852,16 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .fav-cine { font-size: .78rem; margin-left: 6px; }
 .fav-ic { margin-right: 4px; }
 .rev-sinf-caja { margin-top: 14px; opacity: .92; }
-:root { --css-ver: "v52"; }
+/* v53: Más, cada utilidad en su botón */
+.mas-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.mas-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin: 0; text-align: left; font-weight: 600;
+  background: var(--card, #fff); color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--sombra); }
+.mas-btn span:nth-child(2) { flex: 1; } .mas-btn i { font-style: normal; color: var(--muted, #888); }
+.mas-ic { font-size: 1.25rem; width: 1.6rem; text-align: center; }
+.mas-item.on .mas-btn { border-color: var(--pri); }
+.mas-panel { padding: 4px 2px 2px; }
+.grupos-sel { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 8px; }
+.grupos-sel .chip { flex: none; }
+.grupos-ayuda { font-size: .78rem; margin-top: -2px; }
+.otro-grupo summary { cursor: pointer; font-weight: 600; } .otro-grupo input, .otro-grupo button { margin-top: 6px; }
+:root { --css-ver: "v53"; }
