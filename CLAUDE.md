@@ -384,6 +384,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   `data/cine.json` {fecha, cines:[{peliculas:[{titulo, original, generos, edad, estreno, cartel, sesiones:[{h, v: Doblada|VOSE|VO, f?}]}]}]}.
   (v31) También `sinopsis` y `notas` {usuarios, prensa} (medias de SensaCine /5, de la misma página). FilmAffinity bloquea
   todo acceso automático (Cloudflare, incluso robots.txt): NO se lee; solo un enlace a su búsqueda que abre la persona.
+  (v50) Cartel: `<img class="thumbnail-img …">` (la clase lleva más nombres). La película entera abre la sinopsis (<details>);
+  debajo, siempre, FilmAffinity e IMDb (búsquedas que abre la persona).
   En Eventos → 🎬 Cine: cartelera por cine con «🗣️ Solo versión original»; en 🎭 ¿Qué hay? → Cine, enlace a la cartelera.
 
 ## Navegación, mejor día, votar fechas y compartir (v29, ideas de apps muy valoradas: AllTrails, Howbout, Fever)

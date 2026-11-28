@@ -53,7 +53,8 @@ def pelicula(card):
     info = (re.search(r'meta-body-info">(.*?)</div>', card, re.S) or [None, ''])[1]
     generos = [limpia(g) for g in re.findall(r'dark-grey-link">([^<]+)</span>', info)]
     edad = limpia((re.search(r'certificate-text">(.*?)</span>', card, re.S) or [None, ''])[1])
-    cartel = (re.search(r'class="thumbnail-img"[^>]*?(?:data-src|src)="(https://[^"]+/c_160_213/[^"]+)"', card) or [None, ''])[1]
+    img = (re.search(r'<img[^>]*class="thumbnail-img[^"]*"[^>]*>', card) or [''])[0]  # (v50) la clase puede llevar más nombres
+    cartel = (re.search(r'data-src="(https://[^"]+/c_160_213/[^"]+)"', img) or re.search(r'src="(https://[^"]+/c_160_213/[^"]+)"', img) or [None, ''])[1]
     estreno = 'estreno esta semana' in card.lower()
     sinopsis = limpia((re.search(r'<div class="synopsis">\s*<div class="content-txt[^"]*">(.*?)</div>', card, re.S) or [None, ''])[1])
     notas = {}  # notas medias de SensaCine (sobre 5): «Medios» (prensa) y «Usuarios»

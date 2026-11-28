@@ -43,12 +43,21 @@ limpia = lambda x: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', x o
 slug = lambda t: re.sub(r'[^a-z0-9]+', '-', unicodedata.normalize('NFD', t.lower()).encode('ascii', 'ignore').decode()).strip('-')
 
 
+class _Https(urllib.request.HTTPRedirectHandler):
+    """Algunas webs (Adeje) redirigen a http://: se sigue la misma dirección en https://."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return super().redirect_request(req, fp, code, msg, headers, re.sub(r'^http://', 'https://', newurl))
+
+
+ABRIR = urllib.request.build_opener(_Https)
+
+
 def get(url):
     if os.environ.get('NOTICIAS_TRAZA'):
         print('  ·', url[:100], flush=True)
     for i in range(3):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=25) as r:
+            with ABRIR.open(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=25) as r:
                 return r.read().decode('utf-8', 'replace')
         except Exception:
             time.sleep(6 * (i + 1))

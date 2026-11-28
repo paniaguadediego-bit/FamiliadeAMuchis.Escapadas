@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v50 · Carteles y sinopsis de las películas (2026-11-28)
+- Faltaban 70 de 75 carteles: SensaCine añadió otra clase a la imagen y el lector no la reconocía. Arreglado: 74 de 74.
+- Cada película es un botón: al tocarla se despliega la sinopsis (pista «Sinopsis ▾»). Debajo, siempre a la vista,
+  «Ver en FilmAffinity ›» y «Ver en IMDb ›» (búsqueda por título original).
+- Lector de ayuntamientos: Adeje redirige a http://; ahora se sigue en https:// (antes se quedaba colgado).
+
 ## v49 · 📰 Por revisar: lo que anuncian los ayuntamientos (2026-11-28)
 - Nuevo lector `herramientas/noticias_aytos.py` (GitHub Actions cada mañana, `noticias.yml`) → `data/revision.json`: agendas de
   Arona (RSS con fecha, lugar y coordenadas), Adeje, La Orotava y La Laguna, y titulares con pinta de evento de las noticias de

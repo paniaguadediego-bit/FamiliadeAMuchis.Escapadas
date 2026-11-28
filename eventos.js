@@ -106,6 +106,8 @@ function cargarAgenda(d, clave = 'tenerife') {
 
 // ---------- 🎬 Cartelera de cine (data/cine.json: SensaCine, cada mañana con GitHub Actions; solo las sesiones del día) ----------
 let CINE = null, cineSel = null, cineVO = false, cineOrden = null;
+const peliAbiertas = new Set(); // sinopsis abiertas (no se cierran al repintar)
+document.addEventListener('toggle', e => { const d = e.target; if (d.dataset && d.dataset.peli) { if (d.open) peliAbiertas.add(d.dataset.peli); else peliAbiertas.delete(d.dataset.peli); } }, true);
 const ORDEN_CINE = { estrenos: 'Estrenos primero', publico: '⭐ Público', prensa: '⭐ Prensa', titulo: 'Título (A-Z)' };
 const cineHoy = () => CINE && CINE.fecha === hoyISO();
 const VERS = { VOSE: 'VOSE', VO: 'VO', Doblada: '' };
@@ -128,13 +130,18 @@ function carteleraHTML() {
     <div class="chips"><button class="chip ${cineVO ? 'on' : ''}" data-cinevo>🗣️ Solo versión original (VOSE)</button>
       <label class="orden-sel"><span class="vh">Ordenar películas</span><select id="cine-orden">${Object.entries(ORDEN_CINE).map(([k, n]) => `<option value="${k}" ${cineOrden === k ? 'selected' : ''}>↕️ ${n}</option>`).join('')}</select></label></div>
     <p class="muted cuenta-lista">${esc(c.nombre)} · ${esc(c.municipio)} · ${pelis.length} película${pelis.length === 1 ? '' : 's'}${c.aviso ? ' · ⚠️ ' + esc(c.aviso) : ''}</p>
-    ${pelis.length ? pelis.map(([p, ss]) => `<div class="card peli">${p.cartel ? `<img class="peli-cartel" src="${esc(p.cartel)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+    ${pelis.length ? pelis.map(([p, ss]) => { // (v50) tocar la película despliega la sinopsis; debajo, FilmAffinity e IMDb
+      const q = encodeURIComponent(p.original || p.titulo), sin = !!p.sinopsis, abierta = peliAbiertas.has(p.titulo);
+      const cab = `${p.cartel ? `<img class="peli-cartel" src="${esc(p.cartel)}" alt="" loading="lazy" onerror="this.remove()">` : '<span class="peli-cartel peli-sinc">🎬</span>'}
       <div class="peli-tx"><b>${esc(p.titulo)}</b>${p.estreno ? ' <span class="peli-est">Estreno</span>' : ''}
         <div class="muted peli-m">${esc([p.generos.join(', '), p.edad && p.edad.replace(/^Película no recomendada a menores de /, '+').replace(/^Película /, '')].filter(Boolean).join(' · '))}${p.original ? `<br><i>${esc(p.original)}</i>` : ''}</div>
         ${p.notas ? `<div class="peli-notas">${p.notas.usuarios ? `<span>⭐ ${String(p.notas.usuarios).replace('.', ',')} <small>público</small></span>` : ''}${p.notas.prensa ? `<span>⭐ ${String(p.notas.prensa).replace('.', ',')} <small>prensa</small></span>` : ''}<small class="muted">/5 SensaCine</small></div>` : ''}
         <div class="peli-ses">${ss.map(s => `<span class="ses ${s.v !== 'Doblada' ? 'vo' : ''}">${esc(s.h)}${VERS[s.v] ? ` <small>${VERS[s.v]}</small>` : ''}${s.f ? ` <small>${esc(s.f)}</small>` : ''}</span>`).join('')}</div>
-        <div class="peli-mas">${p.sinopsis ? `<details><summary>Sinopsis</summary><p>${esc(p.sinopsis)}</p></details>` : ''}
-          <a href="https://www.filmaffinity.com/es/search.php?stext=${encodeURIComponent(p.original || p.titulo)}" target="_blank" rel="noopener">Ver en FilmAffinity ›</a></div></div></div>`).join('')
+        ${sin ? '<span class="peli-pista">Sinopsis <i>▾</i></span>' : ''}</div>`;
+      const pie = `<div class="peli-mas"><a href="https://www.filmaffinity.com/es/search.php?stext=${q}" target="_blank" rel="noopener">Ver en FilmAffinity ›</a>
+        <a href="https://www.imdb.com/find/?q=${q}&s=tt" target="_blank" rel="noopener">Ver en IMDb ›</a></div>`;
+      return sin ? `<div class="card peli-d"><details data-peli="${esc(p.titulo)}" ${abierta ? 'open' : ''}><summary class="peli">${cab}</summary><p class="peli-sin">${esc(p.sinopsis)}</p></details>${pie}</div>`
+        : `<div class="card peli-d"><div class="peli">${cab}</div>${pie}</div>`; }).join('')
       : `<div class="card muted">${cineVO ? 'Hoy no hay sesiones en versión original en este cine.' : 'Sin sesiones.'}</div>`}
     <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.</p>`;
 }
