@@ -1,5 +1,8 @@
 # PROGRESO
 
+## v55 · Por revisar, abajo (2026-11-28)
+- En Eventos, «📰 Por revisar» pasa al final de la página, justo encima de «📰 Sin fecha» (antes iba arriba del todo).
+
 ## v54 · Grupo más limpio (2026-11-28)
 - Pestaña Grupo sin «🏆 Quién lleva más» ni «🕒 Últimas marcas» (pedido del usuario). Quedan los miembros, el pasaporte,
   el aviso de planes y «🌱 Nadie ha ido todavía».

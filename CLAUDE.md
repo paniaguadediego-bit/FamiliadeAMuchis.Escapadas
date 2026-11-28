@@ -494,3 +494,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   `selectorGruposHTML()` en Planes y Grupo (solo con 2 o más). Unirse con un código de un grupo tuyo = cambiar a él.
   Los datos ya iban por grupo (`grupos/{gid}/…`): no hubo que tocar reglas.
 - Más: `masSec` (un panel abierto a la vez), botones `data-massec`; la letra fuera de los botones; sin tema (🌓 arriba).
+- (v55) En Eventos, `revisionHTML()` va al final, justo encima de `sinFechaHTML()` (pedido del usuario).

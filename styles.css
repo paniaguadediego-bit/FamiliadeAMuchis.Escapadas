@@ -864,4 +864,4 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .grupos-sel .chip { flex: none; }
 .grupos-ayuda { font-size: .78rem; margin-top: -2px; }
 .otro-grupo summary { cursor: pointer; font-weight: 600; } .otro-grupo input, .otro-grupo button { margin-top: 6px; }
-:root { --css-ver: "v54"; }
+:root { --css-ver: "v55"; }

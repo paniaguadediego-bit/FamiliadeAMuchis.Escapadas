@@ -176,7 +176,7 @@ function viewEventos() {
   lista.forEach(([s, f]) => { const ini = f[0] < a ? a : f[0], sb = typeof sabadoDe === 'function' ? sabadoDe(ini) : ini; (semanas[sb] = semanas[sb] || []).push([s, f]); });
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
-  return novedadesHTML('eventos') + revisionHTML() + `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
+  return novedadesHTML('eventos') + `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
     <div class="ev-cats">${Object.entries(CAT_EV).filter(([k]) => !CULTURA.includes(k)).map(([k, [ic, n]]) => `<button class="fm ${evCats.has(k) ? 'on' : ''}" data-evcat="${k}" aria-pressed="${evCats.has(k)}">${ic} ${esc(n.replace(' y espectáculos', '').replace(' y mercados', ''))}</button>`).join('')}
       <div class="ev-cats-pie"><button class="enlace" data-evcats="todas">✓ Todas</button><button class="enlace" data-evcats="ninguna">✕ Ninguna</button></div></div>
     <div class="filtros-barra">
@@ -189,7 +189,7 @@ function viewEventos() {
     ${evSoloCine() && !lista.length ? '' : lista.length ? Object.keys(semanas).sort().map(sb => `<details class="ev-sem" data-sem="${sb}" ${evCerradas.has(sb) ? '' : 'open'}><summary><span>📅 ${esc(titulo(sb))}</span><small>${semanas[sb].length} evento${semanas[sb].length === 1 ? '' : 's'}</small></summary>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}</details>`).join('')
       : `<div class="card muted">${evCats.size ? 'Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.' : 'No hay ninguna categoría marcada: toca las que quieras ver o «✓ Todas».'}</div>`}
     <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), del Auditorio, de lo que el grupo acepta de las webs de los ayuntamientos (📰), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>
-    ${sinFechaHTML()}`;
+    ${revisionHTML()}${sinFechaHTML()}`; // (v55) Por revisar abajo del todo, justo encima de «Sin fecha»
 }
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-evcat]'); if (c) { leerCats(); const k = c.dataset.evcat; if (evCats.has(k)) evCats.delete(k); else evCats.add(k); ponerCats(evCats); render(); return; }
@@ -296,7 +296,7 @@ function revisionHTML() {
   if (!pend.length) return '';
   const MAX = 8, ver = revVerTodo ? pend : pend.slice(0, MAX);
   return `<details class="card rev" ${load('esc.revabierta', true) ? 'open' : ''} data-revcaja="esc.revabierta"><summary>📰 Por revisar <b>${pend.length}</b> <small class="muted">· de las webs de los ayuntamientos</small></summary>
-    <p class="muted rev-ayuda">Lo que anuncian los ayuntamientos (agendas y noticias). «➕ Añadir» lo lleva a Eventos${typeof enGrupo === 'function' && enGrupo() ? ' para todo el grupo' : ''}. Los que no traen fecha están al final de la página.</p>
+    <p class="muted rev-ayuda">Lo que anuncian los ayuntamientos (agendas y noticias). «➕ Añadir» lo lleva a Eventos${typeof enGrupo === 'function' && enGrupo() ? ' para todo el grupo' : ''}. Los que no traen fecha están justo debajo.</p>
     ${ver.map(a => revItemHTML(a, revBotones(a))).join('')}
     ${pend.length > MAX ? `<button class="enlace" data-revtodo>${revVerTodo ? '▴ Ver menos' : `▾ Ver los ${pend.length}`}</button>` : ''}
     ${(REVISION.notas || []).length ? `<p class="muted rev-ayuda">⚠️ ${REVISION.notas.map(esc).join(' · ')}</p>` : ''}</details>`;
