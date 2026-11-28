@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v50';
+const VERSION = 'v51';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -189,7 +189,7 @@ function fichaHTML(s) {
   const m = marca(s.id), e = m.estado;
   const datos = [s.km && `🥾 ${String(s.km).replace('.', ',')} km · ⛰️ +${s.desnivel} m${s.circular ? ' · 🔁 circular' : ' · lineal'}`, s.ninos && `🧸 Con niños: ${esc(s.ninos)}`, s.lugar && `📍 ${esc(s.lugar)}`, distTxt(s) && esc(distTxt(s)), s.duracion && `⏱️ ${esc(s.duracion)}`, s.dificultad && `💪 ${esc(s.dificultad)}`, s.acceso && `🚗 ${esc(s.acceso)}`].filter(Boolean);
   return `<details class="ficha ${e ? 'e-' + e : ''}" id="f-${esc(s.id)}" data-ficha="${esc(s.id)}" ${abiertas.has(s.id) ? 'open' : ''}>
-    <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 📍 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
+    <summary>${fotoSrc(s.id) ? `<span class="mini-foto">${fotoImg(s.id, '', true)}<span class="mini-ic">${icFicha(s)}</span></span>` : `<span class="ic">${icFicha(s)}</span>`}<span class="nom">${s.tipo === 'evento' ? favIc(s) : ''}${esc(s.nombre)}<small>${esc(subFicha(s))}${distCasa(s) != null ? ` · 📍 ${esc(fmtKm(distCasa(s)))}` : ''}</small></span>
       <span class="est">${caritasMini(s.id)}${e ? ESTADOS[e][0] : ''}${m.estrellas ? `<small> ${'⭐'.repeat(m.estrellas)}</small>` : ''}</span></summary>
     <div class="cuerpo">
       ${abiertas.has(s.id) && fotoSrc(s.id) ? `<div class="ficha-foto">${fotoImg(s.id)}${fotoCredito(s.id)}</div>` : fotoSrc(s.id) ? '<div class="ficha-foto" data-pendiente></div>' : ''}
@@ -282,13 +282,17 @@ function zonaMuni(m) {
     for (const [mu, k] of Object.entries(c)) ZMUNI[mu] = Object.entries(k).sort((x, y) => y[1] - x[1])[0][0]; }
   return (ZMUNI || {})[m] || '';
 }
+// Áreas: las 6 zonas del tiempo y Santa Cruz – La Laguna juntas (pedido del usuario: «tienen que funcionar juntos»).
+const AREAS_EXTRA = { metro: ['🏙️', 'Santa Cruz – La Laguna', ['Santa Cruz de Tenerife', 'San Cristóbal de La Laguna']] };
 function favs() {
-  if (!FAV) { const munis = new Set(load('esc.favmunis', [])), cines = load('esc.favcines', []);
-    FAV = { munis, cines, zonas: new Set([...munis].map(zonaMuni).filter(Boolean)) }; }
+  if (!FAV) { const munis = new Set(load('esc.favmunis', [])), cines = load('esc.favcines', []), areas = new Set(load('esc.favareas', []));
+    const enArea = new Set(MUNICIPIOS.filter(m => areas.has(zonaMuni(m)) || Object.entries(AREAS_EXTRA).some(([k, [, , ms]]) => areas.has(k) && ms.includes(m))));
+    FAV = { munis, cines, areas, enArea, zonas: new Set([...munis, ...enArea].map(zonaMuni).filter(Boolean)) }; }
   return FAV;
 }
-const favMuni = m => favs().munis.has(m);
-const favSitio = s => !!s && (favMuni(s.municipio) ? 2 : favs().zonas.has(zonaNom(s)) ? 1 : 0); // 2 su municipio, 1 su zona
+const favMuni = m => favs().munis.has(m) || favs().enArea.has(m); // el municipio o un área que lo incluye
+const favSitio = s => !!s && (favMuni(s.municipio) ? 2 : favs().zonas.has(zonaNom(s)) ? 1 : 0); // 2 dentro de tus 💛, 1 misma zona
+const favIc = s => s && favMuni(s.municipio) ? '<span class="fav-ic" title="En tus favoritos">💛</span>' : '';
 function alternarFav(clave, v) {
   const l = load(clave, []), i = l.indexOf(v); if (i >= 0) l.splice(i, 1); else l.push(v);
   save(clave, l); FAV = null; render();
@@ -297,8 +301,10 @@ const zonasOrden = () => Object.entries(ZONAS).sort(([a], [b]) => favs().zonas.h
 function favoritosHTML() {
   const zonasM = Object.entries(ZONAS).map(([z, Z]) => [Z, MUNICIPIOS.filter(m => zonaMuni(m) === z)]);
   const cines = [['E0627', 'Yelmo Meridiano'], ['E0284', 'Multicines La Laguna'], ['E0622', 'Yelmo La Villa'], ['E0700', 'X-Sur'], ['E0541', 'Zentral Center']];
-  return `<div class="card fav"><p class="muted">Lo de tus 💛 sale primero: sitios en Explorar, eventos, el tiempo de su zona, más papeletas en Sorpréndeme y tu cine en la cartelera. Solo en este móvil.</p>
-    ${zonasM.map(([Z, ms]) => ms.length ? `<div class="fav-zona"><small>${Z.ic} ${esc(Z.nom)}</small><div class="chips">${ms.map(m => `<button class="chip ${favMuni(m) ? 'on' : ''}" data-fav="esc.favmunis" data-v="${esc(m)}">${favMuni(m) ? '💛' : '🤍'} ${esc(m.replace('San Cristóbal de ', ''))}</button>`).join('')}</div></div>` : '').join('')}
+  const ar = k => favs().areas.has(k), bArea = (k, ic, n) => `<button class="chip ${ar(k) ? 'on' : ''}" data-fav="esc.favareas" data-v="${k}">${ar(k) ? '💛' : '🤍'} ${ic} ${esc(n)}</button>`;
+  return `<div class="card fav"><p class="muted">Lo que está en tus 💛 sale primero y marcado con 💛 en Eventos y Cultura; también sube en Explorar, el tiempo de su zona va arriba, Sorpréndeme lo elige más y tu cine abre la cartelera. Solo en este móvil.</p>
+    <div class="fav-zona"><small>🗺️ Áreas</small><div class="chips">${Object.entries(AREAS_EXTRA).map(([k, [ic, n]]) => bArea(k, ic, n)).join('')}${Object.entries(ZONAS).map(([k, Z]) => bArea(k, Z.ic, Z.nom)).join('')}</div></div>
+    ${zonasM.map(([Z, ms]) => ms.length ? `<div class="fav-zona"><small>${Z.ic} ${esc(Z.nom)}</small><div class="chips">${ms.map(m => `<button class="chip ${favMuni(m) ? 'on' : ''}" data-fav="esc.favmunis" data-v="${esc(m)}">${favs().munis.has(m) ? '💛' : favs().enArea.has(m) ? '💛' : '🤍'} ${esc(m.replace('San Cristóbal de ', ''))}</button>`).join('')}</div></div>` : '').join('')}
     <div class="fav-zona"><small>🎬 Cines</small><div class="chips">${cines.map(([id, n]) => `<button class="chip ${favs().cines.includes(id) ? 'on' : ''}" data-fav="esc.favcines" data-v="${id}">${favs().cines.includes(id) ? '💛' : '🤍'} ${n}</button>`).join('')}</div></div></div>`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-fav]'); if (b) { e.preventDefault(); e.stopPropagation(); alternarFav(b.dataset.fav, b.dataset.v); } }, true);

@@ -327,7 +327,7 @@ function carruselFindeHTML(i) {
     const ya = f[0] <= hoy && f[1] >= hoy, p = g && proximosPlanes().find(x => x.sitioId === s.id);
     const acc = ''; // (v47) sin «Proponer» en la rueda: se propone desde la ficha
     return `<div class="ev-tarjeta"><button class="ev-ban banner-plano ya" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
-      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${ya ? '¡Ahora!' : s.destacado ? '¡No te lo pierdas!' : 'Evento'}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
+      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${ya ? '¡Ahora!' : s.destacado ? '¡No te lo pierdas!' : 'Evento'}${typeof favMuni === 'function' && favMuni(s.municipio) ? ' · 💛' : ''}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
       ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
   };
   // (v48) Sin ideas; planes y eventos juntos por orden cronológico (a igual día, los planes primero).
