@@ -526,3 +526,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - (v67) `SALAS` + `salaFoto(s)` (eventos.js): foto de la sala (teatro-leal, teatro-guimera, auditorio) en la ficha del evento (`.ficha.con-sala`,
   `--sala`, opacidad 0,17 con máscara). Cines: sin fotos libres en Commons → `.peli-d::before` con telón dibujado. `.lista-fondo` ya no se usa.
 - (v68) Portada: `.portada-h::after` con velo 0,18 → 0,78 y radial abajo; `.portada-tx` con sombra doble; `.pf-pie` en pastilla.
+- (v69) `salaFoto` también mira la descripción (220 car.) y «Obispo Rey Redondo» (Teatro Leal). Telón de películas a 0,14 (oscuro 0,2).

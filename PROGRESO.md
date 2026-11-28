@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v69 · Foto del Teatro Leal en sus obras (2026-11-28)
+- La agenda de Turismo de Tenerife da la dirección, no el nombre de la sala: ahora se mira también la descripción («llega al
+  Teatro Leal…») y la calle del Leal (Obispo Rey Redondo, según Wikipedia). Teatro: 30 de 36 obras con la foto de su sala
+  (las otras 6 son en hoteles, un cine, el Teatro Unión de Tejina, el Recinto Ferial…, sin foto en la app).
+- Cines: siguen sin fotos libres (Wikimedia Commons no tiene de ninguno y SensaCine no da la dirección); el telón dibujado de
+  las películas, algo más visible.
+
 ## v68 · Portada legible (2026-11-28)
 - El saludo, «Este finde» y las líneas de la portada de Planes se leen sobre cualquier foto: velo más oscuro detrás del texto
   (y algo arriba), foto al 72 %, sombra marcada en las letras y el crédito de la foto en una pastilla oscura.

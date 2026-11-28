@@ -109,9 +109,11 @@ let CINE = null, cineSel = null, cineVO = false, cineOrden = null;
 // (v62) Fondo de la cartelera: foto del municipio del cine (de sus fichas, Wikimedia Commons), muy atenuada.
 // (v67) Cada obra o concierto lleva de fondo, muy suave, la foto de SU sala (si es una de las que tienen ficha con foto en
 // Wikimedia Commons). De los cines no hay fotos libres: sus tarjetas llevan un telón dibujado, no una foto de otro sitio.
-const SALAS = [[/teatro leal|\bleal\b/i, 'teatro-leal'], [/guimer[aá]/i, 'teatro-guimera'], [/auditorio de tenerife|auditorio ad[aá]n mart[ií]n|sala sinf[oó]nica|sala de c[aá]mara/i, 'auditorio']];
+// (v69) La agenda de Turismo da la dirección, no la sala: se mira también la descripción («llega al Teatro Leal…») y la calle
+// del Teatro Leal (Obispo Rey Redondo, según Wikipedia).
+const SALAS = [[/teatro leal|obispo rey redondo/i, 'teatro-leal'], [/teatro guimer[aá]/i, 'teatro-guimera'], [/auditorio de tenerife|auditorio ad[aá]n mart[ií]n|sala sinf[oó]nica|sala de c[aá]mara/i, 'auditorio']];
 function salaFoto(s) {
-  const t = `${s.lugar || ''} ${s.nombre || ''}`;
+  const t = `${s.lugar || ''} ${s.nombre || ''} ${(s.desc || '').slice(0, 220)}`;
   let id = (SALAS.find(([re]) => re.test(t)) || [])[1];
   if (!id && String(s.id).startsWith('au-') && /^\s*\(?sala|^\s*$/i.test(s.lugar || '')) id = 'auditorio'; // programación del Auditorio, en sus salas
   return id ? fotoSrc(id) : '';
