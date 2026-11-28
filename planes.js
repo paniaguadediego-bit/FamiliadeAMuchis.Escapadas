@@ -315,8 +315,7 @@ function carruselFindeHTML(i) {
   const d0 = b.dias[0] ? b.dias[0].slice(0, 10) : sab, dN = b.dias.length ? b.dias[b.dias.length - 1].slice(0, 10) : masDias(sab, 1);
   const ps = g ? proximosPlanes().filter(p => p.fecha <= dN && finPlan(p) >= d0) : [];
   const evs = ordenarEventos(eventosEntre(masDias(sab, -1), dN), masDias(sab, -1));
-  const usados = new Set([...ps.map(p => p.sitioId), ...evs.map(([s]) => s.id)]);
-  const ideas = ideasFinde(sab, 3, usados), hoy = hoyISO();
+  const hoy = hoyISO();
   const caras = us => us.slice(0, 5).map(u => carita(perfilDe(u))).join('') + (us.length > 5 ? `<small>+${us.length - 5}</small>` : '');
   const tPlan = p => {
     const s = p.sitioId && sitio(p.sitioId), voy = (p.apuntados || []).includes(NUBE.user.uid), isla = ISLAS[p.isla] || ISLAS.tenerife;
@@ -331,22 +330,15 @@ function carruselFindeHTML(i) {
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${ya ? '¡Ahora!' : s.destacado ? '¡No te lo pierdas!' : 'Evento'}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
       ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
   };
-  const tIdea = s => {
-    const tv = typeof tiempoVale === 'function' ? tiempoVale(s, sab) : {}, q = ganas(s.id);
-    return `<div class="ev-tarjeta t-idea"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
-      <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">💡 Idea${tv.nota ? ' · ' + esc(tv.nota) : ''}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}${q ? ` · 🔖 ${q} con ganas` : ''}</small></span></span></button>
-      </div>`;
-  };
-  // (v43) Lista vertical; los planes del grupo primero y el resto en orden aleatorio (fijo durante la visita).
-  const mezcla = l => l.map(x => [x, azarDe(x[0] ? x[0].id || x[0] : x.id)]).sort((a, b) => a[1] - b[1]).map(([x]) => x);
-  const resto = mezcla([...evs.map(e => ['e', e]), ...ideas.map(s => ['i', s])].map(([t, x]) => ({ t, x, id: t === 'e' ? x[0].id : x.id })));
-  const tarjetas = [...ps.map(tPlan), ...resto.map(o => o.t === 'e' ? tEv(o.x) : tIdea(o.x))];
+  // (v48) Sin ideas; planes y eventos juntos por orden cronológico (a igual día, los planes primero).
+  const tarjetas = [...ps.map(p => [p.fecha, '', tPlan(p)]), ...evs.map(e => [e[1][0], e[1][1], tEv(e)])]
+    .sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])).map(x => x[2]);
   const abierto = verMasFinde.has(i), MAX = 4;
   const fests = b.dias.map(k => festivo(k)).filter(Boolean);
   const rango = `${nomDia(d0)} – ${nomDia(dN)} ${new Date(dN + 'T12:00').toLocaleDateString('es-ES', { month: 'short' })}`;
   const form = g && planForm && planForm.carrusel === String(i) ? formPlanHTML(planForm) : '';
   return `<div class="car-cab"><h2>${['🎠 Este finde', '🎠 El que viene', '🎠 En 2 semanas'][i] || '🎠'} <small class="muted">${esc(rango)}${fests.length ? ' · 🎉 puente' : ''}</small></h2>${i === 0 ? '<button class="enlace" data-tab="eventos">Todos los eventos ›</button>' : ''}</div>
-    <div class="ev-pista">${ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} · ` : ''}${evs.length ? `🎟️ ${evs.length} evento${evs.length > 1 ? 's' : ''} · ` : ''}💡 ${ideas.length} ideas</div>
+    <div class="ev-pista">${ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} · ` : ''}${evs.length ? `🎟️ ${evs.length} evento${evs.length > 1 ? 's' : ''}` : 'Sin eventos en la agenda'}</div>
     ${tarjetas.length > 1 ? `<div class="rueda" data-rueda="${i}" aria-label="Desliza para girar">${tarjetas.join('')}</div>` : `<div class="ev-lista">${tarjetas.join('')}</div>`}${form}`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-cal-ir]'); if (b) { calSel = b.dataset.calIr; calMes = calSel.slice(0, 7); render(); const x = document.querySelector('.cal'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); } });
@@ -430,11 +422,16 @@ function girarRuedas() {
   document.querySelectorAll('[data-rueda]').forEach(r => {
     if (!r._rueda) {
       r._rueda = 1; let pend = 0;
-      r.addEventListener('scroll', () => { posRueda[r.dataset.rueda] = r.scrollTop; if (!pend) pend = requestAnimationFrame(() => { pend = 0; pintarRueda(r); }); }, { passive: true });
+      r.addEventListener('scroll', () => { if (r._listo) posRueda[r.dataset.rueda] = r.scrollTop; if (!pend) pend = requestAnimationFrame(() => { pend = 0; pintarRueda(r); }); }, { passive: true });
       // Tocar una tarjeta que no está en el centro la trae al centro (sin abrirla).
       r.addEventListener('click', e => { const t = e.target.closest('.ev-tarjeta'); if (t && !t.classList.contains('en-centro')) { e.preventDefault(); e.stopPropagation(); r.scrollTo({ top: t.offsetTop - (r.clientHeight - t.offsetHeight) / 2, behavior: 'smooth' }); } }, true);
       if (posRueda[r.dataset.rueda] != null) r.scrollTop = posRueda[r.dataset.rueda];
-      else if (r.children.length > 2 && !r.querySelector('.t-plan')) { const t = r.children[1]; r.scrollTop = t.offsetTop - (r.clientHeight - t.offsetHeight) / 2; } // sin planes: empieza en la 2.ª para que se vea la rueda por los dos lados
+      else if (r.children.length > 2) { // empieza en la 2.ª: la 1.ª asoma arriba, sin hueco (cuando ya está maquetada)
+        const ir2 = () => { if (!r.isConnected || !r.clientHeight) return; const t = r.children[1]; r.scrollTop = t.offsetTop - (r.clientHeight - t.offsetHeight) / 2; pintarRueda(r); }; ir2();
+        requestAnimationFrame(() => requestAnimationFrame(ir2));
+      }
+      // Solo se recuerda la posición que pone la persona, no el ajuste automático del navegador al maquetar.
+      ['pointerdown', 'touchstart', 'wheel'].forEach(ev => r.addEventListener(ev, () => { r._listo = 1; }, { passive: true }));
     }
     pintarRueda(r);
   });
@@ -443,8 +440,8 @@ function pintarRueda(r) {
   const centro = r.scrollTop + r.clientHeight / 2;
   [...r.children].forEach(t => {
     const d = (t.offsetTop + t.offsetHeight / 2 - centro) / t.offsetHeight, a = Math.min(Math.abs(d), 3);
-    t.style.transform = `perspective(900px) rotateX(${(-d * 32).toFixed(1)}deg) scale(${(1 - a * 0.14).toFixed(3)})`;
-    t.style.opacity = Math.max(0, 1 - a * 0.42).toFixed(2);
+    t.style.transform = `perspective(1400px) rotateX(${(-d * 16).toFixed(2)}deg) scale(${(1 - a * 0.07).toFixed(4)})`; // (v48) más sutil
+    t.style.opacity = Math.max(0, 1 - a * 0.32).toFixed(3);
     t.classList.toggle('en-centro', a < 0.5);
   });
 }

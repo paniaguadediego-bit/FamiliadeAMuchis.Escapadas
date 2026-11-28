@@ -460,3 +460,5 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   horizontal y puntitos `data-pagina`; `paginaFinde` recuerda la página. La rueda no lleva botones de Proponer.
 - Eventos que no salen en las agendas automáticas (p. ej. La Noche en Blanco de La Laguna): a mano en sitios.json, con la
   noticia oficial como fuente y `verificar`.
+- (v48) Rueda sin ideas, en orden cronológico; giro 16°, escala −7 %, sin transición; solo recuerda la posición tras
+  tocarla (`r._listo`); al pintar, empieza en la 2.ª tarjeta.

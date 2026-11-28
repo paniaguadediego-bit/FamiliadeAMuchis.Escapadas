@@ -816,4 +816,8 @@ header { margin-bottom: 18px; }
 button.punto { width: 9px; height: 9px; min-height: 0; padding: 0; margin: 0; border-radius: 50%; border: 0; background: var(--line); }
 button.punto.on { background: var(--pri); width: 22px; border-radius: 999px; }
 .rueda { height: 18rem; padding: 5.4rem 0; }
-:root { --css-ver: "v47"; }
+/* v48: rueda más chata y fluida (sin transición: la mueve el propio desplazamiento) */
+.rueda { height: 14rem; padding: 4.6rem 0; gap: 5px; }
+.rueda .ev-tarjeta { transition: none; }
+.rueda button.ev-ban, .rueda button.ev-ban:first-child { min-height: 4.6rem; }
+:root { --css-ver: "v48"; }

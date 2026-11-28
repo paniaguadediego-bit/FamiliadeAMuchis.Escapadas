@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v48 · Rueda cronológica y más sutil (2026-11-28)
+- La rueda ya no lleva 💡 ideas: solo planes del grupo y eventos, por orden cronológico (por el día en que empiezan; a
+  igual día, primero los planes y luego lo que acaba antes).
+- Más chata (tarjetas de 4,6 rem, rueda de 14 rem) y más fluida: giro de 16° en vez de 32°, menos encogido y sin
+  transición (la mueve el propio dedo). Arranca siempre en la 2.ª tarjeta (la 1.ª asoma arriba, sin hueco).
+
 ## v47 · Findes deslizables y La Noche en Blanco (2026-11-28)
 - Rueda sin «📅 Proponer» (ocupaba sitio; se propone desde ➕ Plan o desde la ficha).
 - Los findes van en páginas: deslizar a la izquierda pasa de «Este finde» a «El que viene» y «En 2 semanas»; puntitos
