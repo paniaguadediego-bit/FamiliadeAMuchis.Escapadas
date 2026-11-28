@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v60 · Fotos de la isla en la portada de Planes (2026-11-28)
+- La tarjeta «Buenos días/tardes…» ya no lleva siempre el Teide: pase de 10 vistas de la isla (Roques de García, Los Gigantes,
+  Masca, Benijo, El Caletón, Las Teresitas, Taganana, Punta de Teno, El Médano, Teide) en fundido lento cada 7 s, algo
+  transparentes y con un leve zoom; orden al azar en cada visita y nombre del sitio con «Wikimedia Commons» en la esquina.
+  Quieto si el móvil pide «reducir movimiento».
+
 ## v59 · Filtros centrados y categorías de Eventos como Cultura (2026-11-28)
 - Explorar: filtros y títulos centrados.
 - Eventos: las categorías, en un recuadro con borde como el selector de Cultura (algo más pequeño): rejilla 3×2 con icono

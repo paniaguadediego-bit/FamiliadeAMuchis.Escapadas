@@ -509,3 +509,5 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   (app.js) y `POS_MAPA_T` (La Laguna y Santa Cruz separadas), `mapaTDia` (chips `data-mtdia`).
 - (v58) Filtros de Explorar: `pills(clave, actual, ops, titulo)` con `.fm-tit`; sin fila de zonas (`fZona` queda solo para enlaces internos).
 - (v59) Filtros de Explorar centrados. Categorías de Eventos: `.ev-cats.ev-cats-g` (rejilla 3 columnas, icono en <span> arriba), estilo del selector de Cultura.
+- (v60) Portada de Planes: `PORTADA_FOTOS` (10 sitios con foto, barajados), `portadaI`, `moverPase()` (cada 7 s cambia `.pf.on`, fundido 2,4 s,
+  opacidad 0,78, zoom suave), pie `.pf-pie` con el nombre. Se llama al pintar Planes.

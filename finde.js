@@ -318,9 +318,28 @@ function portadaHTML() {
     evs ? `🎟️ ${evs} evento${evs > 1 ? 's' : ''} en la isla` : '',
     mej ? `<button class="enlace claro" data-cal="${mej.f}" data-calmesir="${mej.f.slice(0, 7)}" data-irCal="1">💫 Mejor día: ${esc(nomDia(mej.k))}${mej.k.endsWith('T') ? ' ' + +mej.f.slice(8) : ''} (${mej.si}/${(NUBE.grupo.miembros || []).length}) ›</button>` : ''
   ].filter(Boolean);
-  const foto = fotoSrc('teide') ? `<img class="portada-foto" src="${esc(fotoSrc('teide'))}" alt="" loading="lazy" onerror="this.remove()">` : '';
-  return `<div class="portada-h">${foto}<div class="portada-tx"><div class="portada-hola">${esc(saludo + nombre)} 👋</div>
+  // (v60) Pase de fotos de la isla en fundido (Wikimedia Commons, las de sus fichas), suaves y con un leve zoom.
+  const pfs = PORTADA_FOTOS.filter(id => fotoSrc(id)), i0 = portadaI % Math.max(1, pfs.length);
+  const fotos = pfs.map((id, i) => `<img class="portada-foto pf ${i === i0 ? 'on' : ''}" data-pf="${i}" data-nom="${esc((sitio(id) || {}).nombre || '')}" src="${esc(fotoSrc(id))}" alt="" ${Math.abs(i - i0) <= 1 ? '' : 'loading="lazy"'} onerror="this.remove()">`).join('');
+  const pie = pfs.length ? `<span class="pf-pie">📷 <span data-pfnom>${esc((sitio(pfs[i0]) || {}).nombre || '')}</span> · Wikimedia Commons</span>` : '';
+  return `<div class="portada-h" data-pase>${fotos}${pie}<div class="portada-tx"><div class="portada-hola">${esc(saludo + nombre)} 👋</div>
       <div class="portada-f">Este finde · ${esc(rango)}</div>${lineas.map(l => `<div class="portada-l">${l}</div>`).join('')}</div></div>`;
+}
+// Vistas de la isla para el pase de la portada (todas con foto en data/fotos.json); el orden se baraja en cada visita.
+const PORTADA_FOTOS = ['roques-garcia', 'los-gigantes', 'masca', 'benijo', 'garachico-caleton', 'teresitas', 'taganana', 'punta-teno', 'el-medano', 'teide']
+  .map(id => [id, Math.random()]).sort((a, b) => a[1] - b[1]).map(([id]) => id);
+let portadaI = 0, portadaT = 0;
+function moverPase() {
+  clearInterval(portadaT);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  portadaT = setInterval(() => {
+    const c = document.querySelector('[data-pase]'); if (!c) return clearInterval(portadaT);
+    const fs = [...c.querySelectorAll('.pf')]; if (fs.length < 2) return;
+    portadaI = (portadaI + 1) % fs.length;
+    fs.forEach((x, i) => x.classList.toggle('on', i === portadaI));
+    const sig = fs[(portadaI + 1) % fs.length]; if (sig) sig.loading = 'eager'; // que la siguiente ya esté cargada
+    const n = c.querySelector('[data-pfnom]'); if (n) n.textContent = fs[portadaI].dataset.nom;
+  }, 7000);
 }
 // (v50) Los 3 botones van abajo del todo: primero se ve qué hay (rueda, calendario, ganas); las acciones, al final.
 function rapidosHTML() {

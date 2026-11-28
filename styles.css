@@ -914,4 +914,10 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .ev-cats-g button.fm span { font-size: 1.2rem; line-height: 1; }
 .ev-cats-g button.fm.on { background: var(--pri); color: var(--pri-fg); }
 .ev-cats-g .ev-cats-pie { grid-column: 1 / -1; }
-:root { --css-ver: "v59"; }
+/* v60: pase de fotos de la isla en la portada (fundido lento, algo transparentes, leve zoom) */
+.portada-foto.pf { opacity: 0; transition: opacity 2.4s ease; transform: scale(1.02); }
+.portada-foto.pf.on { opacity: .78; animation: pf-zoom 9s ease-out forwards; }
+@keyframes pf-zoom { from { transform: scale(1.02); } to { transform: scale(1.1); } }
+.pf-pie { position: absolute; top: 8px; right: 10px; z-index: 1; font-size: .62rem; color: rgba(255,255,255,.85); text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+@media (prefers-reduced-motion: reduce) { .portada-foto.pf { transition: none; } .portada-foto.pf.on { animation: none; } }
+:root { --css-ver: "v60"; }
