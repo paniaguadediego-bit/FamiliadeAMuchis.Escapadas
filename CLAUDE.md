@@ -508,3 +508,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - `tiempoPlegadoHTML()` (finde.js, al final de Planes): solo pinta el contenido si está abierto. `mapaTiempoHTML()`: SVG con `ISLA`
   (app.js) y `POS_MAPA_T` (La Laguna y Santa Cruz separadas), `mapaTDia` (chips `data-mtdia`).
 - (v58) Filtros de Explorar: `pills(clave, actual, ops, titulo)` con `.fm-tit`; sin fila de zonas (`fZona` queda solo para enlaces internos).
+- (v59) Filtros de Explorar centrados. Categorías de Eventos: `.ev-cats.ev-cats-g` (rejilla 3 columnas, icono en <span> arriba), estilo del selector de Cultura.

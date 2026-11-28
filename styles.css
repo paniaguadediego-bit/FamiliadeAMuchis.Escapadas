@@ -906,4 +906,12 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .fm-tit { flex: 0 0 100%; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted, #777); margin: 0 2px; }
 .filtros-mini button.fm { font-size: .84rem; padding: 6px 11px; border-width: 1.5px; }
 .filtros-mini button.fm.on { box-shadow: 0 1px 4px color-mix(in srgb, var(--pri) 45%, transparent); }
-:root { --css-ver: "v58"; }
+/* v59: filtros de Explorar centrados; categorías de Eventos como el selector de Cultura, algo más pequeñas */
+.filtros-mini .fm-ops { justify-content: center; } .fm-tit { text-align: center; }
+.ev-cats.ev-cats-g { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border: 2px solid var(--pri); border-radius: 16px; }
+.ev-cats-g button.fm { width: 100%; min-height: 3.1rem; margin: 0; border: 0; border-radius: 12px; background: none; color: var(--muted, #777);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: .78rem; font-weight: 700; padding: 4px 2px; }
+.ev-cats-g button.fm span { font-size: 1.2rem; line-height: 1; }
+.ev-cats-g button.fm.on { background: var(--pri); color: var(--pri-fg); }
+.ev-cats-g .ev-cats-pie { grid-column: 1 / -1; }
+:root { --css-ver: "v59"; }

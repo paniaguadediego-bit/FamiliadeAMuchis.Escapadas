@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v59 · Filtros centrados y categorías de Eventos como Cultura (2026-11-28)
+- Explorar: filtros y títulos centrados.
+- Eventos: las categorías, en un recuadro con borde como el selector de Cultura (algo más pequeño): rejilla 3×2 con icono
+  arriba y nombre debajo; se siguen marcando varias, con «✓ Todas / ✕ Ninguna» debajo.
+
 ## v58 · Filtros de Explorar más claros (2026-11-28)
 - Cada fila de filtros con su título («Qué es», «Especial», «Tus marcas», «El grupo») y botones más grandes y marcados.
 - Fuera la fila de zonas (Oeste, Sur…): ya se filtra por municipios (y el orden «por zona» sigue en ↕️).

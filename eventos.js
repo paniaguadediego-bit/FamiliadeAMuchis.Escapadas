@@ -177,7 +177,7 @@ function viewEventos() {
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
   return novedadesHTML('eventos') + `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
-    <div class="ev-cats">${Object.entries(CAT_EV).filter(([k]) => !CULTURA.includes(k)).map(([k, [ic, n]]) => `<button class="fm ${evCats.has(k) ? 'on' : ''}" data-evcat="${k}" aria-pressed="${evCats.has(k)}">${ic} ${esc(n.replace(' y espectáculos', '').replace(' y mercados', ''))}</button>`).join('')}
+    <div class="ev-cats ev-cats-g">${Object.entries(CAT_EV).filter(([k]) => !CULTURA.includes(k)).map(([k, [ic, n]]) => `<button class="fm ${evCats.has(k) ? 'on' : ''}" data-evcat="${k}" aria-pressed="${evCats.has(k)}"><span>${ic}</span>${esc(n.replace(' y espectáculos', '').replace(' y mercados', ''))}</button>`).join('')}
       <div class="ev-cats-pie"><button class="enlace" data-evcats="todas">✓ Todas</button><button class="enlace" data-evcats="ninguna">✕ Ninguna</button></div></div>
     <div class="filtros-barra">
       <label class="orden-sel"><span class="vh">Cuándo</span><select id="ev-rango">${Object.entries(RANGOS).map(([k, n]) => `<option value="${k}" ${evRango === k ? 'selected' : ''}>📅 ${n}</option>`).join('')}</select></label>
