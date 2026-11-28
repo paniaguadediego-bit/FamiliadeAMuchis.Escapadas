@@ -99,7 +99,7 @@ function apuntarse(id, si) {
   const F = firebase.firestore.FieldValue;
   colPlanes().doc(id).update({ apuntados: si ? F.arrayUnion(NUBE.user.uid) : F.arrayRemove(NUBE.user.uid) }).catch(e => alert('No se pudo (' + (e.code || e.message) + ').'));
 }
-function cancelarPlan(id) { if (confirm('¿Cancelar este plan para todo el grupo?')) colPlanes().doc(id).delete().catch(() => {}); }
+async function cancelarPlan(id) { if (await confirmar({ ic: '🗑️', titulo: '¿Seguro que quieres cancelar este plan?', texto: 'Se cancela para todo el grupo.', si: 'Sí, cancelar', no: 'No', peligro: true })) colPlanes().doc(id).delete().catch(() => {}); }
 
 // ---------- cómo se ve un plan ----------
 // 🗳️ Votación de fechas: cada uno marca las que le valen; quien propone fija la elegida.
@@ -406,7 +406,7 @@ document.addEventListener('click', e => {
   else if (a === 'votar') votar(id, b.dataset.f);
   else if (a === 'coment-ver') { if (comentAbiertos.has(id)) comentAbiertos.delete(id); else comentAbiertos.add(id); render(); const x = document.getElementById('cm-' + id); if (x) x.focus(); }
   else if (a === 'comentar') comentar(id);
-  else if (a === 'coment-borrar') { if (confirm('¿Borrar tu comentario?')) NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('comentarios').doc(id).delete().catch(() => {}); }
+  else if (a === 'coment-borrar') { confirmar({ ic: '💬', titulo: '¿Borrar tu comentario?', si: 'Sí, borrar', peligro: true }).then(ok => { if (ok) NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('comentarios').doc(id).delete().catch(() => {}); }); }
   else if (a === 'fijar') fijar(id, b.dataset.f);
   else if (a === 'cancelar') cancelarPlan(id);
   else if (a === 'b-abrir') { planBForm = id; render(); const f = document.getElementById('pb-' + id); if (f) f.focus(); }

@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v55';
+const VERSION = 'v56';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -591,6 +591,18 @@ addEventListener('resize', () => { if (tab === 'mapa') pintarMapa(); });
 function viewGrupo() { return viewNube(); }
 
 // ---------- ☰ Más ----------
+// (v56) Aviso propio «¿Seguro?»: confirmar({ ic, titulo, texto, si, peligro }) → Promise<true|false>.
+function confirmar({ ic = '❓', titulo = '¿Seguro?', texto = '', si = 'Sí', no = 'Cancelar', peligro = false } = {}) {
+  return new Promise(ok => {
+    const f = document.createElement('div'); f.className = 'confirma-fondo';
+    f.innerHTML = `<div class="confirma" role="alertdialog" aria-modal="true" aria-labelledby="cf-t"><div class="cf-ic">${ic}</div><h3 id="cf-t">${esc(titulo)}</h3>${texto ? `<p>${esc(texto)}</p>` : ''}
+      <div class="cf-bot"><button class="sec" data-cf="no">${esc(no)}</button><button class="${peligro ? 'danger' : ''}" data-cf="si">${esc(si)}</button></div></div>`;
+    const fin = v => { f.remove(); document.removeEventListener('keydown', tecla); ok(v); };
+    const tecla = e => { if (e.key === 'Escape') fin(false); };
+    f.addEventListener('click', e => { const b = e.target.closest('[data-cf]'); if (b) fin(b.dataset.cf === 'si'); else if (e.target === f) fin(false); });
+    document.addEventListener('keydown', tecla); document.body.appendChild(f); f.querySelector('[data-cf="no"]').focus();
+  });
+}
 // (v53) Cada utilidad en su botón (se abre debajo; una a la vez). La letra, siempre a la vista. El tema se cambia arriba (🌓).
 let masSec = '';
 function viewMas() {
@@ -630,7 +642,7 @@ document.addEventListener('click', async e => {
     return;
   }
   if (e.target.closest('[data-importar]')) { $('#file').click(); return; }
-  if (e.target.closest('[data-borrar]') && confirm('¿Borrar todas tus marcas de este móvil? No se puede deshacer (salvo con una copia).')) { marcas = {}; save(K_MARCAS, marcas); render(); }
+  if (e.target.closest('[data-borrar]') && await confirmar({ ic: '🧹', titulo: '¿Seguro que quieres borrar tus marcas?', texto: 'Se borran todas las de este móvil. No se puede deshacer (salvo con una copia).', si: 'Sí, borrar', peligro: true })) { marcas = {}; save(K_MARCAS, marcas); render(); }
 });
 // Descarga todas las fotos (grande y miniatura) para que el service worker las guarde.
 let fotosBajando = false;

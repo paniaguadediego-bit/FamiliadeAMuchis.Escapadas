@@ -92,8 +92,8 @@ async function guardarPropio() {
   } catch (e) { alert('No se pudo guardar (' + (e.code || e.message) + ').'); }
   render();
 }
-function borrarPropio(s) {
-  if (!confirm(`¿Borrar «${s.nombre}» para todo el grupo?`)) return;
+async function borrarPropio(s) {
+  if (!await confirmar({ ic: '🗑️', titulo: `¿Seguro que quieres borrar «${s.nombre}»?`, texto: 'Se borra para todo el grupo.', si: 'Sí, borrar', peligro: true })) return;
   colPropios().doc(s._id).delete().catch(e => alert('No se pudo borrar (' + (e.code || e.message) + ').'));
 }
 // En la ficha de un sitio propio: editar y borrar (solo quien lo añadió).

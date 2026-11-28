@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v56 · «¿Seguro?» y pasaporte de verdad (2026-11-28)
+- Aviso propio de la app (no el del navegador, que en la app instalada a veces ni se ve) al salir de un grupo y al cerrar
+  sesión: «¿Seguro que quieres…?» con Cancelar / Sí. También al borrar marcas, cancelar un plan, borrar un comentario o un sitio.
+- Pasaporte: tapa granate con letras doradas (PASAPORTE · TENERIFE · ISLAS CANARIAS, «N de 31 sellos»), páginas con un fondo
+  de seguridad muy suave (ondas y círculos), municipios visitados como sellos (girados, con aro de tinta) y una línea de
+  lectura mecánica tenue al pie. Prueba: `node pruebas/avisos.js`.
+
 ## v55 · Por revisar, abajo (2026-11-28)
 - En Eventos, «📰 Por revisar» pasa al final de la página, justo encima de «📰 Sin fecha» (antes iba arriba del todo).
 

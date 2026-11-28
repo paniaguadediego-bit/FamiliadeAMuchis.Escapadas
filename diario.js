@@ -13,11 +13,15 @@ function pasaporteHTML() {
   const zonas = Object.entries(ZONAS).map(([z, Z]) => { const ms = MUNICIPIOS.filter(m => zonaM(m) === z); return [Z, ms, ms.filter(m => porMuni[m].vistos)]; }).filter(([, ms]) => ms.length);
   const reto = zonas.filter(([, ms, h]) => h.length && h.length < ms.length).sort((a, b) => (a[1].length - a[2].length) - (b[1].length - b[2].length))[0];
   const caras = P => [...P.gente].slice(0, 3).map(u => u === 'yo' ? '🙂' : esc(perfilDe(u).emoji)).join('');
-  return `<div class="card pasaporte"><div class="pas-cab"><b>🛂 Pasaporte de Tenerife</b><span><b>${hechos.length}</b> de 31 municipios</span></div>
+  // (v56) Aspecto de pasaporte: tapa granate con letras doradas, páginas con fondo de seguridad muy suave, municipios como sellos.
+  return `<div class="card pasaporte"><div class="pas-tapa"><div><small>PASAPORTE · PASSPORT</small><b>Tenerife</b><span>Islas Canarias</span></div>
+      <div class="pas-cuenta"><b>${hechos.length}</b><small>de 31<br>sellos</small></div></div>
+    <div class="pas-hoja">
     <div class="pas-g">${zonas.flatMap(([, ms]) => ms).map(m => { const P = porMuni[m];
       return `<div class="pas-m ${P.vistos ? 'si' : ''}" style="${varsMuni(m)}" title="${esc(m)}"><span class="pas-ic">${muniTema(m).ic}</span><span class="pas-n">${esc(m.replace(/ de (Abona|Acentejo|Chasna|Tenerife|los Vinos|Isora|la Rambla)$/, '').replace('San Cristóbal de ', '').replace('Buenavista del Norte', 'Buenavista'))}</span><small>${P.vistos ? caras(P) + ' ' : ''}${P.vistos}/${P.total}</small></div>`; }).join('')}</div>
     <div class="pas-z">${zonas.map(([Z, ms, h]) => `<div class="pas-zona"><span>${Z.ic} ${esc(Z.nom)}</span><span class="pas-barra"><i style="width:${Math.round(100 * h.length / ms.length)}%"></i></span><small>${h.length}/${ms.length}</small></div>`).join('')}</div>
-    ${reto ? `<p class="pas-reto">🏁 Reto: completad ${reto[0].ic} ${esc(reto[0].nom)}; os falta${reto[1].length - reto[2].length > 1 ? 'n' : ''} ${esc(reto[1].filter(m => !porMuni[m].vistos).join(', '))}.</p>` : ''}</div>`;
+    ${reto ? `<p class="pas-reto">🏁 Reto: completad ${reto[0].ic} ${esc(reto[0].nom)}; os falta${reto[1].length - reto[2].length > 1 ? 'n' : ''} ${esc(reto[1].filter(m => !porMuni[m].vistos).join(', '))}.</p>` : ''}
+    <div class="pas-mrz" aria-hidden="true">P&lt;ESPTENERIFE&lt;&lt;ESCAPADAS&lt;&lt;${String(hechos.length).padStart(2, '0')}&lt;31&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div></div></div>`;
 }
 // 📔 Diario (lo que has ido marcando con ✅, por fecha) y 🖨️ Resumen del año para guardar en PDF.
 // El PDF lo hace el propio móvil: se pinta una hoja y se abre «Imprimir → Guardar como PDF» (sin librerías).

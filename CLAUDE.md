@@ -495,3 +495,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   Los datos ya iban por grupo (`grupos/{gid}/…`): no hubo que tocar reglas.
 - Más: `masSec` (un panel abierto a la vez), botones `data-massec`; la letra fuera de los botones; sin tema (🌓 arriba).
 - (v55) En Eventos, `revisionHTML()` va al final, justo encima de `sinFechaHTML()` (pedido del usuario).
+
+## Avisos y pasaporte (v56, pedido del usuario)
+- `confirmar({ ic, titulo, texto, si, no, peligro })` (app.js) → Promise<bool>: aviso propio (`.confirma-fondo`). Usarlo en vez de
+  `confirm()` (salir del grupo, cerrar sesión, borrar marcas, cancelar plan, borrar comentario o sitio).
+- Pasaporte: `.pas-tapa` (granate #6d1a26–#8e2a37, dorado #e8c873), `.pas-hoja` con SVG de ondas a opacidad 0,16, sellos
+  `.pas-m.si` girados, `.pas-mrz` al pie. Tema oscuro en sus dos selectores.

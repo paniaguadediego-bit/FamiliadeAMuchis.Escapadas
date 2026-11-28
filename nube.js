@@ -59,7 +59,7 @@ async function entrarGoogle() {
   }
 }
 async function salirCuenta() {
-  if (!confirm('¿Cerrar sesión en este móvil? Tus marcas del móvil se quedan.')) return;
+  if (!await confirmar({ ic: '🚪', titulo: '¿Seguro que quieres cerrar sesión?', texto: 'Tus marcas se quedan en este móvil. Para volver a ver al grupo tendrás que entrar otra vez con Google.', si: 'Sí, cerrar sesión', peligro: true })) return;
   try { localStorage.removeItem(K_GRUPO); } catch {}
   if (NUBE.offMisGrupos) { NUBE.offMisGrupos(); NUBE.offMisGrupos = null; } NUBE.misGrupos = [];
   await NUBE.auth.signOut();
@@ -176,7 +176,7 @@ async function unirseGrupo(texto) {
   NUBE.ocupado = false; repintarNube();
 }
 async function salirGrupo() {
-  if (!NUBE.grupo || !confirm(`¿Salir del grupo «${NUBE.grupo.nombre}»? Podrás volver con el código.`)) return;
+  if (!NUBE.grupo || !await confirmar({ ic: '👋', titulo: `¿Seguro que quieres salir de «${NUBE.grupo.nombre}»?`, texto: 'Dejarás de ver sus planes y marcas. Podrás volver con el código del grupo.', si: 'Sí, salir', peligro: true })) return;
   const gid = NUBE.grupo.id;
   try { await NUBE.db.collection('grupos').doc(gid).update({ miembros: firebase.firestore.FieldValue.arrayRemove(NUBE.user.uid) }); } catch {}
   if (NUBE.offGrupo) { NUBE.offGrupo(); NUBE.offGrupo = null; }
