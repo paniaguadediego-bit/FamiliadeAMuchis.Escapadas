@@ -6,3 +6,4 @@ tareas/
 logs/
 ESTADO_AGENTES.md
 pruebas/capturas/
+__pycache__/
