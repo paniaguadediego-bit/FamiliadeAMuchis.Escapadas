@@ -4,7 +4,13 @@
 - Faltaban 70 de 75 carteles: SensaCine añadió otra clase a la imagen y el lector no la reconocía. Arreglado: 74 de 74.
 - Cada película es un botón: al tocarla se despliega la sinopsis (pista «Sinopsis ▾»). Debajo, siempre a la vista,
   «Ver en FilmAffinity ›» y «Ver en IMDb ›» (búsqueda por título original).
-- Lector de ayuntamientos: Adeje redirige a http://; ahora se sigue en https:// (antes se quedaba colgado).
+- Lector de ayuntamientos: Adeje redirige a http://; ahora se sigue en https:// (antes se quedaba colgado). En las noticias,
+  la fecha es la primera que no ha pasado (no la de publicación); si todas son pasadas, se descarta. Un mismo evento en varias
+  fechas (ciclos semanales) = un aviso «y N fechas más»; fuera programas de más de 45 días y partidos de liga.
+- 💛 Favoritos (de cada persona, en este móvil): municipios y cines. En ☰ Más («💛 Mis lugares y cines»), en el banner de cada
+  municipio de Explorar y en la cartelera. Lo favorito sale primero: municipios en Explorar, eventos (Eventos, Cultura y a igual
+  día en la rueda), zonas en el Tiempo, más papeletas en Sorpréndeme y tu cine en la cartelera.
+- Planes: los botones ➕ Plan, 🎲 Sorpréndeme y 🎭 ¿Qué hay? bajan al final («¿Algo más?»); al tocar uno, la página baja a su panel.
 
 ## v49 · 📰 Por revisar: lo que anuncian los ayuntamientos (2026-11-28)
 - Nuevo lector `herramientas/noticias_aytos.py` (GitHub Actions cada mañana, `noticias.yml`) → `data/revision.json`: agendas de

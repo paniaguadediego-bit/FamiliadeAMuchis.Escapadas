@@ -331,8 +331,9 @@ function carruselFindeHTML(i) {
       ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
   };
   // (v48) Sin ideas; planes y eventos juntos por orden cronológico (a igual día, los planes primero).
-  const tarjetas = [...ps.map(p => [p.fecha, '', tPlan(p)]), ...evs.map(e => [e[1][0], e[1][1], tEv(e)])]
-    .sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1])).map(x => x[2]);
+  const fv = s => typeof favSitio === 'function' ? favSitio(s) : 0; // a igual día, lo de tus 💛 antes
+  const tarjetas = [...ps.map(p => [p.fecha, '', tPlan(p), 9]), ...evs.map(e => [e[1][0], e[1][1], tEv(e), fv(e[0])])]
+    .sort((a, b) => a[0].localeCompare(b[0]) || b[3] - a[3] || a[1].localeCompare(b[1])).map(x => x[2]);
   const abierto = verMasFinde.has(i), MAX = 4;
   const fests = b.dias.map(k => festivo(k)).filter(Boolean);
   const rango = `${nomDia(d0)} – ${nomDia(dN)} ${new Date(dN + 'T12:00').toLocaleDateString('es-ES', { month: 'short' })}`;

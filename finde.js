@@ -140,7 +140,7 @@ function tiempoHTML() {
   const fs = findesConTiempo(); if (!fs.length) return '<div class="card muted">Sin previsión para el finde todavía.</div>';
   if (findeTiempo >= fs.length) findeTiempo = 0;
   const F = fs[findeTiempo], dias = F.dias;
-  const filas = Object.entries(ZONAS).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.lugar}</th>${dias.map(([f]) => {
+  const filas = (typeof zonasOrden === 'function' ? zonasOrden() : Object.entries(ZONAS)).map(([z, Z]) => `<tr><th>${Z.ic} ${Z.lugar}</th>${dias.map(([f]) => {
     const t = tiempoDe(z, f); if (!t) return '<td class="muted">—</td>';
     const [ic, txt] = cielo(t.c);
     return `<td title="${esc(txt)}"><span class="t-ic">${ic}</span> <b>${Math.round(t.max)}°</b><span class="muted">/${Math.round(t.min)}°</span>${t.p >= 20 ? `<div class="t-p">💧 ${t.p}%</div>` : ''}${t.v >= 40 ? `<div class="t-p">💨 ${Math.round(t.v)} km/h</div>` : ''}</td>`; }).join('')}</tr>`).join('');
@@ -168,7 +168,7 @@ function proximosDiasHTML() {
   const dias = []; for (let i = 0; i < 7; i++) { const d = new Date(); d.setDate(d.getDate() + i); dias.push(new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10)); }
   const ds = dias.filter(f => tiempoDe('norte', f)); if (!ds.length) return '';
   const cab = ds.map(f => { const d = new Date(f + 'T12:00'); return `<th class="${[0, 6].includes(d.getDay()) ? 'finde-dia' : ''}">${d.toLocaleDateString('es-ES', { weekday: 'narrow' }).toUpperCase()}<br><small>${d.getDate()}</small></th>`; }).join('');
-  return `<div class="card tiempo semana"><table><thead><tr><th></th>${cab}</tr></thead><tbody>${Object.entries(ZONAS).map(([z, Z]) => `<tr><th title="${esc(Z.lugar)}">${Z.ic}</th>${ds.map(f => { const x = tiempoDe(z, f); if (!x) return '<td>—</td>'; const [ic, txt] = cielo(x.c);
+  return `<div class="card tiempo semana"><table><thead><tr><th></th>${cab}</tr></thead><tbody>${(typeof zonasOrden === 'function' ? zonasOrden() : Object.entries(ZONAS)).map(([z, Z]) => `<tr><th title="${esc(Z.lugar)}">${Z.ic}</th>${ds.map(f => { const x = tiempoDe(z, f); if (!x) return '<td>—</td>'; const [ic, txt] = cielo(x.c);
     return `<td title="${esc(txt)} · ${x.p}% lluvia"><span class="t-ic">${ic}</span><br><b>${Math.round(x.max)}°</b>${x.p >= 40 ? `<div class="t-p">💧${x.p}</div>` : ''}</td>`; }).join('')}</tr>`).join('')}</tbody></table>
     <div class="leyenda">${Object.values(ZONAS).map(Z => `${Z.ic} ${Z.lugar}`).join(' · ')}</div></div>`;
 }
@@ -214,6 +214,7 @@ function candidatos() {
   }).map(s => {
     // Más papeletas si alguien quiere ir y si el tiempo acompaña.
     let w = 1; if (marca(s.id).estado === 'quiero') w += 3;
+    if (typeof favSitio === 'function') w += favSitio(s); // 💛 tu municipio (+2) o tu zona (+1)
     if (typeof enGrupo === 'function' && enGrupo()) w += 2 * otrosEn(s.id).quiero.length;
     return [s, w, f];
   });
@@ -284,18 +285,23 @@ function portadaHTML() {
     mej ? `<button class="enlace claro" data-cal="${mej.f}" data-calmesir="${mej.f.slice(0, 7)}" data-irCal="1">💫 Mejor día: ${esc(nomDia(mej.k))}${mej.k.endsWith('T') ? ' ' + +mej.f.slice(8) : ''} (${mej.si}/${(NUBE.grupo.miembros || []).length}) ›</button>` : ''
   ].filter(Boolean);
   const foto = fotoSrc('teide') ? `<img class="portada-foto" src="${esc(fotoSrc('teide'))}" alt="" loading="lazy" onerror="this.remove()">` : '';
-  const boton = (k, ic, n) => `<button class="rapido ${panelPlanes === k ? 'on' : ''}" ${k === 'tiempo' ? 'data-tab="tiempo"' : `data-panel="${k}"`}><span>${ic}</span>${n}</button>`;
+  return `<div class="portada-h">${foto}<div class="portada-tx"><div class="portada-hola">${esc(saludo + nombre)} 👋</div>
+      <div class="portada-f">Este finde · ${esc(rango)}</div>${lineas.map(l => `<div class="portada-l">${l}</div>`).join('')}</div></div>`;
+}
+// (v50) Los 3 botones van abajo del todo: primero se ve qué hay (rueda, calendario, ganas); las acciones, al final.
+function rapidosHTML() {
+  const g = typeof enGrupo === 'function' && enGrupo(), sab = proximoSabado();
+  const boton = (k, ic, n) => `<button class="rapido ${panelPlanes === k ? 'on' : ''}" data-panel="${k}"><span>${ic}</span>${n}</button>`;
   let panel = '';
   if (panelPlanes === 'plan') panel = g ? formPlanHTML(planForm && planForm.rapido ? planForm : (planForm = { sabado: sab, rapido: true })) : '<div class="card muted centro">👥 Para proponer planes, entra en el grupo (pestaña Grupo).</div>';
   else if (panelPlanes === 'sorp') panel = sorpresaHTML();
   else if (panelPlanes === 'agenda' && typeof agendaHTML === 'function') panel = agendaHTML();
-  return `<div class="portada-h">${foto}<div class="portada-tx"><div class="portada-hola">${esc(saludo + nombre)} 👋</div>
-      <div class="portada-f">Este finde · ${esc(rango)}</div>${lineas.map(l => `<div class="portada-l">${l}</div>`).join('')}</div></div>
-    <div class="rapidos">${boton('plan', '➕', 'Plan')}${boton('sorp', '🎲', 'Sorpréndeme')}${boton('agenda', '🎭', '¿Qué hay?')}</div>
+  return `<h2>¿Algo más?</h2><div class="rapidos">${boton('plan', '➕', 'Plan')}${boton('sorp', '🎲', 'Sorpréndeme')}${boton('agenda', '🎭', '¿Qué hay?')}</div>
     ${panel ? `<div class="panel-rapido">${panel}</div>` : ''}`;
 }
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-panel]'); if (b) { panelPlanes = panelPlanes === b.dataset.panel ? '' : b.dataset.panel; if (panelPlanes === 'plan') planForm = { sabado: proximoSabado(), rapido: true }; else if (planForm && planForm.rapido) planForm = null; render(); return; }
+  const b = e.target.closest('[data-panel]'); if (b) { panelPlanes = panelPlanes === b.dataset.panel ? '' : b.dataset.panel; if (panelPlanes === 'plan') planForm = { sabado: proximoSabado(), rapido: true }; else if (planForm && planForm.rapido) planForm = null; render();
+    if (panelPlanes) setTimeout(() => { const x = document.querySelector('.panel-rapido'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60); return; }
   const c = e.target.closest('[data-ircal]'); if (c) setTimeout(() => { const x = document.querySelector('.dia-sel'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60);
 });
 function viewFindeS5() {
@@ -313,6 +319,7 @@ function viewFindeS5() {
     ${ganas.length ? `<div class="ev-carrusel ganas">${ganas.map(s => `<div class="ev-tarjeta"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">${marca(s.id).estado === 'quiero' ? '🔖 Tú' : `🔖 ${otrosEn(s.id).quiero.map(([u]) => esc(perfilDe(u).emoji)).join('')}`}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}</small></span></span></button></div>`).join('')}</div>`
       : '<div class="card muted centro">Todavía nada. En 🧭 Explorar, abre una ficha y toca «🔖 Quiero ir».</div>'}
-    ${cuentaHTML()}</div>`;
+    ${cuentaHTML()}
+    ${rapidosHTML()}</div>`;
 }
 addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde' || tab === 'tiempo')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });

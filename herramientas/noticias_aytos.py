@@ -80,27 +80,30 @@ def dia(d, mes, anio=None):
     return f
 
 
-def fechas(s):
-    """Primer día o rango claro del texto → (desde, hasta) ISO, o ('', '') si no hay."""
+def fechas(s, futuras=False):
+    """Día o rango claro del texto → (desde, hasta) ISO, o ('', '') si no hay. Con futuras=True, el primero que no ha
+    pasado (en las noticias, la primera fecha suele ser la de publicación)."""
     s = s.replace('|', ' ')
-    m = re.search(r'del? (\d{1,2})(?: de ' + M + r')?(?: de (\d{4}))? al? (\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I)
-    if m:
+    hallados = []
+    for m in re.finditer(r'del? (\d{1,2})(?: de ' + M + r')?(?: de (\d{4}))? al? (\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I):
         a2 = m.group(6); b = dia(m.group(4), m.group(5), a2)
         a = dia(m.group(1), m.group(2) or m.group(5), m.group(3) or a2)
         if a and b:
             if a > b:
                 a = a.replace(year=a.year - 1)
-            return a.isoformat(), b.isoformat()
-    m = re.search(r'(\d{1,2}) y (\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I)
-    if m:
+            hallados.append((m.start(), a, b))
+    for m in re.finditer(r'(\d{1,2}) y (\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I):
         a, b = dia(m.group(1), m.group(3), m.group(4)), dia(m.group(2), m.group(3), m.group(4))
         if a and b:
-            return a.isoformat(), b.isoformat()
-    m = re.search(r'(\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I)
-    if m:
+            hallados.append((m.start(), a, b))
+    rangos = list(hallados)  # un día suelto que forma parte de un rango ya visto no cuenta aparte
+    for m in re.finditer(r'(\d{1,2}) de ' + M + r'(?: de (\d{4}))?', s, re.I):
         a = dia(m.group(1), m.group(2), m.group(3))
-        if a:
-            return a.isoformat(), a.isoformat()
+        if a and not any(x <= m.start() <= x + 60 for x, _, _ in rangos):
+            hallados.append((m.start(), a, a))
+    for _, a, b in sorted(hallados, key=lambda h: h[0]):
+        if not futuras or b >= HOY:
+            return a.isoformat(), b.isoformat()
     return '', ''
 
 
@@ -120,9 +123,12 @@ def de_noticia(muni, pref, id_, titulo, url, cuerpo=''):
     """Noticia con pinta de evento: fecha del titular o, si no, del comienzo del texto."""
     if not es_evento(titulo):
         return None
-    d, h = fechas(titulo)
-    if not d and cuerpo:
-        d, h = fechas(texto(cuerpo)[:1500])
+    d, h = fechas(titulo, True)
+    tx = texto(cuerpo)[:2500] if cuerpo else ''
+    if not d and tx:
+        d, h = fechas(tx, True)
+    if not d and (fechas(titulo)[0] or fechas(tx)[0] or re.search(r'\b(hoy|ayer|este (viernes|s[aá]bado|domingo)|celebr[oó]|reuni[oó]|cerr[oó]|despide)\b', titulo + ' ' + tx[:300], re.I)):
+        return None  # solo trae fechas ya pasadas (o habla de algo que ya ocurre/ocurrió): no es un aviso útil
     return aviso(muni, 'noticia', f'rv-{pref}-{id_}', titulo, url, d, h, extracto=texto(cuerpo)[:600] if cuerpo else '')
 
 
@@ -171,8 +177,8 @@ def orotava():
         pag = get(base + u); time.sleep(1)
         og = lambda k: html.unescape((re.search(r'<meta property="og:%s" content="([^"]*)"' % k, pag) or [None, ''])[1])
         s = texto(pag); m = re.search(r'Fechas?: ([^|]{6,120})', s)
-        d, h = fechas(m.group(1)) if m else ('', '')
-        tit = og('title') or limpia((re.search(r'<h1[^>]*>(.*?)</h1>', pag, re.S) or [None, ''])[1])
+        d, h = fechas(m.group(1)) if m else fechas(texto((re.search(r'<article.*?</article>', pag, re.S) or [''])[0])[:3000], True)
+        tit = og('title') or limpia((re.search(r'<h1[^>]*>(.*?)</h1>', pag, re.S) or [None, ''])[1]) or limpia((re.search(r'<title>(.*?)</title>', pag, re.S) or [None, ''])[1])
         out.append(aviso('La Orotava', 'agenda', 'rv-oro-' + slug(u.split('/')[-1])[:50], re.sub(r'\s*\|.*$', '', tit), base + u, d, h,
                          extracto=og('description'), foto=og('image')))
     for u in dict.fromkeys(re.findall(r'href="(/es/noticias/[^"#?]+)"', get(base + '/es/noticias'))):
@@ -181,7 +187,8 @@ def orotava():
             continue
         pag = get(base + u); time.sleep(1)
         og = lambda k: html.unescape((re.search(r'<meta property="og:%s" content="([^"]*)"' % k, pag) or [None, ''])[1])
-        n = de_noticia('La Orotava', 'oron', slug(u.split('/')[-1])[:50], og('title') or tit, base + u,
+        t2 = og('title') or limpia((re.search(r'<title>(.*?)</title>', pag, re.S) or [None, ''])[1]).split(' | ')[0]
+        n = de_noticia('La Orotava', 'oron', slug(u.split('/')[-1])[:50], t2 or tit, base + u,
                        (re.search(r'<article.*?</article>', pag, re.S) or [''])[0])
         if n:
             n['foto'] = og('image'); out.append(n)
@@ -244,17 +251,27 @@ def main():
     _, nota = santacruz()
     if nota:
         notas.append(nota)
-    hoy, vistos, salida = HOY.isoformat(), set(), []
-    for a in avisos:
+    hoy, vistos, salida, por_titulo = HOY.isoformat(), set(), [], {}
+    for a in sorted(avisos, key=lambda a: a['desde'] or '9999'):
         if not a['titulo'] or a['id'] in vistos or (a['hasta'] and a['hasta'] < hoy):
             continue  # ya pasados o repetidos
         if a['desde'] and a['desde'] > (HOY + datetime.timedelta(days=366)).isoformat():
             continue
-        vistos.add(a['id']); a['visto'] = previos.get(a['id'], hoy); salida.append(a)
+        if a['desde'] and (datetime.date.fromisoformat(a['hasta']) - datetime.date.fromisoformat(a['desde'])).days > 45:
+            continue  # programas de meses (cursos, «programación de otoño»): no son un plan de finde
+        if re.match(r'partido de', a['titulo'], re.I):
+            continue  # partidos de liga local
+        clave = (a['municipio'], slug(re.sub(r'^entradas agotadas\s*-\s*', '', a['titulo'], flags=re.I)))
+        if clave in por_titulo:  # el mismo evento en varias fechas (p. ej. un ciclo semanal): un solo aviso
+            o = por_titulo[clave]; o['otras'] = o.get('otras', 0) + (1 if a['desde'] != o['desde'] else 0); continue
+        vistos.add(a['id']); a['visto'] = previos.get(a['id'], hoy); salida.append(a); por_titulo[clave] = a
     salida.sort(key=lambda a: (a['desde'] or '9999', a['municipio'], a['titulo']))
     with open(ruta, 'w') as fh:
         json.dump({'fuente': 'Webs de los ayuntamientos (agendas y noticias)', 'actualizado': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%MZ'),
                    'notas': notas, 'avisos': salida}, fh, ensure_ascii=False, indent=0)
+    for a in salida:
+        if a.get('otras'):
+            a['extracto'] = (f"Y {a['otras']} fecha{'s' if a['otras'] > 1 else ''} más en la agenda. " + a['extracto'])[:300]
     print(len(salida), 'avisos;', sum(1 for a in salida if not a['desde']), 'sin fecha;', notas)
 
 

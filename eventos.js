@@ -65,7 +65,7 @@ function proximosEventosHTML(sab, n = 4) {
 const durDias = f => Math.round((new Date(f[1] + 'T12:00') - new Date(f[0] + 'T12:00')) / 864e5);
 const pesoEvento = (s, f, desde) => (s.destacado ? 0 : 2) + (FOTOS[s.id] || (typeof FOTOS_AG !== 'undefined' && FOTOS_AG[s.id]) ? 0 : 1)
   + (durDias(f) > 14 ? 4 : durDias(f) > 4 ? 1 : 0) + (desde && f[0] < desde ? 2 : 0);
-const ordenarEventos = (l, desde) => l.slice().sort((a, b) => pesoEvento(a[0], a[1], desde) - pesoEvento(b[0], b[1], desde) || a[1][0].localeCompare(b[1][0]));
+const ordenarEventos = (l, desde) => l.slice().sort((a, b) => (typeof favSitio === 'function' ? favSitio(b[0]) - favSitio(a[0]) : 0) || pesoEvento(a[0], a[1], desde) - pesoEvento(b[0], b[1], desde) || a[1][0].localeCompare(b[1][0])); // 💛 primero
 // Este finde: lo que hay (viernes a domingo).
 function eventosFindeHTML(sab) {
   const ev = eventosEntre(isoMas(sab, -1), isoMas(sab, 1));
@@ -114,8 +114,9 @@ const VERS = { VOSE: 'VOSE', VO: 'VO', Doblada: '' };
 const CINE_CORTO = { E0627: 'Meridiano', E0284: 'Multicines La Laguna', E0622: 'La Villa', E0700: 'X-Sur', E0541: 'Zentral Center' };
 function carteleraHTML() {
   if (!CINE) return `<div class="card muted centro">🎬 ${navigator.onLine ? 'Cargando la cartelera…' : 'La cartelera se verá cuando haya conexión.'}</div>`;
-  const cines = CINE.cines.filter(c => c.peliculas.length || c.aviso);
-  if (!cineSel || !cines.some(c => c.id === cineSel)) cineSel = load('esc.cine', cines[0] && cines[0].id);
+  const fc = typeof favs === 'function' ? favs().cines : [];
+  const cines = CINE.cines.filter(c => c.peliculas.length || c.aviso).sort((a, b) => fc.includes(b.id) - fc.includes(a.id)); // 💛 primero
+  if (!cineSel || !cines.some(c => c.id === cineSel)) cineSel = load('esc.cine', (cines[0] || {}).id);
   const c = cines.find(x => x.id === cineSel) || cines[0]; if (!c) return '<div class="card muted">Sin cartelera.</div>';
   const fechaTxt = new Date(CINE.fecha + 'T12:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   if (!cineOrden) cineOrden = load('esc.cineorden', 'estrenos');
@@ -126,10 +127,11 @@ function carteleraHTML() {
   const nVO = x => x.peliculas.filter(p => p.sesiones.some(s => s.v !== 'Doblada')).length;
   return `<div class="cine-cab"><b>🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del ' + esc(fechaTxt)}</b>
       <span class="muted">${cineHoy() ? esc(fechaTxt) : 'se actualiza cada mañana'}</span></div>
-    <div class="chips cine-sel">${cines.map(x => `<button class="chip ${x.id === c.id ? 'on' : ''}" data-cine="${x.id}">${ZONAS[x.zona] ? ZONAS[x.zona].ic : '🎬'} ${esc(CINE_CORTO[x.id] || x.nombre)}${nVO(x) ? ' <small>VOSE</small>' : ''}</button>`).join('')}</div>
+    <div class="chips cine-sel">${cines.map(x => `<button class="chip ${x.id === c.id ? 'on' : ''}" data-cine="${x.id}">${fc.includes(x.id) ? '💛' : ZONAS[x.zona] ? ZONAS[x.zona].ic : '🎬'} ${esc(CINE_CORTO[x.id] || x.nombre)}${nVO(x) ? ' <small>VOSE</small>' : ''}</button>`).join('')}</div>
     <div class="chips"><button class="chip ${cineVO ? 'on' : ''}" data-cinevo>🗣️ Solo versión original (VOSE)</button>
       <label class="orden-sel"><span class="vh">Ordenar películas</span><select id="cine-orden">${Object.entries(ORDEN_CINE).map(([k, n]) => `<option value="${k}" ${cineOrden === k ? 'selected' : ''}>↕️ ${n}</option>`).join('')}</select></label></div>
-    <p class="muted cuenta-lista">${esc(c.nombre)} · ${esc(c.municipio)} · ${pelis.length} película${pelis.length === 1 ? '' : 's'}${c.aviso ? ' · ⚠️ ' + esc(c.aviso) : ''}</p>
+    <p class="muted cuenta-lista">${esc(c.nombre)} · ${esc(c.municipio)} · ${pelis.length} película${pelis.length === 1 ? '' : 's'}${c.aviso ? ' · ⚠️ ' + esc(c.aviso) : ''}
+      <button class="enlace fav-cine" data-fav="esc.favcines" data-v="${c.id}">${fc.includes(c.id) ? '💛 Tu cine favorito' : '🤍 Marcar como favorito'}</button></p>
     ${pelis.length ? pelis.map(([p, ss]) => { // (v50) tocar la película despliega la sinopsis; debajo, FilmAffinity e IMDb
       const q = encodeURIComponent(p.original || p.titulo), sin = !!p.sinopsis, abierta = peliAbiertas.has(p.titulo);
       const cab = `${p.cartel ? `<img class="peli-cartel" src="${esc(p.cartel)}" alt="" loading="lazy" onerror="this.remove()">` : '<span class="peli-cartel peli-sinc">🎬</span>'}

@@ -108,6 +108,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Planes: 🎠 carrusel de un finde · 💡 idea (sitio que encaja) · 🔎 nivel de zoom del mapa · 💫 mejor día · 🗳️ votar fechas · 📤 compartir.
 - 🏞️ orden «por zona» en Sitios (🧭 es Explorar).
 - Tema: 🌓 auto · ☀️ claro · 🌙 oscuro.
+- 💛 favorito (municipio o cine; 🤍 = no lo es) · 📰 avisos de los ayuntamientos (Por revisar).
 
 ## Marcas
 - En el móvil: `localStorage['esc.marcas']` = `{ [sitioId]: {estado: 'quiero'|'fuimos'|'no',
@@ -473,3 +474,11 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Nada entra solo: `revEstado(id)` = grupos/{gid}/revision/{id} {estado si|no, uid, actualizado} o `esc.revision` sin grupo.
   Aceptados con fecha → `cargarAgenda(…, 'ayto')` con `verificar`; sin fecha → «📰 Anunciados sin fecha» en Eventos.
 - (v49) Rueda: vecinas con opacidad 1 − 0,18·d (más visibles), 16,5 rem de alto, dentro de `.rueda-marco` (borde, fondo y «↕ gira aquí»: fuera del marco se desplaza Planes).
+
+## 💛 Favoritos y botones de Planes (v50, pedido del usuario)
+- `esc.favmunis` (municipios) y `esc.favcines` (ids de SensaCine), solo en el móvil. `favs()` (caché `FAV`, se borra en
+  `alternarFav`), `favMuni(m)`, `favSitio(s)` = 2 su municipio / 1 su zona / 0, `zonasOrden()`, `zonaMuni(m)` = zona de la mayoría
+  de sus sitios (el primer pueblo puede caer en otra, p. ej. Anaga en Santa Cruz). Botones `data-fav="<clave>" data-v`.
+- Efectos: Explorar por municipio/zona, `ordenarEventos` (Eventos, Cultura, chips), rueda (a igual día), Tiempo (filas por
+  zona), Sorpréndeme (+2/+1 papeletas) y cartelera (cines y selección inicial).
+- Planes: `rapidosHTML()` (➕ Plan, 🎲, 🎭) al final de la página, bajo «¿Algo más?».

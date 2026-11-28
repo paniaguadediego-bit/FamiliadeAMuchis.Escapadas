@@ -846,4 +846,8 @@ button.punto.on { background: var(--pri); width: 22px; border-radius: 999px; }
 details[open] .peli-pista i { transform: rotate(180deg); }
 .peli-sin { margin: 0 10px 4px; font-size: .84rem; line-height: 1.4; }
 .peli-d .peli-mas { margin: 0; padding: 6px 10px 9px; border-top: 1px solid var(--line); }
+/* v50: 💛 favoritos */
+.fav-zona { margin: 6px 0; } .fav-zona small { font-weight: 700; color: var(--muted, #666); }
+.fav-ban { margin-left: 6px; font-size: 1.05rem; padding: 2px 4px; cursor: pointer; }
+.fav-cine { font-size: .78rem; margin-left: 6px; }
 :root { --css-ver: "v50"; }

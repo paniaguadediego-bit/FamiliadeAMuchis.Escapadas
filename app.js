@@ -273,6 +273,35 @@ const ESTADOS_F = [['', '🗂️', 'Todos'], ['quiero', '🔖', 'Quiero ir'], ['
 const GRUPO_F = [['', '👥', 'Da igual'], ['nadie', '🌱', 'Nadie ha ido'], ['ganas', '🔖', 'Alguien quiere ir'], ['fueron', '✅', 'Alguien lo visitó']];
 const ORDENES = { municipio: '🏘️ Por municipio', zona: '🏞️ Por zona', nombre: '🔤 Nombre (A-Z)', cerca: '📍 Más cerca de mí', valorados: '⭐ Mejor valorados', deseados: '🔖 Más deseados' };
 const zonaNom = s => typeof zonaDe === 'function' ? zonaDe(s) : '';
+// ---------- 💛 Favoritos (v50): municipios y cines de cada persona (solo en este móvil) ----------
+let FAV = null, ZMUNI = null;
+// Zona de un municipio = la de la mayoría de sus sitios del catálogo (el primer pueblo puede caer en otra zona, p. ej. Anaga).
+function zonaMuni(m) {
+  if (!ZMUNI && BASE.length) { ZMUNI = {}; const c = {};
+    BASE.forEach(s => { if (s.aprox || s.tipo === 'evento') return; const z = zonaNom(s); if (!z) return; const k = c[s.municipio] = c[s.municipio] || {}; k[z] = (k[z] || 0) + 1; });
+    for (const [mu, k] of Object.entries(c)) ZMUNI[mu] = Object.entries(k).sort((x, y) => y[1] - x[1])[0][0]; }
+  return (ZMUNI || {})[m] || '';
+}
+function favs() {
+  if (!FAV) { const munis = new Set(load('esc.favmunis', [])), cines = load('esc.favcines', []);
+    FAV = { munis, cines, zonas: new Set([...munis].map(zonaMuni).filter(Boolean)) }; }
+  return FAV;
+}
+const favMuni = m => favs().munis.has(m);
+const favSitio = s => !!s && (favMuni(s.municipio) ? 2 : favs().zonas.has(zonaNom(s)) ? 1 : 0); // 2 su municipio, 1 su zona
+function alternarFav(clave, v) {
+  const l = load(clave, []), i = l.indexOf(v); if (i >= 0) l.splice(i, 1); else l.push(v);
+  save(clave, l); FAV = null; render();
+}
+const zonasOrden = () => Object.entries(ZONAS).sort(([a], [b]) => favs().zonas.has(b) - favs().zonas.has(a));
+function favoritosHTML() {
+  const zonasM = Object.entries(ZONAS).map(([z, Z]) => [Z, MUNICIPIOS.filter(m => zonaMuni(m) === z)]);
+  const cines = [['E0627', 'Yelmo Meridiano'], ['E0284', 'Multicines La Laguna'], ['E0622', 'Yelmo La Villa'], ['E0700', 'X-Sur'], ['E0541', 'Zentral Center']];
+  return `<div class="card fav"><p class="muted">Lo de tus 💛 sale primero: sitios en Explorar, eventos, el tiempo de su zona, más papeletas en Sorpréndeme y tu cine en la cartelera. Solo en este móvil.</p>
+    ${zonasM.map(([Z, ms]) => ms.length ? `<div class="fav-zona"><small>${Z.ic} ${esc(Z.nom)}</small><div class="chips">${ms.map(m => `<button class="chip ${favMuni(m) ? 'on' : ''}" data-fav="esc.favmunis" data-v="${esc(m)}">${favMuni(m) ? '💛' : '🤍'} ${esc(m.replace('San Cristóbal de ', ''))}</button>`).join('')}</div></div>` : '').join('')}
+    <div class="fav-zona"><small>🎬 Cines</small><div class="chips">${cines.map(([id, n]) => `<button class="chip ${favs().cines.includes(id) ? 'on' : ''}" data-fav="esc.favcines" data-v="${id}">${favs().cines.includes(id) ? '💛' : '🤍'} ${n}</button>`).join('')}</div></div></div>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-fav]'); if (b) { e.preventDefault(); e.stopPropagation(); alternarFav(b.dataset.fav, b.dataset.v); } }, true);
 // ⭐ media de tus estrellas y las del grupo; 🔖 cuántos quieren ir (tú incluido).
 function notaMedia(id) {
   const v = [marca(id).estrellas || 0, ...(enGrupo() ? Object.entries(NUBE.marcasGrupo[id] || {}).filter(([u]) => u !== NUBE.user.uid).map(([, m]) => m.estrellas || 0) : [])].filter(Boolean);
@@ -351,15 +380,15 @@ function viewSitios() {
   // Buscando: lista seguida, primero lo que coincide en el nombre (ver ordenar).
   if (sinTildes(q).trim() && (orden === 'municipio' || orden === 'zona')) return cab + `<div class="lista-plana">${lista.map(fichaHTML).join('')}</div>`;
   if (orden === 'zona') {
-    return cab + Object.entries(ZONAS).map(([z, Z]) => { const ss = lista.filter(s => zonaNom(s) === z).sort((x, y) => x.nombre.localeCompare(y.nombre, 'es'));
+    return cab + zonasOrden().map(([z, Z]) => { const ss = lista.filter(s => zonaNom(s) === z).sort((x, y) => x.nombre.localeCompare(y.nombre, 'es'));
       return ss.length ? `<details class="muni zona" data-muni="z:${z}" ${filtro || muniAbiertos.has('z:' + z) ? 'open' : ''}><summary class="banner" style="--h:${{ oeste: 25, sur: 40, este: 210, laguna: 345, norte: 130, teide: 8 }[z]}">${fotoImg(({ oeste: 'los-gigantes', sur: 'el-medano', este: 'teresitas', laguna: 'catedral-laguna', norte: 'garachico-caleton', teide: 'teide' })[z], 'banner-foto')}<span class="banner-tx"><span class="banner-ic">${Z.ic}</span><span class="banner-n"><b>${esc(Z.nom)}</b><small>${ss.length} sitios</small></span></span></summary><div class="fichas">${ss.map(fichaHTML).join('')}</div></details>` : ''; }).join('');
   }
   if (orden !== 'municipio') return cab + `<div class="lista-plana">${lista.map(fichaHTML).join('')}</div>`;
-  const grupos = MUNICIPIOS.map(m => [m, lista.filter(s => s.municipio === m)]).filter(g => g[1].length);
+  const grupos = MUNICIPIOS.map(m => [m, lista.filter(s => s.municipio === m)]).filter(g => g[1].length).sort((x, y) => favMuni(y[0]) - favMuni(x[0])); // 💛 primero
   return cab + `<div id="lista">${grupos.map(([m, ss]) => `<details class="muni" data-muni="${esc(m)}" ${filtro || muniAbiertos.has(m) ? 'open' : ''}>
       <summary class="banner" style="${varsMuni(m)}">${portadaDe(m) ? fotoImg(portadaDe(m), 'banner-foto') : ''}<span class="banner-tx"><span class="banner-ic">${muniTema(m).ic}</span>
         <span class="banner-n"><b>${esc(m)}</b><small>${esc(muniTema(m).lema)}</small></span>
-        <span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length} ✅ · ${ss.length}</span></span></summary>
+        <span class="n">${ss.filter(s => marca(s.id).estado === 'fuimos').length} ✅ · ${ss.length}</span><span class="fav-ban" role="button" data-fav="esc.favmunis" data-v="${esc(m)}" aria-label="Favorito">${favMuni(m) ? '💛' : '🤍'}</span></span></summary>
       <div class="fichas">${ss.map(fichaHTML).join('')}</div></details>`).join('')}</div>`;
 }
 document.addEventListener('click', e => {
@@ -563,6 +592,8 @@ function viewMas() {
     <h2>🔠 Letra</h2>
     <div class="chips">${Object.entries(LETRAS).map(([k, n]) => `<button class="chip ${load('esc.letra', 'compacta') === k ? 'on' : ''}" data-setletra="${k}" style="font-size:${k === 'compacta' ? '.78rem' : k === 'normal' ? '.88rem' : '1rem'}">Aa ${n}</button>`).join('')}</div>
     ${!enGrupo() ? pasaporteHTML() : ''}
+    <h2>💛 Mis lugares y cines</h2>
+    ${favoritosHTML()}
     <h2>🎉 Festivos</h2>
     ${festivosHTML()}
     <h2>📷 Fotos sin conexión</h2>
