@@ -525,3 +525,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Categorías de Eventos: tarjetas con icono en círculo y `.on` con tinte, borde y ✓. ¿Algo más?: el botón no se mueve al abrir su panel.
 - (v67) `SALAS` + `salaFoto(s)` (eventos.js): foto de la sala (teatro-leal, teatro-guimera, auditorio) en la ficha del evento (`.ficha.con-sala`,
   `--sala`, opacidad 0,17 con máscara). Cines: sin fotos libres en Commons → `.peli-d::before` con telón dibujado. `.lista-fondo` ya no se usa.
+- (v68) Portada: `.portada-h::after` con velo 0,18 → 0,78 y radial abajo; `.portada-tx` con sombra doble; `.pf-pie` en pastilla.

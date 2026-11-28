@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v68 · Portada legible (2026-11-28)
+- El saludo, «Este finde» y las líneas de la portada de Planes se leen sobre cualquier foto: velo más oscuro detrás del texto
+  (y algo arriba), foto al 72 %, sombra marcada en las letras y el crédito de la foto en una pastilla oscura.
+
 ## v67 · Foto de la sala en cada tarjeta (2026-11-28)
 - Obras y conciertos: cada tarjeta lleva de fondo, muy suave y difuminada hacia la izquierda, la foto de SU sala (Auditorio de
   Tenerife, Teatro Leal o Teatro Guimerá; fotos de sus fichas, Wikimedia Commons) según el lugar de la agenda. 91 de 97
