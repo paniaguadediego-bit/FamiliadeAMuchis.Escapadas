@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v62 · Cines como pantallas y «Nuevo» arriba (2026-11-28)
+- Cultura → Cine: los cines son pantallas en una ruleta que se desliza de lado (como la rueda de Planes); la del centro,
+  iluminada, es la elegida. Así se distingue del botón VOSE y ocupa una sola fila.
+- Fondo de la cartelera: foto del municipio del cine (de las fichas, Wikimedia Commons), muy atenuada.
+- «🆕 Nuevo en la agenda» va arriba del todo, encima de Cine · Teatro · Música (y en Eventos encima de las categorías),
+  plegado por defecto (el título dice cuántas hay sin ver).
+- Eventos: fuera la tarjeta «🏠 Este finde hay N eventos».
+
 ## v61 · Código del grupo bajo el pasaporte (2026-11-28)
 - En la pestaña Grupo, la tarjeta «Código para invitar» (con «📤 Pasar el código») va justo debajo del pasaporte.
 

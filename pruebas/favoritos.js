@@ -15,7 +15,7 @@ const P = require('./comun');
   console.log('Zona primera en el Tiempo:', await p.evaluate(() => zonasOrden()[0][0]));
   console.log('Sorpréndeme: peso de un sitio de Garachico:', await p.evaluate(() => favSitio(SITIOS.find(s => s.municipio === 'Garachico'))));
   await P.tab(p, 'cultura'); await p.waitForTimeout(300);
-  console.log('Primer cine en la cartelera:', await p.$eval('.cine-sel .chip', b => b.textContent.trim()));
+  console.log('Primer cine en la cartelera:', await p.$eval('.cine-rueda .pantalla', b => b.textContent.trim()));
   await P.tab(p, 'finde'); await p.waitForTimeout(300);
   const orden = await p.evaluate(() => [...document.querySelector('.planes').children].map(x => x.className || x.tagName).join(' > '));
   console.log('Botones al final de Planes:', /rapidos/.test(orden.split(' > ').slice(-3).join(' ')));
