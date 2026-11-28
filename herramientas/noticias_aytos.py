@@ -44,9 +44,11 @@ slug = lambda t: re.sub(r'[^a-z0-9]+', '-', unicodedata.normalize('NFD', t.lower
 
 
 def get(url):
+    if os.environ.get('NOTICIAS_TRAZA'):
+        print('  ·', url[:100], flush=True)
     for i in range(3):
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=40) as r:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=25) as r:
                 return r.read().decode('utf-8', 'replace')
         except Exception:
             time.sleep(6 * (i + 1))
