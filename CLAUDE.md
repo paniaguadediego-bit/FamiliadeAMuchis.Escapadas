@@ -515,3 +515,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - (v62) Cine: `.cine-rueda` con `button.pantalla` (`girarCines()`: rotateY por distancia; al soltar, la del centro = `cineSel`);
   `cineFondo(c)` = foto de `portadaDe(municipio)` en `.cine-lista::before` (opacidad 0,16). Novedades arriba, plegadas (`esc.novabierta`).
   Eventos sin la tarjeta «Este finde hay…».
+- (v64) `girarCines()`: `.on` según la más centrada en cada fotograma; al parar, `[data-cinecuerpo]` se sustituye (sin `render()`).

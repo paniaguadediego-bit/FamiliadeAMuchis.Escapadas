@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v64 · Ruleta de cines fluida (2026-11-28)
+- La pantalla del centro se enciende en amarillo mientras deslizas (antes, al pararse y repintar todo).
+- Al parar (evento «scrollend» o 140 ms sin moverse) solo se cambia la lista de películas, no toda la pestaña.
+- Perspectiva en el contenedor y medidas una sola vez: cada fotograma solo mueve. Tocar una pantalla la centra con suavidad.
+
 ## v63 · Museo de Agache (2026-11-28)
 - Nuevo sitio: Museo Arqueológico, Costumbrista y Naturalista del Tagoror Cultural de Agache (El Escobonal, Güímar), propuesto
   por el usuario. Fuente: ficha del blog «Güímar Tenerife»; coordenadas: las de El Escobonal en Wikipedia (el museo está en la

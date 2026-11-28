@@ -111,18 +111,29 @@ const cineFondo = c => { const id = typeof portadaDe === 'function' && portadaDe
 // (v62) Ruleta horizontal de cines (como la rueda de Planes, de lado): la del centro es la elegida.
 function girarCines() {
   const r = document.querySelector('[data-cinerueda]'); if (!r) return;
+  const ps = [...r.children];
+  const centro = () => { const cx = r.scrollLeft + r.clientWidth / 2; let m = null, md = 1e9;
+    ps.forEach(t => { const d = Math.abs(t.offsetLeft + t.offsetWidth / 2 - cx); if (d < md) { md = d; m = t; } }); return m; };
+  // (v64) Cada fotograma solo transforma (sin leer más de lo justo) y enciende al momento la pantalla del centro.
   const pinta = () => { const cx = r.scrollLeft + r.clientWidth / 2;
-    [...r.children].forEach(t => { const d = (t.offsetLeft + t.offsetWidth / 2 - cx) / t.offsetWidth, a = Math.min(Math.abs(d), 2.5);
-      t.style.transform = `perspective(700px) rotateY(${(d * -24).toFixed(1)}deg) scale(${(1 - a * 0.12).toFixed(3)})`; t.style.opacity = Math.max(0.25, 1 - a * 0.35).toFixed(2); }); };
+    ps.forEach(t => { const d = (t._x - cx) / t._w, a = Math.min(Math.abs(d), 2.5);
+      t.style.transform = `rotateY(${(d * -22).toFixed(1)}deg) scale(${(1 - a * 0.1).toFixed(3)})`; t.style.opacity = Math.max(0.3, 1 - a * 0.3).toFixed(2); });
+    const m = centro(); ps.forEach(t => t.classList.toggle('on', t === m)); };
+  const medir = () => ps.forEach(t => { t._x = t.offsetLeft + t.offsetWidth / 2; t._w = t.offsetWidth; });
+  medir();
   const on = r.querySelector('.pantalla.on');
   if (on) r.scrollLeft = on.offsetLeft - (r.clientWidth - on.offsetWidth) / 2;
   pinta();
+  // Al parar: solo se cambia la lista de películas (no toda la pestaña).
+  const elegir = () => { const m = centro(); if (!m || m.dataset.cine === cineSel) return; cineSel = m.dataset.cine; save('esc.cine', cineSel);
+    const tmp = document.createElement('div'); tmp.innerHTML = carteleraHTML();
+    const nuevo = tmp.querySelector('[data-cinecuerpo]'), viejo = document.querySelector('[data-cinecuerpo]');
+    if (nuevo && viejo) viejo.replaceWith(nuevo); else render(); };
   let pend = 0, fin = 0;
   r.addEventListener('scroll', () => { if (!pend) pend = requestAnimationFrame(() => { pend = 0; pinta(); });
-    clearTimeout(fin); fin = setTimeout(() => { if (!r._toque) return; const cx = r.scrollLeft + r.clientWidth / 2;
-      const t = [...r.children].sort((a, b) => Math.abs(a.offsetLeft + a.offsetWidth / 2 - cx) - Math.abs(b.offsetLeft + b.offsetWidth / 2 - cx))[0];
-      if (t && t.dataset.cine !== cineSel) { cineSel = t.dataset.cine; save('esc.cine', cineSel); render(); } }, 260); }, { passive: true });
-  ['pointerdown', 'touchstart', 'wheel'].forEach(ev => r.addEventListener(ev, () => { r._toque = 1; }, { passive: true }));
+    clearTimeout(fin); fin = setTimeout(elegir, 140); }, { passive: true });
+  r.addEventListener('scrollend', () => { clearTimeout(fin); elegir(); });
+  addEventListener('resize', () => { medir(); pinta(); });
 }
 const peliAbiertas = new Set(); // sinopsis abiertas (no se cierran al repintar)
 document.addEventListener('toggle', e => { const d = e.target; if (d.dataset && d.dataset.peli) { if (d.open) peliAbiertas.add(d.dataset.peli); else peliAbiertas.delete(d.dataset.peli); } }, true);
@@ -147,7 +158,7 @@ function carteleraHTML() {
       <span class="muted">${cineHoy() ? esc(fechaTxt) : 'se actualiza cada mañana'}</span></div>
     <div class="cine-rueda" data-cinerueda role="tablist" aria-label="Cines (desliza)">${cines.map(x => `<button class="pantalla ${x.id === c.id ? 'on' : ''}" data-cine="${x.id}" role="tab" aria-selected="${x.id === c.id}">
       <b>${fc.includes(x.id) ? '💛 ' : ''}${esc(CINE_CORTO[x.id] || x.nombre)}</b><small>${esc(x.municipio.replace('San Cristóbal de ', '').replace(' de Tenerife', ''))}${nVO(x) ? ' · VOSE' : ''}</small></button>`).join('')}</div>
-    <div class="chips"><button class="chip ${cineVO ? 'on' : ''}" data-cinevo>🗣️ Solo versión original (VOSE)</button>
+    <div data-cinecuerpo><div class="chips"><button class="chip ${cineVO ? 'on' : ''}" data-cinevo>🗣️ Solo versión original (VOSE)</button>
       <label class="orden-sel"><span class="vh">Ordenar películas</span><select id="cine-orden">${Object.entries(ORDEN_CINE).map(([k, n]) => `<option value="${k}" ${cineOrden === k ? 'selected' : ''}>↕️ ${n}</option>`).join('')}</select></label></div>
     <p class="muted cuenta-lista">${esc(c.nombre)} · ${esc(c.municipio)} · ${pelis.length} película${pelis.length === 1 ? '' : 's'}${c.aviso ? ' · ⚠️ ' + esc(c.aviso) : ''}
       <button class="enlace fav-cine" data-fav="esc.favcines" data-v="${c.id}">${fc.includes(c.id) ? '💛 Tu cine favorito' : '🤍 Marcar como favorito'}</button></p>
@@ -165,10 +176,10 @@ function carteleraHTML() {
       return sin ? `<div class="card peli-d"><details data-peli="${esc(p.titulo)}" ${abierta ? 'open' : ''}><summary class="peli">${cab}</summary><p class="peli-sin">${esc(p.sinopsis)}</p></details>${pie}</div>`
         : `<div class="card peli-d"><div class="peli">${cab}</div>${pie}</div>`; }).join('')
       : `<div class="card muted">${cineVO ? 'Hoy no hay sesiones en versión original en este cine.' : 'Sin sesiones.'}</div>`}</div>
-    <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.${portadaDe(c.municipio) ? ` Fondo: foto de ${esc(c.municipio)} (Wikimedia Commons).` : ''}</p>`;
+    <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.${portadaDe(c.municipio) ? ` Fondo: foto de ${esc(c.municipio)} (Wikimedia Commons).` : ''}</p></div>`;
 }
 document.addEventListener('click', e => {
-  const c = e.target.closest('[data-cine]'); if (c) { cineSel = c.dataset.cine; save('esc.cine', cineSel); render(); return; }
+  const c = e.target.closest('[data-cine]'); if (c) { const r = c.parentElement; if (r && r.matches('[data-cinerueda]')) r.scrollTo({ left: c.offsetLeft - (r.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' }); else { cineSel = c.dataset.cine; save('esc.cine', cineSel); render(); } return; }
   if (e.target.closest('[data-cinevo]')) { cineVO = !cineVO; render(); return; }
   if (e.target.closest('[data-vercine]')) { culSec = 'cine'; save('esc.cultura', 'cine'); ir('cultura'); }
 });

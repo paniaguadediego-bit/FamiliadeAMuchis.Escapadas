@@ -932,4 +932,7 @@ button.pantalla.on { background: radial-gradient(ellipse at 50% 0%, #fff7d6 0%, 
 .cine-lista::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: 16px; background-image: var(--fondo, none); background-size: cover; background-position: center;
   opacity: .16; filter: saturate(.7) blur(1px); }
 .cine-lista .card { background: color-mix(in srgb, var(--card, #fff) 88%, transparent); }
-:root { --css-ver: "v63"; }
+/* v64: ruleta de cines más fluida (perspectiva en el contenedor, sin transiciones; el color cambia al instante) */
+.cine-rueda { perspective: 700px; -webkit-overflow-scrolling: touch; }
+button.pantalla { transition: background .15s, color .15s, box-shadow .15s; }
+:root { --css-ver: "v64"; }
