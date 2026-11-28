@@ -441,7 +441,7 @@ function pintarRueda(r) {
   [...r.children].forEach(t => {
     const d = (t.offsetTop + t.offsetHeight / 2 - centro) / t.offsetHeight, a = Math.min(Math.abs(d), 3);
     t.style.transform = `perspective(1400px) rotateX(${(-d * 16).toFixed(2)}deg) scale(${(1 - a * 0.07).toFixed(4)})`; // (v48) más sutil
-    t.style.opacity = Math.max(0, 1 - a * 0.32).toFixed(3);
+    t.style.opacity = Math.max(0, 1 - a * (a < 1.2 ? 0.18 : 0.4)).toFixed(3); // (v49) las vecinas se ven más
     t.classList.toggle('en-centro', a < 0.5);
   });
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v48';
+const VERSION = 'v49';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -55,6 +55,7 @@ fetch('data/cine.json').then(r => r.json()).then(d => { CINE = d; if (tab === 'e
 fetch('data/festivos.json').then(r => r.json()).then(d => { FESTIVOS = d; render(); }).catch(() => {});
 fetch('data/agenda.json').then(r => r.json()).then(d => { cargarAgenda(d); mezclarSitios(); render(); }).catch(() => {});
 fetch('data/agenda_auditorio.json').then(r => r.json()).then(d => { cargarAgenda(d, 'auditorio'); mezclarSitios(); render(); }).catch(() => {});
+fetch('data/revision.json').then(r => r.json()).then(d => { cargarRevision(d); mezclarSitios(); render(); }).catch(() => {});
 const fotoSrc = (id, mini) => { const f = FOTOS[id] || FOTOS_AG[id]; if (!f) return ''; return mini ? f.src.replace('/960px-', '/330px-') : f.src; };
 const fotoCredito = id => !FOTOS[id] && FOTOS_AG[id] ? `<a class="credito" href="${esc(FOTOS_AG[id].enlace)}" target="_blank" rel="noopener">📷 ${esc(FOTOS_AG[id].credito || 'Turismo de Tenerife')}</a>` : FOTOS[id] && FOTOS[id].archivo ? `<a class="credito" href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(FOTOS[id].archivo)}" target="_blank" rel="noopener">📷 Wikimedia Commons</a>` : '';
 // <img> perezosa; la miniatura, si no existe en ese tamaño, prueba la grande; si tampoco, desaparece.

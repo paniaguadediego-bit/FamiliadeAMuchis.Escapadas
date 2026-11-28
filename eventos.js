@@ -85,7 +85,8 @@ const catDe = s => s.categoria || (s.tipo === 'evento' ? 'fiestas' : 'otros');
 const catIc = s => (CAT_EV[catDe(s)] || CAT_EV.otros)[0];
 // Varias agendas (Turismo de Tenerife y, desde v44, Auditorio de Tenerife): se juntan y se quitan los repetidos
 // (mismo nombre y misma fecha de inicio; se queda la primera fuente).
-const AGENDAS = {}, FUENTE_AG = { tenerife: ['Agenda de Turismo de Tenerife', 'Turismo de Tenerife'], auditorio: ['Auditorio de Tenerife', 'Auditorio de Tenerife'] };
+const AGENDAS = {}, FUENTE_AG = { tenerife: ['Agenda de Turismo de Tenerife', 'Turismo de Tenerife'], auditorio: ['Auditorio de Tenerife', 'Auditorio de Tenerife'],
+  ayto: ['Web del ayuntamiento', 'Ayuntamiento'] };
 function cargarAgenda(d, clave = 'tenerife') {
   AGENDAS[clave] = d;
   if (clave === 'tenerife') AGENDA_INFO = d && { fuente: d.fuente, actualizado: d.actualizado };
@@ -97,7 +98,7 @@ function cargarAgenda(d, clave = 'tenerife') {
       const clv = norm(e.nombre) + '|' + e.desde; if (vistos.has(clv)) continue; vistos.add(clv);
       if (e.foto) FOTOS_AG[e.id] = { src: e.foto, credito: FUENTE_AG[k][1], enlace: e.url };
       AGENDA_SITIOS.push({ id: e.id, nombre: e.nombre, tipo: 'evento', municipio: e.municipio || '', lat: e.lat, lon: e.lon, aprox: !!e.aprox, agenda: true,
-        categoria: e.categoria, lugar: e.lugar, desc: e.extracto || '', fuente: FUENTE_AG[k][0], url: e.url,
+        categoria: e.categoria, lugar: e.lugar, desc: e.extracto || '', fuente: e.fuente || FUENTE_AG[k][0], url: e.url, ...(e.verificar ? { verificar: e.verificar } : {}),
         cuando: { tipo: 'fechas', lista: [[e.desde, e.hasta]] }, visto: e.visto || '' });
     }
   }
@@ -166,7 +167,7 @@ function viewEventos() {
   lista.forEach(([s, f]) => { const ini = f[0] < a ? a : f[0], sb = typeof sabadoDe === 'function' ? sabadoDe(ini) : ini; (semanas[sb] = semanas[sb] || []).push([s, f]); });
   const titulo = sb => sb === sab ? 'Este finde y estos días' : sb === isoMas(sab, 7) ? 'La semana que viene' : `Semana del finde ${+isoMas(sb, 0).slice(8)}-${+isoMas(sb, 1).slice(8)} de ${new Date(sb + 'T12:00').toLocaleDateString('es-ES', { month: 'long' })}`;
   const act = AGENDA_INFO && AGENDA_INFO.actualizado ? new Date(AGENDA_INFO.actualizado).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
-  return novedadesHTML('eventos') + `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
+  return novedadesHTML('eventos') + revisionHTML() + `<button class="card ev-enlace" data-tab="finde">🏠 Este finde hay <b>${nFinde}</b> evento${nFinde === 1 ? '' : 's'} · <span class="tr-ver">Ver en Planes ›</span></button>
     <div class="ev-cats">${Object.entries(CAT_EV).filter(([k]) => !CULTURA.includes(k)).map(([k, [ic, n]]) => `<button class="fm ${evCats.has(k) ? 'on' : ''}" data-evcat="${k}" aria-pressed="${evCats.has(k)}">${ic} ${esc(n.replace(' y espectáculos', '').replace(' y mercados', ''))}</button>`).join('')}
       <div class="ev-cats-pie"><button class="enlace" data-evcats="todas">✓ Todas</button><button class="enlace" data-evcats="ninguna">✕ Ninguna</button></div></div>
     <div class="filtros-barra">
@@ -178,7 +179,8 @@ function viewEventos() {
     ${evSoloCine() ? carteleraHTML() + (lista.length ? '<h2>🎟️ Otros eventos de cine</h2>' : '') : CINE && false ? `<button class="card ev-enlace" data-evcats="cine">🎬 Cartelera ${cineHoy() ? 'de hoy' : 'del día'}: ${CINE.cines.filter(c => c.peliculas.length).length} cines${CINE.cines.some(c => c.peliculas.some(p => p.sesiones.some(s => s.v !== 'Doblada'))) ? ', con VOSE' : ''} · <span class="tr-ver">Ver ›</span></button>` : ''}
     ${evSoloCine() && !lista.length ? '' : lista.length ? Object.keys(semanas).sort().map(sb => `<details class="ev-sem" data-sem="${sb}" ${evCerradas.has(sb) ? '' : 'open'}><summary><span>📅 ${esc(titulo(sb))}</span><small>${semanas[sb].length} evento${semanas[sb].length === 1 ? '' : 's'}</small></summary>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}</details>`).join('')
       : `<div class="card muted">${evCats.size ? 'Nada con esos filtros. Prueba con «Próximos 4 meses» o toda la isla.' : 'No hay ninguna categoría marcada: toca las que quieras ver o «✓ Todas».'}</div>`}
-    <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
+    ${sinFechaHTML()}
+    <p class="muted ag-nota">Los eventos salen de la agenda pública de Turismo de Tenerife (se actualiza sola dos veces por semana), del Auditorio, de lo que el grupo acepta de las webs de los ayuntamientos (📰), de las fiestas de la app y de los que añade el grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
 }
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-evcat]'); if (c) { leerCats(); const k = c.dataset.evcat; if (evCats.has(k)) evCats.delete(k); else evCats.add(k); ponerCats(evCats); render(); return; }
@@ -239,3 +241,61 @@ function novedadesHTML(area) {
 }
 // Al abrir la pestaña, lo de hoy queda visto (el contador se apaga; lo nuevo sigue resaltado hasta salir).
 function novMarcarVisto(area) { const v = novVisto(); if (v[area] !== hoyISO()) { v[area] = hoyISO(); save('esc.novvisto', v); } }
+
+// ---------- 📰 Por revisar (v49): avisos de las webs de 6 ayuntamientos (data/revision.json, cada mañana) ----------
+// Nada entra solo: alguien del grupo (o tú, sin grupo) lo añade o lo descarta. Con fecha → a Eventos con ⚠️ VERIFICAR;
+// sin fecha → «📰 Anunciados sin fecha». Con grupo: grupos/{gid}/revision/{id} = { estado: 'si'|'no', uid, actualizado }.
+let REVISION = null, revVerTodo = false;
+function cargarRevision(d) { REVISION = d; aplicarRevision(); }
+const revEstado = id => { const g = typeof enGrupo === 'function' && enGrupo(); const r = g ? (NUBE.revision || {})[id] : load('esc.revision', {})[id]; return r ? (r.estado || r) : ''; };
+const revFechaTxt = a => !a.desde ? '⚠️ Sin fecha' : a.desde === a.hasta ? nomDiaLargo(a.desde) : `${nomDiaLargo(a.desde)} – ${nomDiaLargo(a.hasta)}`;
+const nomDiaLargo = f => new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+function aplicarRevision() {
+  if (!REVISION) return;
+  const centro = m => (typeof BASE !== 'undefined' ? BASE : []).find(s => s.municipio === m && s.tipo === 'pueblo') || {};
+  const ok = (REVISION.avisos || []).filter(a => a.desde && revEstado(a.id) === 'si');
+  cargarAgenda({ eventos: ok.map(a => { const c = centro(a.municipio), exacto = isFinite(a.lat) && a.lat !== null;
+    return { id: a.id, nombre: a.titulo, desde: a.desde, hasta: a.hasta || a.desde, lugar: a.lugar, municipio: a.municipio, categoria: a.categoria || 'otros',
+      extracto: a.extracto, foto: a.foto, url: a.url, lat: exacto ? a.lat : c.lat, lon: exacto ? a.lon : c.lon, aprox: !exacto, visto: '',
+      fuente: 'Web del Ayuntamiento de ' + a.municipio.replace('San Cristóbal de ', ''), verificar: 'Leído de la web del ayuntamiento: confirma fecha y programa' }; }) }, 'ayto');
+}
+function decidirRevision(id, estado) {
+  if (typeof enGrupo === 'function' && enGrupo()) {
+    NUBE.revision = { ...(NUBE.revision || {}), [id]: { estado, uid: NUBE.user.uid } }; // se ve al momento; la nube lo confirma
+    NUBE.db.collection('grupos').doc(NUBE.grupo.id).collection('revision').doc(id).set({ estado, uid: NUBE.user.uid, actualizado: Date.now() }).catch(() => {});
+  } else { const m = load('esc.revision', {}); m[id] = estado; save('esc.revision', m); }
+  aplicarRevision(); mezclarSitios(); render();
+}
+function seguirRevision(gid) {
+  if (NUBE.offRevision) NUBE.offRevision();
+  NUBE.offRevision = NUBE.db.collection('grupos').doc(gid).collection('revision').onSnapshot(q => {
+    const r = {}; q.forEach(d => { const v = d.data(); if (v && v.estado) r[d.id] = v; });
+    NUBE.revision = r; aplicarRevision(); mezclarSitios(); refrescarVista();
+  }, () => {});
+}
+function revisionHTML() {
+  if (!REVISION) return '';
+  const pend = (REVISION.avisos || []).filter(a => !revEstado(a.id));
+  if (!pend.length) return '';
+  const MAX = 8, ver = revVerTodo ? pend : pend.slice(0, MAX);
+  return `<details class="card rev" ${load('esc.revabierta', true) ? 'open' : ''} data-revcaja><summary>📰 Por revisar <b>${pend.length}</b> <small class="muted">· de las webs de los ayuntamientos</small></summary>
+    <p class="muted rev-ayuda">Lo que anuncian los ayuntamientos (agendas y noticias). «➕ Añadir» lo lleva a Eventos${typeof enGrupo === 'function' && enGrupo() ? ' para todo el grupo' : ''}; si no trae fecha, va a «Anunciados sin fecha».</p>
+    ${ver.map(a => `<div class="rev-item"><div class="rev-tx"><small>${esc(a.municipio.replace('San Cristóbal de ', ''))} · ${a.clase === 'agenda' ? 'Agenda' : 'Noticia'} · <b class="${a.desde ? '' : 'rev-sinf'}">${esc(revFechaTxt(a))}</b></small>
+        <a href="${esc(a.url)}" target="_blank" rel="noopener">${catIc(a)} ${esc(a.titulo)}</a>${a.lugar ? `<small class="muted">📍 ${esc(a.lugar)}</small>` : ''}${a.extracto ? `<p class="muted">${esc(a.extracto)}</p>` : ''}</div>
+      <div class="rev-acc"><button class="mini" data-rev="si" data-id="${esc(a.id)}">➕ Añadir</button><button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Descartar</button></div></div>`).join('')}
+    ${pend.length > MAX ? `<button class="enlace" data-revtodo>${revVerTodo ? '▴ Ver menos' : `▾ Ver los ${pend.length}`}</button>` : ''}
+    ${(REVISION.notas || []).length ? `<p class="muted rev-ayuda">⚠️ ${REVISION.notas.map(esc).join(' · ')}</p>` : ''}</details>`;
+}
+function sinFechaHTML() {
+  if (!REVISION) return '';
+  const l = (REVISION.avisos || []).filter(a => !a.desde && revEstado(a.id) === 'si');
+  if (!l.length) return '';
+  return `<details class="ev-sem" open><summary><span>📰 Anunciados sin fecha</span><small>${l.length}</small></summary>
+    ${l.map(a => `<div class="card rev-item"><div class="rev-tx"><small>${esc(a.municipio.replace('San Cristóbal de ', ''))} · ⚠️ Sin fecha: mira la noticia</small><a href="${esc(a.url)}" target="_blank" rel="noopener">${catIc(a)} ${esc(a.titulo)}</a></div>
+      <div class="rev-acc"><button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Quitar</button></div></div>`).join('')}</details>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-rev]'); if (b) { decidirRevision(b.dataset.id, b.dataset.rev); return; }
+  if (e.target.closest('[data-revtodo]')) { revVerTodo = !revVerTodo; render(); }
+});
+document.addEventListener('toggle', e => { if (e.target.dataset && 'revcaja' in e.target.dataset) save('esc.revabierta', e.target.open); }, true);

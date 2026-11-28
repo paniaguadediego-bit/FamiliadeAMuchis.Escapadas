@@ -85,6 +85,16 @@ service cloud.firestore {
         allow delete: if esMiembro(gid) && resource.data.autor == yo();
       }
 
+      // 📰 Por revisar (v49): qué hace el grupo con cada aviso de las webs de los ayuntamientos. Decide cualquiera.
+      match /revision/{rid} {
+        allow read: if esMiembro(gid);
+        allow create, update: if esMiembro(gid) && rid.size() <= 80
+          && request.resource.data.keys().hasOnly(['estado', 'uid', 'actualizado'])
+          && request.resource.data.estado in ['si', 'no']
+          && request.resource.data.uid == yo()
+          && request.resource.data.actualizado is number;
+      }
+
       // Comentarios de los planes: los lee el grupo; cada uno escribe y borra solo los suyos.
       match /comentarios/{cid} {
         allow read: if esMiembro(gid);

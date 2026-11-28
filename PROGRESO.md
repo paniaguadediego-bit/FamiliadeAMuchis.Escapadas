@@ -1,5 +1,14 @@
 # PROGRESO
 
+## v49 · 📰 Por revisar: lo que anuncian los ayuntamientos (2026-11-28)
+- Nuevo lector `herramientas/noticias_aytos.py` (GitHub Actions cada mañana, `noticias.yml`) → `data/revision.json`: agendas de
+  Arona (RSS con fecha, lugar y coordenadas), Adeje, La Orotava y La Laguna, y titulares con pinta de evento de las noticias de
+  Arona, La Orotava, Puerto de la Cruz (API de WordPress) y La Laguna. Santa Cruz corta las conexiones de programas: queda el aviso.
+- En Eventos, arriba, «📰 Por revisar»: «➕ Añadir» (con fecha → a Eventos con ⚠️ VERIFICAR; sin fecha → «📰 Anunciados sin
+  fecha») o «🗑️ Descartar». Con grupo lo decide cualquiera y lo ve todo el grupo (`grupos/{gid}/revision`, reglas nuevas).
+- Rueda de Planes: las tarjetas de arriba y abajo se ven más (opacidad 0,82, rueda algo más alta, degradado más corto).
+- Prueba: `node pruebas/revision.js`.
+
 ## v48 · Rueda cronológica y más sutil (2026-11-28)
 - La rueda ya no lleva 💡 ideas: solo planes del grupo y eventos, por orden cronológico (por el día en que empiezan; a
   igual día, primero los planes y luego lo que acaba antes).

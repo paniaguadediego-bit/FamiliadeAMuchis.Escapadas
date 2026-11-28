@@ -462,3 +462,12 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   noticia oficial como fuente y `verificar`.
 - (v48) Rueda sin ideas, en orden cronológico; giro 16°, escala −7 %, sin transición; solo recuerda la posición tras
   tocarla (`r._listo`); al pintar, empieza en la 2.ª tarjeta.
+
+## 📰 Por revisar (v49, pedido del usuario: eventos de los ayuntamientos)
+- `herramientas/noticias_aytos.py` → `data/revision.json` {notas, avisos:[{id rv-<web>-…, municipio, clase agenda|noticia, titulo,
+  url, desde, hasta ('' = sin fecha), lugar, extracto, categoria, foto, lat, lon, visto}]}. Workflow `noticias.yml` (diario).
+- Webs: arona.org (RSS agenda y noticias), adeje.es/agenda, laorotava.es/es/agenda y /es/noticias, puertodelacruz.es (wp-json),
+  aytolalaguna.es (eventos de portada y noticias). Santa Cruz: no responde a programas; NO hacerse pasar por navegador.
+- Nada entra solo: `revEstado(id)` = grupos/{gid}/revision/{id} {estado si|no, uid, actualizado} o `esc.revision` sin grupo.
+  Aceptados con fecha → `cargarAgenda(…, 'ayto')` con `verificar`; sin fecha → «📰 Anunciados sin fecha» en Eventos.
+- (v49) Rueda: vecinas con opacidad 1 − 0,18·d (más visibles), 16,5 rem de alto.

@@ -1,0 +1,44 @@
+# 📰 Lee las agendas y noticias de 6 ayuntamientos (La Laguna, Santa Cruz, La Orotava, Puerto de la Cruz, Adeje, Arona)
+# y deja los avisos en data/revision.json para la bandeja «Por revisar» de la app. Cada mañana, a mano o al cambiar el lector.
+name: Avisos de los ayuntamientos
+
+on:
+  schedule:
+    - cron: '41 5 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'herramientas/noticias_aytos.py'
+      - '.github/workflows/noticias.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datos-main
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Leer las webs de los ayuntamientos
+        run: python3 herramientas/noticias_aytos.py
+
+      - name: Subir si hay avisos nuevos o cambiados
+        run: |
+          if git diff --quiet -I '"actualizado"' data/revision.json; then echo "Sin cambios"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/revision.json
+          git commit -m "Avisos de los ayuntamientos actualizados"
+          git pull --rebase origin main
+          git push origin HEAD:main

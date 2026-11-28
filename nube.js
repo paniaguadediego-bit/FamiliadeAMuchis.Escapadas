@@ -117,7 +117,7 @@ function seguirGrupo(gid) {
     if (!d.exists || !(d.data().miembros || []).includes(NUBE.user.uid)) { NUBE.grupo = null; return repintarNube(); }
     const nuevo = !NUBE.grupo || NUBE.grupo.id !== d.id;
     NUBE.grupo = { id: d.id, ...d.data() };
-    if (nuevo) { seguirMarcas(d.id); seguirPlanes(d.id); seguirDisponibilidad(d.id); seguirPropios(d.id); if (typeof seguirComentarios === 'function') seguirComentarios(d.id); }
+    if (nuevo) { seguirMarcas(d.id); seguirPlanes(d.id); seguirDisponibilidad(d.id); seguirPropios(d.id); if (typeof seguirComentarios === 'function') seguirComentarios(d.id); if (typeof seguirRevision === 'function') seguirRevision(d.id); }
     await cargarMiembros(); repintarNube(); refrescarVista();
   }, () => { NUBE.grupo = null; dejarMarcas(); repintarNube(); });
 }

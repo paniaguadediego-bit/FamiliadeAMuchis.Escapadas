@@ -820,4 +820,15 @@ button.punto.on { background: var(--pri); width: 22px; border-radius: 999px; }
 .rueda { height: 14rem; padding: 4.6rem 0; gap: 5px; }
 .rueda .ev-tarjeta { transition: none; }
 .rueda button.ev-ban, .rueda button.ev-ban:first-child { min-height: 4.6rem; }
-:root { --css-ver: "v48"; }
+/* v49: las tarjetas de arriba y abajo se ven más */
+.rueda { height: 16.5rem; padding: 5.8rem 0; -webkit-mask-image: linear-gradient(transparent 0%, #000 14%, #000 86%, transparent 100%); mask-image: linear-gradient(transparent 0%, #000 14%, #000 86%, transparent 100%); }
+/* v49: 📰 Por revisar */
+.rev summary { cursor: pointer; font-weight: 600; }
+.rev-ayuda { font-size: .78rem; margin: .4rem 0; }
+.rev-item { display: flex; gap: .6rem; align-items: flex-start; padding: .55rem 0; border-top: 1px solid var(--line); }
+.rev-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.rev-tx a { font-weight: 600; color: inherit; }
+.rev-tx p { margin: 2px 0 0; font-size: .78rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rev-acc { display: flex; flex-direction: column; gap: 4px; flex: none; }
+.rev-sinf { color: #b45309; }
+:root { --css-ver: "v49"; }
