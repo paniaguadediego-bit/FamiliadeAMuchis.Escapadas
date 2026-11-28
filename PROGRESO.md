@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v57 · Tiempo dentro de Planes y Mapa propio (2026-11-28)
+- Pestañas: 🏠 Planes · 🧭 Explorar (lista) · 🗺️ Mapa · 🎟️ Eventos · 🎨 Cultura · 👥 Grupo · ☰ Más. El Tiempo ya no es
+  pestaña y el Mapa sale de Explorar (sin «Lista ⇄ Mapa»).
+- Planes: «🌤️ Previsión del tiempo» plegada al final. Dentro, un mapita de la isla con el cielo, la máxima y la lluvia (si ≥ 40 %)
+  sobre cada zona y chips para elegir el día (hasta 7), y debajo el finde y los próximos días. «Ver el tiempo» de cualquier
+  sitio abre este desplegable. Prueba: `node pruebas/tiempo_planes.js`.
+
 ## v56 · «¿Seguro?» y pasaporte de verdad (2026-11-28)
 - Aviso propio de la app (no el del navegador, que en la app instalada a veces ni se ve) al salir de un grupo y al cerrar
   sesión: «¿Seguro que quieres…?» con Cancelar / Sí. También al borrar marcas, cancelar un plan, borrar un comentario o un sitio.

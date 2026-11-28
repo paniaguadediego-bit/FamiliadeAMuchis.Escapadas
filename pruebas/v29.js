@@ -3,13 +3,7 @@ const P = require('./comun');
 (async () => {
   const { p, errores, cerrar } = await P.abrir();
   console.log('Pestañas:', await p.$$eval('#tabs button', x => x.map(e => e.textContent.trim()).join(' · ')));
-  await p.click('#tabs [data-tab="explorar"]'); await p.waitForTimeout(300);
-  console.log('Explorar abre:', await p.evaluate(() => tab), '| conmutador:', await p.locator('.conmutador button').count());
-  await p.click('.conmutador [data-tab="mapa"]'); await p.waitForTimeout(300);
-  await p.click('#tabs [data-tab="finde"]'); await p.click('#tabs [data-tab="explorar"]'); await p.waitForTimeout(200);
-  console.log('Recuerda el mapa:', await p.evaluate(() => tab), '| pestaña resaltada:', await p.$eval('#tabs .on', e => e.dataset.tab));
-  await p.click('#tabs [data-tab="tiempo"]'); await p.waitForTimeout(200);
-  console.log('Tiempo desde Planes:', await p.evaluate(() => tab), '| resaltada:', await p.$eval('#tabs .on', e => e.dataset.tab));
+  // (v57) Mapa es pestaña propia y el Tiempo va plegado en Planes: ver pruebas/tiempo_planes.js
   await P.conGrupo(p);
   await p.evaluate(() => { const s = proximoSabado(); __store.disponibilidad = { u2: { uid: 'u2', si: [masDias(s, 7)], no: [] }, u3: { uid: 'u3', si: [masDias(s, 7)], no: [] } }; seguirDisponibilidad('PRUEBA23'); });
   await P.tab(p, 'finde'); await p.waitForTimeout(300);

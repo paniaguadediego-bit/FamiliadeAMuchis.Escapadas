@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v56';
+const VERSION = 'v57';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -118,12 +118,20 @@ applyLetra();
 // ---------- pestañas ----------
 // 5 pestañas (como las apps más valoradas). «Explorar» es Sitios y Mapa en una sola pestaña con «Lista ⇄ Mapa»;
 // el Tiempo se abre desde Planes. Las vistas internas siguen siendo: finde, tiempo, eventos, sitios, mapa, grupo, mas.
-const TABS = [['finde', 'Planes', '🏠'], ['tiempo', 'Tiempo', '🌤️'], ['explorar', 'Explorar', '🧭'], ['eventos', 'Eventos', '🎟️'], ['cultura', 'Cultura', '🎨'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
-const VISTAS = { finde: 'Escapadas', tiempo: 'Tiempo', eventos: 'Eventos', cultura: 'Cultura', sitios: 'Explorar', mapa: 'Explorar', grupo: 'Grupo', mas: 'Más' };
-const pestañaDe = t => t === 'sitios' || t === 'mapa' ? 'explorar' : t;
+// (v57) El Tiempo ya no es pestaña: va plegado al final de Planes (con un mapita). El Mapa, pestaña propia (fuera de Explorar).
+const TABS = [['finde', 'Planes', '🏠'], ['explorar', 'Explorar', '🧭'], ['mapa', 'Mapa', '🗺️'], ['eventos', 'Eventos', '🎟️'], ['cultura', 'Cultura', '🎨'], ['grupo', 'Grupo', '👥'], ['mas', 'Más', '☰']];
+const VISTAS = { finde: 'Escapadas', eventos: 'Eventos', cultura: 'Cultura', sitios: 'Explorar', mapa: 'Mapa', grupo: 'Grupo', mas: 'Más' };
+const pestañaDe = t => t === 'sitios' ? 'explorar' : t;
 let tab = load('esc.tab', 'finde');
 if (!VISTAS[tab]) tab = 'finde';
-function ir(t) { if (t === 'explorar') t = load('esc.explorar', 'sitios'); if (t === 'sitios' || t === 'mapa') save('esc.explorar', t); tab = t; save('esc.tab', t); window.scrollTo(0, 0); render(); }
+function ir(t) {
+  if (t === 'explorar') t = 'sitios';
+  if (t === 'tiempo') { // los enlaces «Ver el tiempo» abren el desplegable del final de Planes
+    save('esc.tiempoabierto', true); tab = 'finde'; save('esc.tab', tab); render();
+    setTimeout(() => { const x = document.querySelector('.tiempo-caja'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60); return;
+  }
+  tab = t; save('esc.tab', t); window.scrollTo(0, 0); render();
+}
 function pintarTabs() {
   const nov = k => (k === 'eventos' || k === 'cultura') && typeof novNuevas === 'function' && k !== tab ? novNuevas(k) : 0;
   $('#tabs').innerHTML = TABS.map(([k, n, ic]) => { const c = nov(k); return `<button class="${k === pestañaDe(tab) ? 'on' : ''}" data-tab="${k}"><span>${ic}</span>${n}${c ? `<i class="badge" aria-label="${c} novedades">${c > 9 ? '9+' : c}</i>` : ''}</button>`; }).join('');
@@ -131,13 +139,13 @@ function pintarTabs() {
 document.addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) ir(b.dataset.tab); });
 $('#buscabtn').addEventListener('click', () => { ir('sitios'); const i = $('#q'); if (i) i.focus(); });
 
-// Explorar: «📋 Lista ⇄ 🗺️ Mapa» arriba (como AllTrails).
+// (hasta v56) Explorar llevaba «📋 Lista ⇄ 🗺️ Mapa» arriba; desde v57 el Mapa es pestaña propia.
 const conmutador = () => MP.elegir ? '' : `<div class="conmutador" role="tablist"><button class="${tab === 'sitios' ? 'on' : ''}" data-tab="sitios" role="tab"><span>📋</span>Lista</button><button class="${tab === 'mapa' ? 'on' : ''}" data-tab="mapa" role="tab"><span>🗺️</span>Mapa</button></div>`;
 function render() {
   pintarTabs();
   $('#title').textContent = VISTAS[tab] || 'Escapadas';
   const v = $('#view');
-  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'cultura' ? viewCultura() : tab === 'sitios' ? conmutador() + viewSitios() : tab === 'mapa' ? conmutador() + viewMapa()
+  v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'eventos' ? viewEventos() : tab === 'cultura' ? viewCultura() : tab === 'sitios' ? viewSitios() : tab === 'mapa' ? viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
   if (tab === 'finde' && typeof girarRuedas === 'function') { montarPaginador(); girarRuedas(); }

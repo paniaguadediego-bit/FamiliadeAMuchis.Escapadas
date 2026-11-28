@@ -82,7 +82,7 @@ async function pedirTiempo() {
         a.p = Math.max(a.p, h.precipitation_probability[j] ?? 0); a.v = Math.max(a.v, h.wind_speed_10m[j] ?? 0); });
       for (const [f, a] of Object.entries(tardes)) porZona[z][f + 'T'] = a;
     });
-    if (Object.keys(porZona).length) { tiempo = { t: Date.now(), z: porZona }; save(K_TIEMPO, tiempo); if (tab === 'finde' || tab === 'tiempo') render(); }
+    if (Object.keys(porZona).length) { tiempo = { t: Date.now(), z: porZona }; save(K_TIEMPO, tiempo); if (tab === 'finde') render(); }
   } catch {}
   tiempoPidiendo = false;
 }
@@ -178,6 +178,40 @@ function viewTiempo() {
     <h2>📆 Los próximos días</h2>${proximosDiasHTML() || '<div class="card muted">Sin previsión todavía.</div>'}
     <p class="muted">Previsión de Open-Meteo en seis puntos de la isla, uno por zona: ${Object.values(ZONAS).map(Z => `${esc(Z.lugar)} (${esc(Z.nom)})`).join(', ')}. En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
 }
+// (v57) 🌤️ Previsión plegada al final de Planes: mapita de la isla con el cielo y la máxima de cada zona, el finde y los
+// próximos días. Se abre y se cierra (se recuerda en esc.tiempoabierto); «Ver el tiempo» de cualquier sitio la abre.
+let mapaTDia = null;
+// Dónde se pinta cada zona en el mapita (La Laguna y Santa Cruz, separadas un poco para que no se pisen).
+const POS_MAPA_T = { oeste: [28.2, -16.82], sur: [28.06, -16.68], este: [28.40, -16.26], laguna: [28.545, -16.36], norte: [28.40, -16.56], teide: [28.255, -16.64] };
+function mapaTiempoHTML() {
+  const dias = [];
+  for (let i = 0; i < 10 && dias.length < 7; i++) { const f = masDias(hoyISO(), i); if (tiempoDe('norte', f)) dias.push(f); }
+  if (!dias.length) return '<div class="muted centro">⏳ Buscando el tiempo…</div>';
+  if (!dias.includes(mapaTDia)) mapaTDia = dias[0];
+  const L0 = -16.95, L1 = -16.08, A0 = 27.97, A1 = 28.62, W = 320, k = W / ((L1 - L0) * Math.cos(28.3 * Math.PI / 180)), H = Math.round((A1 - A0) * k);
+  const xy = ([la, lo]) => [((lo - L0) * Math.cos(28.3 * Math.PI / 180) * k).toFixed(1), ((A1 - la) * k).toFixed(1)];
+  const isla = (typeof ISLA !== 'undefined' ? ISLA : []).map(([lo, la]) => xy([la, lo]).join(',')).join(' ');
+  const nomDiaC = f => f === hoyISO() ? 'Hoy' : f === masDias(hoyISO(), 1) ? 'Mañana' : new Date(f + 'T12:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
+  const marcas = Object.entries(ZONAS).map(([z, Z]) => { const t = tiempoDe(z, mapaTDia); if (!t) return '';
+    const [x, y] = xy(POS_MAPA_T[z] || Z.punto), [ic] = cielo(t.c);
+    return `<g transform="translate(${x} ${y})"><text class="mt-ic" text-anchor="middle" y="0">${ic}</text>
+      <text class="mt-t" text-anchor="middle" y="17">${Math.round(t.max)}°${t.p >= 40 ? ` · ${t.p}%` : ''}</text><text class="mt-n" text-anchor="middle" y="28">${esc(Z.lugar)}</text></g>`; }).join('');
+  return `<div class="chips mt-dias">${dias.map(f => `<button class="chip ${f === mapaTDia ? 'on' : ''}" data-mtdia="${f}">${esc(nomDiaC(f))}</button>`).join('')}</div>
+    <svg class="mapa-t" viewBox="-8 -14 ${W + 16} ${H + 30}" role="img" aria-label="Tiempo por zonas el ${esc(nomDiaC(mapaTDia))}">
+      <polygon class="mt-isla" points="${isla}"/>${marcas}</svg>`;
+}
+function tiempoPlegadoHTML() {
+  pedirTiempo();
+  const abierto = load('esc.tiempoabierto', false);
+  return `<details class="card tiempo-caja" ${abierto ? 'open' : ''} data-tiempocaja><summary>🌤️ Previsión del tiempo <small class="muted">por zonas</small></summary>
+    ${abierto ? `${mapaTiempoHTML()}
+    <h3>El fin de semana</h3>${tiempoHTML()}
+    <h3>Los próximos días</h3>${proximosDiasHTML() || '<div class="muted">Sin previsión todavía.</div>'}
+    <p class="muted mt-nota">Open-Meteo, un punto por zona: ${Object.values(ZONAS).map(Z => esc(Z.lugar)).join(', ')}. En la montaña y en el norte cambia rápido.</p>` : ''}</details>`;
+}
+document.addEventListener('toggle', e => { const d = e.target; if (d.dataset && 'tiempocaja' in d.dataset) { const era = load('esc.tiempoabierto', false); save('esc.tiempoabierto', d.open); if (d.open && !era) render(); } }, true);
+document.addEventListener('click', e => { const b = e.target.closest('[data-mtdia]'); if (b) { mapaTDia = b.dataset.mtdia; render(); } });
+
 // Resumen para Este finde: qué zonas tienen buen tiempo y cuáles no (viernes tarde a domingo).
 function tiempoResumenHTML() {
   if (!leerTiempo()) { pedirTiempo(); return `<div class="card muted">⏳ Buscando el tiempo… <button class="sec mini" data-tab="tiempo">Ver el tiempo ›</button></div>`; }
@@ -320,6 +354,7 @@ function viewFindeS5() {
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">${marca(s.id).estado === 'quiero' ? '🔖 Tú' : `🔖 ${otrosEn(s.id).quiero.map(([u]) => esc(perfilDe(u).emoji)).join('')}`}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}</small></span></span></button></div>`).join('')}</div>`
       : '<div class="card muted centro">Todavía nada. En 🧭 Explorar, abre una ficha y toca «🔖 Quiero ir».</div>'}
     ${cuentaHTML()}
-    ${rapidosHTML()}</div>`;
+    ${rapidosHTML()}
+    ${tiempoPlegadoHTML()}</div>`;
 }
-addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde' || tab === 'tiempo')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });
+addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });

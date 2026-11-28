@@ -99,7 +99,7 @@ Rambla, San Miguel de Abona, Santa Cruz de Tenerife, Santa Úrsula,
 Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 
 ## Iconos (uno por significado)
-- Pestañas (v29, 5): 🏠 Planes · 🧭 Explorar (📋 Lista ⇄ 🗺️ Mapa) · 🎟️ Eventos · 👥 Grupo · ☰ Más. 🌤️ Tiempo se abre desde Planes.
+- Pestañas (v57, 7): 🏠 Planes · 🧭 Explorar (lista) · 🗺️ Mapa · 🎟️ Eventos · 🎨 Cultura · 👥 Grupo · ☰ Más. 🌤️ Tiempo, plegado al final de Planes.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
 - Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota · 🧸 bien con niños.
 - 🎬 cine (cartelera y categoría de eventos) · 🗣️ versión original.
@@ -501,3 +501,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   `confirm()` (salir del grupo, cerrar sesión, borrar marcas, cancelar plan, borrar comentario o sitio).
 - Pasaporte: `.pas-tapa` (granate #6d1a26–#8e2a37, dorado #e8c873), `.pas-hoja` con SVG de ondas a opacidad 0,16, sellos
   `.pas-m.si` girados, `.pas-mrz` al pie. Tema oscuro en sus dos selectores.
+
+## Tiempo en Planes y Mapa propio (v57, pedido del usuario)
+- `TABS`: finde, explorar (= sitios), mapa, eventos, cultura, grupo, mas. Ya no hay vista `tiempo`: `ir('tiempo')` abre Planes con
+  `esc.tiempoabierto` y baja a `.tiempo-caja`. `conmutador` ya no se usa.
+- `tiempoPlegadoHTML()` (finde.js, al final de Planes): solo pinta el contenido si está abierto. `mapaTiempoHTML()`: SVG con `ISLA`
+  (app.js) y `POS_MAPA_T` (La Laguna y Santa Cruz separadas), `mapaTDia` (chips `data-mtdia`).

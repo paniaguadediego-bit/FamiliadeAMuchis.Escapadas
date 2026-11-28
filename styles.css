@@ -891,4 +891,12 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .confirma .cf-ic { font-size: 2rem; } .confirma h3 { margin: 6px 0 4px; font-size: 1.1rem; } .confirma p { margin: 0 0 14px; color: var(--muted, #666); font-size: .9rem; }
 .confirma .cf-bot { display: flex; gap: 8px; } .confirma .cf-bot button { flex: 1; margin: 0; }
 @keyframes cf-in { from { opacity: 0; } to { opacity: 1; } }
-:root { --css-ver: "v56"; }
+/* v57: 🌤️ previsión plegada al final de Planes, con mapita */
+.tiempo-caja { margin-top: 14px; } .tiempo-caja summary { cursor: pointer; font-weight: 700; font-size: 1rem; }
+.tiempo-caja h3 { font-size: .9rem; margin: 12px 0 4px; } .mt-nota { font-size: .74rem; }
+.mt-dias { margin: 8px 0 4px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
+.mt-dias .chip { flex: none; }
+.mapa-t { width: 100%; height: auto; display: block; margin: 4px 0; }
+.mt-isla { fill: color-mix(in srgb, var(--pri) 12%, var(--card, #fff)); stroke: color-mix(in srgb, var(--pri) 40%, transparent); stroke-width: 1.2; }
+.mt-ic { font-size: 22px; } .mt-t { font-size: 11px; font-weight: 700; fill: var(--fg); } .mt-n { font-size: 8.5px; fill: var(--muted, #777); }
+:root { --css-ver: "v57"; }
