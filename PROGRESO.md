@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v63 · Museo de Agache (2026-11-28)
+- Nuevo sitio: Museo Arqueológico, Costumbrista y Naturalista del Tagoror Cultural de Agache (El Escobonal, Güímar), propuesto
+  por el usuario. Fuente: ficha del blog «Güímar Tenerife»; coordenadas: las de El Escobonal en Wikipedia (el museo está en la
+  plaza San José). ⚠️ VERIFICAR ubicación exacta y horario (el blog dice L-V 16:30-20:00). Sin teléfono ni correo.
+
 ## v62 · Cines como pantallas y «Nuevo» arriba (2026-11-28)
 - Cultura → Cine: los cines son pantallas en una ruleta que se desliza de lado (como la rueda de Planes); la del centro,
   iluminada, es la elegida. Así se distingue del botón VOSE y ocupa una sola fila.
