@@ -454,3 +454,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 ## Rueda de Planes (v46)
 - `girarRuedas()`/`pintarRueda()` (planes.js): contenedor `[data-rueda]` con scroll-snap vertical; cada tarjeta, según su
   distancia al centro, `rotateX`, `scale` y opacidad (≈ 1 · 0,58 · 0,15). Tocar una no centrada la centra. Se llama al pintar Planes.
+
+## Findes en páginas (v47)
+- `paginadorFindes()`/`montarPaginador()` (planes.js): 3 páginas (este finde, el que viene, en 2 semanas) con scroll-snap
+  horizontal y puntitos `data-pagina`; `paginaFinde` recuerda la página. La rueda no lleva botones de Proponer.
+- Eventos que no salen en las agendas automáticas (p. ej. La Noche en Blanco de La Laguna): a mano en sitios.json, con la
+  noticia oficial como fuente y `verificar`.

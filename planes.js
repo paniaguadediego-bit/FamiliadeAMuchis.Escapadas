@@ -326,7 +326,7 @@ function carruselFindeHTML(i) {
   };
   const tEv = ([s, f]) => {
     const ya = f[0] <= hoy && f[1] >= hoy, p = g && proximosPlanes().find(x => x.sitioId === s.id);
-    const acc = !g ? '' : p ? '' : `<button class="sec mini" data-plan="abrir" data-sitio="${esc(s.id)}" data-sabado="${f[0] < d0 ? (sab < hoy ? hoy : sab) : f[0]}" data-carrusel="${i}">📅 Proponer</button>`;
+    const acc = ''; // (v47) sin «Proponer» en la rueda: se propone desde la ficha
     return `<div class="ev-tarjeta"><button class="ev-ban banner-plano ya" data-irficha="${esc(s.id)}" style="${s.municipio ? varsMuni(s.municipio) : '--h:330'}">${fotoImg(s.id, 'banner-foto')}
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta">${catIc(s)} ${ya ? '¡Ahora!' : s.destacado ? '¡No te lo pierdas!' : 'Evento'}</span><b>${esc(s.nombre)}</b><small>${esc(fechaEventoTxt(f))}${s.municipio ? ' · ' + esc(s.municipio) : ''}</small></span></span></button>
       ${acc ? `<div class="ev-acc">${acc}</div>` : ''}</div>`;
@@ -335,7 +335,7 @@ function carruselFindeHTML(i) {
     const tv = typeof tiempoVale === 'function' ? tiempoVale(s, sab) : {}, q = ganas(s.id);
     return `<div class="ev-tarjeta t-idea"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">💡 Idea${tv.nota ? ' · ' + esc(tv.nota) : ''}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}${q ? ` · 🔖 ${q} con ganas` : ''}</small></span></span></button>
-      ${g ? `<div class="ev-acc"><button class="sec mini" data-plan="abrir" data-sitio="${esc(s.id)}" data-sabado="${sab < hoy ? hoy : sab}" data-carrusel="${i}">📅 Proponer</button></div>` : ''}</div>`;
+      </div>`;
   };
   // (v43) Lista vertical; los planes del grupo primero y el resto en orden aleatorio (fijo durante la visita).
   const mezcla = l => l.map(x => [x, azarDe(x[0] ? x[0].id || x[0] : x.id)]).sort((a, b) => a[1] - b[1]).map(([x]) => x);
@@ -345,7 +345,7 @@ function carruselFindeHTML(i) {
   const fests = b.dias.map(k => festivo(k)).filter(Boolean);
   const rango = `${nomDia(d0)} – ${nomDia(dN)} ${new Date(dN + 'T12:00').toLocaleDateString('es-ES', { month: 'short' })}`;
   const form = g && planForm && planForm.carrusel === String(i) ? formPlanHTML(planForm) : '';
-  return `<div class="car-cab"><h2>${i === 0 ? '🎠 Este finde' : '🎠 El que viene'} <small class="muted">${esc(rango)}${fests.length ? ' · 🎉 puente' : ''}</small></h2>${i === 0 ? '<button class="enlace" data-tab="eventos">Todos los eventos ›</button>' : ''}</div>
+  return `<div class="car-cab"><h2>${['🎠 Este finde', '🎠 El que viene', '🎠 En 2 semanas'][i] || '🎠'} <small class="muted">${esc(rango)}${fests.length ? ' · 🎉 puente' : ''}</small></h2>${i === 0 ? '<button class="enlace" data-tab="eventos">Todos los eventos ›</button>' : ''}</div>
     <div class="ev-pista">${ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} · ` : ''}${evs.length ? `🎟️ ${evs.length} evento${evs.length > 1 ? 's' : ''} · ` : ''}💡 ${ideas.length} ideas</div>
     ${tarjetas.length > 1 ? `<div class="rueda" data-rueda="${i}" aria-label="Desliza para girar">${tarjetas.join('')}</div>` : `<div class="ev-lista">${tarjetas.join('')}</div>`}${form}`;
 }
@@ -449,3 +449,21 @@ function pintarRueda(r) {
   });
 }
 addEventListener('resize', () => girarRuedas());
+
+// ---------- ↔️ Findes en páginas (v47): deslizar a la derecha pasa al finde siguiente ----------
+let paginaFinde = 0;
+function paginadorFindes() {
+  const n = 3;
+  return `<div class="findes-pager" data-pager>${Array.from({ length: n }, (_, i) => `<section class="finde-pag">${carruselFindeHTML(i)}</section>`).join('')}</div>
+    <div class="pager-puntos">${Array.from({ length: n }, (_, i) => `<button class="punto ${i === paginaFinde ? 'on' : ''}" data-pagina="${i}" aria-label="${['Este finde', 'El que viene', 'En 2 semanas'][i]}"></button>`).join('')}<span class="muted">desliza ↔</span></div>`;
+}
+function montarPaginador() {
+  const p = document.querySelector('[data-pager]'); if (!p) return;
+  if (!p._pg) {
+    p._pg = 1; let t = 0;
+    p.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(() => { paginaFinde = Math.round(p.scrollLeft / p.clientWidth);
+      document.querySelectorAll('.pager-puntos .punto').forEach((b, i) => b.classList.toggle('on', i === paginaFinde)); }, 80); }, { passive: true });
+  }
+  p.scrollLeft = paginaFinde * p.clientWidth;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-pagina]'); if (b) { const p = document.querySelector('[data-pager]'); paginaFinde = +b.dataset.pagina; if (p) p.scrollTo({ left: paginaFinde * p.clientWidth, behavior: 'smooth' }); } });

@@ -808,4 +808,12 @@ header { margin-bottom: 18px; }
 .rueda .ev-tarjeta:not(.en-centro) .ev-acc { visibility: hidden; }
 .rueda button.ev-ban, .rueda button.ev-ban:first-child { min-height: 6.2rem; }
 @media (prefers-reduced-motion: reduce) { .rueda .ev-tarjeta { transition: none; } }
-:root { --css-ver: "v46"; }
+/* v47: findes en páginas que se deslizan */
+.findes-pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0 -12px; overscroll-behavior-x: contain; }
+.findes-pager::-webkit-scrollbar { display: none; }
+.finde-pag { flex: 0 0 100%; scroll-snap-align: start; padding: 0 12px; box-sizing: border-box; min-width: 0; }
+.pager-puntos { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 2px 0 6px; font-size: .7rem; }
+button.punto { width: 9px; height: 9px; min-height: 0; padding: 0; margin: 0; border-radius: 50%; border: 0; background: var(--line); }
+button.punto.on { background: var(--pri); width: 22px; border-radius: 999px; }
+.rueda { height: 18rem; padding: 5.4rem 0; }
+:root { --css-ver: "v47"; }

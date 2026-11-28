@@ -307,7 +307,7 @@ function viewFindeS5() {
     ? SITIOS.filter(s => marca(s.id).estado !== 'fuimos' && marca(s.id).estado !== 'quiero' && otrosEn(s.id).quiero.length).slice(0, 6) : [];
   const ganas = [...quiero, ...grupoQuiere];
   return `<div class="planes">${portadaHTML()}
-    ${carruselFindeHTML(0)}${carruselFindeHTML(1)}
+    ${paginadorFindes()}
     ${typeof enGrupo === 'function' && enGrupo() ? calendarioHTML() : ''}
     <h2>🔖 Con ganas de ir</h2>
     ${ganas.length ? `<div class="ev-carrusel ganas">${ganas.map(s => `<div class="ev-tarjeta"><button class="ev-ban banner-plano" data-irficha="${esc(s.id)}" style="${varsMuni(s.municipio)}">${fotoImg(s.id, 'banner-foto')}

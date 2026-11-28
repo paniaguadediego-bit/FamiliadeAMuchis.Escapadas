@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v47 · Findes deslizables y La Noche en Blanco (2026-11-28)
+- Rueda sin «📅 Proponer» (ocupaba sitio; se propone desde ➕ Plan o desde la ficha).
+- Los findes van en páginas: deslizar a la izquierda pasa de «Este finde» a «El que viene» y «En 2 semanas»; puntitos
+  debajo (tocar uno salta a ese finde). Prueba: `node pruebas/paginas.js`.
+- Añadida La Noche en Blanco de La Laguna (28-11-2026, destacada) con la noticia del Ayuntamiento como fuente: no estaba
+  ni en Turismo de Tenerife ni en el Auditorio. Pendiente: buscar más fuentes de eventos municipales.
+
 ## v46 · Rueda de eventos en Planes (2026-11-28)
 - «Este finde» y «El que viene» son una rueda: la tarjeta del centro grande y nítida; la de arriba y la de abajo, más
   pequeñas, inclinadas y desvanecidas; la siguiente apenas asoma. Al deslizar dentro gira y encaja; tocar una de los
