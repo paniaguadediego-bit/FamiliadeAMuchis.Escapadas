@@ -1,5 +1,13 @@
 # PROGRESO
 
+## v66 · Tiempo con pestaña, fondos visibles y categorías más finas (2026-11-28)
+- 🌤️ Tiempo vuelve a ser pestaña, entre Cultura y Grupo (8 pestañas), con el mapita por zonas arriba; sale de Planes.
+- Fondo de foto que ahora sí se ve: capa fija detrás de la lista mientras bajas (antes la foto se estiraba por toda la lista
+  y quedaba tapada). Cine: foto del municipio del cine; Teatro: Teatro Guimerá; Música: Auditorio de Tenerife. Tarjetas algo
+  transparentes. (En las pruebas, la foto de Las Teresitas salía gris porque ya la había cargado el pase de la portada.)
+- Categorías de Eventos sobrias: icono en un círculo; la marcada con tinte suave, borde y ✓ (antes bloques verdes macizos).
+- ¿Algo más?: al tocar Plan, Sorpréndeme o ¿Qué hay? la pantalla ya no se desplaza (el botón se queda donde estaba).
+
 ## v65 · Secciones de Planes y rueda ampliable (2026-11-28)
 - Planes: cada sección en su panel con una franja de color arriba (findes naranja, calendario azul, con ganas rosa, ¿algo más?
   verde, tiempo celeste) y más espacio entre ellas: se nota al pasar de una a otra.

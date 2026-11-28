@@ -82,7 +82,7 @@ async function pedirTiempo() {
         a.p = Math.max(a.p, h.precipitation_probability[j] ?? 0); a.v = Math.max(a.v, h.wind_speed_10m[j] ?? 0); });
       for (const [f, a] of Object.entries(tardes)) porZona[z][f + 'T'] = a;
     });
-    if (Object.keys(porZona).length) { tiempo = { t: Date.now(), z: porZona }; save(K_TIEMPO, tiempo); if (tab === 'finde') render(); }
+    if (Object.keys(porZona).length) { tiempo = { t: Date.now(), z: porZona }; save(K_TIEMPO, tiempo); if (tab === 'finde' || tab === 'tiempo') render(); }
   } catch {}
   tiempoPidiendo = false;
 }
@@ -174,7 +174,8 @@ function proximosDiasHTML() {
 }
 function viewTiempo() {
   pedirTiempo();
-  return `<h2>🌤️ El fin de semana</h2>${tiempoHTML()}
+  return `<div class="card tiempo-mapa"><h2>🗺️ Por zonas</h2>${mapaTiempoHTML()}</div>
+    <h2>🌤️ El fin de semana</h2>${tiempoHTML()}
     <h2>📆 Los próximos días</h2>${proximosDiasHTML() || '<div class="card muted">Sin previsión todavía.</div>'}
     <p class="muted">Previsión de Open-Meteo en seis puntos de la isla, uno por zona: ${Object.values(ZONAS).map(Z => `${esc(Z.lugar)} (${esc(Z.nom)})`).join(', ')}. En la montaña y en el norte el tiempo cambia rápido: miradlo otra vez antes de salir.</p>`;
 }
@@ -353,8 +354,8 @@ function rapidosHTML() {
     ${panel ? `<div class="panel-rapido">${panel}</div>` : ''}`;
 }
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-panel]'); if (b) { panelPlanes = panelPlanes === b.dataset.panel ? '' : b.dataset.panel; if (panelPlanes === 'plan') planForm = { sabado: proximoSabado(), rapido: true }; else if (planForm && planForm.rapido) planForm = null; render();
-    if (panelPlanes) setTimeout(() => { const x = document.querySelector('.panel-rapido'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60); return; }
+  const b = e.target.closest('[data-panel]'); if (b) { panelPlanes = panelPlanes === b.dataset.panel ? '' : b.dataset.panel; if (panelPlanes === 'plan') planForm = { sabado: proximoSabado(), rapido: true }; else if (planForm && planForm.rapido) planForm = null; const y = b.getBoundingClientRect().top; render(); // (v66) la pantalla no se mueve: el botón queda donde estaba
+    const b2 = document.querySelector(`[data-panel="${b.dataset.panel}"]`); if (b2) scrollBy(0, b2.getBoundingClientRect().top - y); return; }
   const c = e.target.closest('[data-ircal]'); if (c) setTimeout(() => { const x = document.querySelector('.dia-sel'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60);
 });
 function viewFindeS5() {
@@ -375,7 +376,6 @@ function viewFindeS5() {
       <span class="banner-tx"><span class="banner-n"><span class="ev-cuenta c-idea">${marca(s.id).estado === 'quiero' ? '🔖 Tú' : `🔖 ${otrosEn(s.id).quiero.map(([u]) => esc(perfilDe(u).emoji)).join('')}`}</span><b>${tipoIc(s.tipo)} ${esc(s.nombre)}</b><small>${esc(s.municipio)}</small></span></span></button></div>`).join('')}</div>`
       : '<div class="card muted centro">Todavía nada. En 🧭 Explorar, abre una ficha y toca «🔖 Quiero ir».</div>'}
     ${cuentaHTML()}</section>
-    ${sec('mas', rapidosHTML())}
-    ${tiempoPlegadoHTML()}</div>`;
+    ${sec('mas', rapidosHTML())}</div>`;
 }
 addEventListener('online', () => { if (typeof tab !== 'undefined' && (tab === 'finde')) { if (leerTiempo()) tiempo.t = 0; pedirTiempo(); } });

@@ -952,4 +952,25 @@ button.pantalla { transition: background .15s, color .15s, box-shadow .15s; }
   border-radius: 999px; background: var(--card, #fff); color: var(--pri); border: 1.5px solid color-mix(in srgb, var(--pri) 45%, transparent); box-shadow: var(--sombra); }
 .rueda-marco.exp { padding: 18px 8px 8px; }
 .rueda-marco.exp .ev-lista button.ev-ban { min-height: 5.3rem; }
-:root { --css-ver: "v65"; }
+/* v66: fondos de foto que sí se ven (tarjetas algo transparentes) */
+.cine-lista::before { opacity: .34; filter: saturate(.8) blur(1.5px); background-attachment: scroll; }
+.cine-lista .card, .cine-lista .ficha, .cine-lista .ev-sem > summary { background: color-mix(in srgb, var(--card, #fff) 72%, transparent); backdrop-filter: blur(2px); }
+.cine-lista { padding: 6px; margin: 0 -6px; }
+/* v66: categorías de Eventos sobrias (icono en círculo; la marcada con tinte suave, borde y ✓) */
+.ev-cats.ev-cats-g { border: 1px solid var(--line); background: var(--card, #fff); padding: 6px; gap: 6px; }
+.ev-cats-g button.fm { position: relative; background: color-mix(in srgb, var(--fg) 3%, transparent); color: var(--fg); border: 1.5px solid transparent; font-weight: 600; min-height: 3.6rem; }
+.ev-cats-g button.fm span { width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--fg) 7%, transparent); font-size: 1.05rem; }
+.ev-cats-g button.fm.on { background: color-mix(in srgb, var(--pri) 14%, transparent); color: var(--fg); border-color: color-mix(in srgb, var(--pri) 70%, transparent); }
+.ev-cats-g button.fm.on span { background: color-mix(in srgb, var(--pri) 28%, transparent); }
+.ev-cats-g button.fm.on::after { content: '✓'; position: absolute; top: 3px; right: 7px; font-size: .7rem; color: var(--pri); font-weight: 800; }
+/* v66: 8 pestañas */
+nav#tabs button { font-size: .56rem; } nav#tabs button.on span { padding: 3px 11px; }
+.tiempo-mapa h2 { margin-top: 2px; }
+/* v66: la foto de fondo se queda fija detrás mientras bajas (capa sticky), en vez de estirarse por toda la lista */
+.cine-lista::before { content: none; }
+.lista-fondo { position: sticky; top: 4.5rem; height: calc(100vh - 9rem); margin-bottom: calc(-100vh + 9rem); z-index: -1; border-radius: 16px;
+  background: var(--fondo, none) center / cover no-repeat; opacity: .55; filter: saturate(.9) blur(1px); pointer-events: none; }
+.cine-lista .card, .cine-lista .ficha, .cine-lista .ev-sem > summary { background: color-mix(in srgb, var(--card, #fff) 66%, transparent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lista-fondo { opacity: .4; } }
+:root[data-theme="dark"] .lista-fondo { opacity: .4; }
+:root { --css-ver: "v66"; }

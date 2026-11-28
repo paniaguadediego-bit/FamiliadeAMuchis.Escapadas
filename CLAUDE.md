@@ -99,7 +99,7 @@ Rambla, San Miguel de Abona, Santa Cruz de Tenerife, Santa Úrsula,
 Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 
 ## Iconos (uno por significado)
-- Pestañas (v57, 7): 🏠 Planes · 🧭 Explorar (lista) · 🗺️ Mapa · 🎟️ Eventos · 🎨 Cultura · 👥 Grupo · ☰ Más. 🌤️ Tiempo, plegado al final de Planes.
+- Pestañas (v66, 8): 🏠 Planes · 🧭 Explorar (lista) · 🗺️ Mapa · 🎟️ Eventos · 🎨 Cultura · 🌤️ Tiempo · 👥 Grupo · ☰ Más.
 - 🕐 media jornada (Sorpréndeme); 🌤️ es solo el tiempo.
 - Marcas: 🔖 Quiero ir · ✅ Visitado (en datos sigue siendo `fuimos`) · ✖️ No · ⭐ valoración · 📝 nota · 🧸 bien con niños.
 - 🎬 cine (cartelera y categoría de eventos) · 🗣️ versión original.
@@ -517,3 +517,9 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   Eventos sin la tarjeta «Este finde hay…».
 - (v64) `girarCines()`: `.on` según la más centrada en cada fotograma; al parar, `[data-cinecuerpo]` se sustituye (sin `render()`).
 - (v65) Planes: `sec(k, html)` → `<section class="pl-sec pl-<k>">` con `--franja`. Rueda 19,5 rem; `[data-ruedaexp]` alterna rueda / cascada (`.rueda-marco.exp`).
+
+## v66 (pedido del usuario)
+- Tiempo vuelve a ser vista y pestaña (`viewTiempo()` con `mapaTiempoHTML()` arriba); `tiempoPlegadoHTML()` ya no se usa en Planes.
+- Fondos: `.lista-fondo` (capa `position: sticky` con `--fondo`) dentro de `.cine-lista`; `cineFondo(c)` (municipio del cine) y `culFondo()`
+  (teatro-guimera / auditorio). Tarjetas al 66 % de opacidad dentro.
+- Categorías de Eventos: tarjetas con icono en círculo y `.on` con tinte, borde y ✓. ¿Algo más?: el botón no se mueve al abrir su panel.

@@ -107,6 +107,8 @@ function cargarAgenda(d, clave = 'tenerife') {
 // ---------- 🎬 Cartelera de cine (data/cine.json: SensaCine, cada mañana con GitHub Actions; solo las sesiones del día) ----------
 let CINE = null, cineSel = null, cineVO = false, cineOrden = null;
 // (v62) Fondo de la cartelera: foto del municipio del cine (de sus fichas, Wikimedia Commons), muy atenuada.
+// (v66) Teatro y Música: de fondo, el Teatro Guimerá y el Auditorio de Tenerife (sus fichas tienen foto).
+const culFondo = () => { const src = fotoSrc(culSec === 'teatro' ? 'teatro-guimera' : 'auditorio'); return src ? `style="--fondo:url('${esc(src)}')"` : ''; };
 const cineFondo = c => { const id = typeof portadaDe === 'function' && portadaDe(c.municipio), src = id && fotoSrc(id); return src ? `style="--fondo:url('${esc(src)}')"` : ''; };
 // (v62) Ruleta horizontal de cines (como la rueda de Planes, de lado): la del centro es la elegida.
 function girarCines() {
@@ -162,7 +164,7 @@ function carteleraHTML() {
       <label class="orden-sel"><span class="vh">Ordenar películas</span><select id="cine-orden">${Object.entries(ORDEN_CINE).map(([k, n]) => `<option value="${k}" ${cineOrden === k ? 'selected' : ''}>↕️ ${n}</option>`).join('')}</select></label></div>
     <p class="muted cuenta-lista">${esc(c.nombre)} · ${esc(c.municipio)} · ${pelis.length} película${pelis.length === 1 ? '' : 's'}${c.aviso ? ' · ⚠️ ' + esc(c.aviso) : ''}
       <button class="enlace fav-cine" data-fav="esc.favcines" data-v="${c.id}">${fc.includes(c.id) ? '💛 Tu cine favorito' : '🤍 Marcar como favorito'}</button></p>
-    <div class="cine-lista" ${cineFondo(c)}>
+    <div class="cine-lista" ${cineFondo(c)}><div class="lista-fondo" aria-hidden="true"></div>
     ${pelis.length ? pelis.map(([p, ss]) => { // (v50) tocar la película despliega la sinopsis; debajo, FilmAffinity e IMDb
       const q = encodeURIComponent(p.original || p.titulo), sin = !!p.sinopsis, abierta = peliAbiertas.has(p.titulo);
       const cab = `${p.cartel ? `<img class="peli-cartel" src="${esc(p.cartel)}" alt="" loading="lazy" onerror="this.remove()">` : '<span class="peli-cartel peli-sinc">🎬</span>'}
@@ -247,9 +249,10 @@ function viewCultura() {
   const que = culSec === 'teatro' ? ['obra', 'obras', 'teatro y espectáculos'] : ['concierto', 'conciertos', 'música'];
   return nov + sw + `<div class="filtros-barra"><label class="orden-sel ancho"><span class="vh">Zona</span><select id="ev-zona"><option value="">🗺️ Toda la isla</option>${Object.entries(ZONAS).map(([k, z]) => `<option value="${k}" ${evZona === k ? 'selected' : ''}>${z.ic} ${esc(z.nom)}</option>`).join('')}</select></label></div>
     <p class="muted cuenta-lista">${lista.length} ${lista.length === 1 ? que[0] : que[1]} en el próximo año</p>
+    <div class="cine-lista cul-fondo" ${culFondo()}><div class="lista-fondo" aria-hidden="true"></div>
     ${lista.length ? Object.keys(semanas).sort().map(sb => { const k = culSec + ':' + sb; return `<details class="ev-sem" data-sem="${k}" ${evCerradas.has(k) ? '' : 'open'}><summary><span>📅 ${esc(titulo(sb))}</span><small>${semanas[sb].length}</small></summary>${ordenarEventos(semanas[sb], sb === sab ? isoMas(sab, -1) : isoMas(sb, -5)).map(([s]) => fichaHTML(s)).join('')}</details>`; }).join('')
-      : `<div class="card muted">No hay ${que[2]} en la agenda para esa zona. La agenda de Turismo de Tenerife se actualiza dos veces por semana.</div>`}
-    <p class="muted ag-nota">De la agenda de Turismo de Tenerife y de los eventos del grupo. Confirma horarios y entradas en la web de cada uno.</p>`;
+      : `<div class="card muted">No hay ${que[2]} en la agenda para esa zona. La agenda de Turismo de Tenerife se actualiza dos veces por semana.</div>`}</div>
+    <p class="muted ag-nota">De la agenda de Turismo de Tenerife y de los eventos del grupo. Confirma horarios y entradas en la web de cada uno. Fondo: ${culSec === 'teatro' ? 'Teatro Guimerá' : 'Auditorio de Tenerife'} (Wikimedia Commons).</p>`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-cul]'); if (b) { culSec = b.dataset.cul; save('esc.cultura', culSec); render(); } });
 
