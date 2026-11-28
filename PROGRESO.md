@@ -1,5 +1,12 @@
 # PROGRESO
 
+## v70 · Preparado para las fotos de los cines (2026-11-28)
+- Búsqueda a fondo de fotos libres de los 5 cines (Wikimedia Commons por nombre, por coordenadas y por categorías; Wikipedia):
+  no existe ninguna, ni de sus centros comerciales. Las de Yelmo, SensaCine o Google tienen derechos: no se usan.
+- Decisión del usuario: las fotos las hace el grupo. `FOTOS_CINE` (eventos.js) + `fotos/cines/<id>.jpg` (instrucciones en
+  `fotos/cines/LEEME.md`): con foto, las películas de ese cine la llevan de fondo (como las salas de teatro) y el crédito al pie;
+  sin foto, el telón.
+
 ## v69 · Foto del Teatro Leal en sus obras (2026-11-28)
 - La agenda de Turismo de Tenerife da la dirección, no el nombre de la sala: ahora se mira también la descripción («llega al
   Teatro Leal…») y la calle del Leal (Obispo Rey Redondo, según Wikipedia). Teatro: 30 de 36 obras con la foto de su sala

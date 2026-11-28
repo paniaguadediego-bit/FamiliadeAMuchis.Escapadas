@@ -995,4 +995,7 @@ nav#tabs button { font-size: .56rem; } nav#tabs button.on span { padding: 3px 11
 .peli-d::before { opacity: .14; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .peli-d::before { opacity: .2; } }
 :root[data-theme="dark"] .peli-d::before { opacity: .2; }
-:root { --css-ver: "v69"; }
+/* v70: cine con foto propia (hecha por el grupo): la foto en vez del telón, igual que las salas de teatro */
+.peli-d.con-foto::before { background: var(--sala) center / cover no-repeat; opacity: .17; filter: saturate(.8);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 45%); mask-image: linear-gradient(90deg, transparent 0%, #000 45%); }
+:root { --css-ver: "v70"; }

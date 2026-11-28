@@ -145,6 +145,11 @@ function girarCines() {
   r.addEventListener('scrollend', () => { clearTimeout(fin); elegir(); });
   addEventListener('resize', () => { medir(); pinta(); });
 }
+// (v70) Fotos de los cines hechas por el grupo (no hay fotos libres en ningún sitio): fotos/cines/<id>.jpg, sin datos EXIF.
+// Mientras un cine no tenga la suya, sus películas llevan el telón dibujado.
+const FOTOS_CINE = { // id de SensaCine → { src, autor }
+};
+const cineSala = id => FOTOS_CINE[id] ? `style="--sala:url('${esc(FOTOS_CINE[id].src)}')"` : '';
 const peliAbiertas = new Set(); // sinopsis abiertas (no se cierran al repintar)
 document.addEventListener('toggle', e => { const d = e.target; if (d.dataset && d.dataset.peli) { if (d.open) peliAbiertas.add(d.dataset.peli); else peliAbiertas.delete(d.dataset.peli); } }, true);
 const ORDEN_CINE = { estrenos: 'Estrenos primero', publico: '⭐ Público', prensa: '⭐ Prensa', titulo: 'Título (A-Z)' };
@@ -183,10 +188,11 @@ function carteleraHTML() {
         ${sin ? '<span class="peli-pista">Sinopsis <i>▾</i></span>' : ''}</div>`;
       const pie = `<div class="peli-mas"><a href="https://www.filmaffinity.com/es/search.php?stext=${q}" target="_blank" rel="noopener">Ver en FilmAffinity ›</a>
         <a href="https://www.imdb.com/find/?q=${q}&s=tt" target="_blank" rel="noopener">Ver en IMDb ›</a></div>`;
-      return sin ? `<div class="card peli-d"><details data-peli="${esc(p.titulo)}" ${abierta ? 'open' : ''}><summary class="peli">${cab}</summary><p class="peli-sin">${esc(p.sinopsis)}</p></details>${pie}</div>`
-        : `<div class="card peli-d"><div class="peli">${cab}</div>${pie}</div>`; }).join('')
+      const fc2 = FOTOS_CINE[c.id] ? ' con-foto' : '', st = cineSala(c.id);
+      return sin ? `<div class="card peli-d${fc2}" ${st}><details data-peli="${esc(p.titulo)}" ${abierta ? 'open' : ''}><summary class="peli">${cab}</summary><p class="peli-sin">${esc(p.sinopsis)}</p></details>${pie}</div>`
+        : `<div class="card peli-d${fc2}" ${st}><div class="peli">${cab}</div>${pie}</div>`; }).join('')
       : `<div class="card muted">${cineVO ? 'Hoy no hay sesiones en versión original en este cine.' : 'Sin sesiones.'}</div>`}</div>
-    <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.</p></div>`;
+    <p class="muted ag-nota">📚 <a href="${esc(c.url)}" target="_blank" rel="noopener">Cartelera en SensaCine</a>. La app guarda solo las sesiones del día (se actualiza cada mañana); compra y horarios de otros días, en la web del cine.${FOTOS_CINE[c.id] ? ` Foto del cine: ${esc(FOTOS_CINE[c.id].autor)}.` : ''}</p></div>`;
 }
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-cine]'); if (c) { const r = c.parentElement; if (r && r.matches('[data-cinerueda]')) r.scrollTo({ left: c.offsetLeft - (r.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' }); else { cineSel = c.dataset.cine; save('esc.cine', cineSel); render(); } return; }
