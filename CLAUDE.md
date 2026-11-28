@@ -470,4 +470,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   aytolalaguna.es (eventos de portada y noticias). Santa Cruz: no responde a programas; NO hacerse pasar por navegador.
 - Nada entra solo: `revEstado(id)` = grupos/{gid}/revision/{id} {estado si|no, uid, actualizado} o `esc.revision` sin grupo.
   Aceptados con fecha → `cargarAgenda(…, 'ayto')` con `verificar`; sin fecha → «📰 Anunciados sin fecha» en Eventos.
-- (v49) Rueda: vecinas con opacidad 1 − 0,18·d (más visibles), 16,5 rem de alto.
+- (v49) Rueda: vecinas con opacidad 1 − 0,18·d (más visibles), 16,5 rem de alto, dentro de `.rueda-marco` (borde, fondo y «↕ gira aquí»: fuera del marco se desplaza Planes).

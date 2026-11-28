@@ -339,7 +339,7 @@ function carruselFindeHTML(i) {
   const form = g && planForm && planForm.carrusel === String(i) ? formPlanHTML(planForm) : '';
   return `<div class="car-cab"><h2>${['🎠 Este finde', '🎠 El que viene', '🎠 En 2 semanas'][i] || '🎠'} <small class="muted">${esc(rango)}${fests.length ? ' · 🎉 puente' : ''}</small></h2>${i === 0 ? '<button class="enlace" data-tab="eventos">Todos los eventos ›</button>' : ''}</div>
     <div class="ev-pista">${ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} · ` : ''}${evs.length ? `🎟️ ${evs.length} evento${evs.length > 1 ? 's' : ''}` : 'Sin eventos en la agenda'}</div>
-    ${tarjetas.length > 1 ? `<div class="rueda" data-rueda="${i}" aria-label="Desliza para girar">${tarjetas.join('')}</div>` : `<div class="ev-lista">${tarjetas.join('')}</div>`}${form}`;
+    ${tarjetas.length > 1 ? `<div class="rueda-marco"><div class="rueda" data-rueda="${i}" aria-label="Desliza para girar">${tarjetas.join('')}</div><span class="rueda-asa" aria-hidden="true">↕ gira aquí</span></div>` : `<div class="ev-lista">${tarjetas.join('')}</div>`}${form}`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-cal-ir]'); if (b) { calSel = b.dataset.calIr; calMes = calSel.slice(0, 7); render(); const x = document.querySelector('.cal'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); } });
 
