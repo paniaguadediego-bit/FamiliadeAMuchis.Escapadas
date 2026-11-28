@@ -511,3 +511,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - (v59) Filtros de Explorar centrados. Categorías de Eventos: `.ev-cats.ev-cats-g` (rejilla 3 columnas, icono en <span> arriba), estilo del selector de Cultura.
 - (v60) Portada de Planes: `PORTADA_FOTOS` (10 sitios con foto, barajados), `portadaI`, `moverPase()` (cada 7 s cambia `.pf.on`, fundido 2,4 s,
   opacidad 0,78, zoom suave), pie `.pf-pie` con el nombre. Se llama al pintar Planes.
+- (v61) Grupo: la tarjeta del código para invitar va justo debajo del pasaporte.

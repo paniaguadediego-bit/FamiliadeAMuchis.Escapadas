@@ -349,10 +349,10 @@ function viewNube() {
   return `${yo}${aviso}
     ${mis.length > 1 ? `<h2>👥 Tus grupos</h2>${selectorGruposHTML('en-grupo')}<p class="muted grupos-ayuda">Toca uno para cambiar: Planes, calendario y marcas del grupo pasan a ser los de ese.</p>` : ''}
     <h2>👥 ${esc(g.nombre)}</h2>
-    <div class="card"><div class="muted">Código para invitar</div><div class="codigo">${esc(codigoBonito(g.id))}</div>
-      <button class="sec" data-nube="compartir">📤 Pasar el código</button></div>
     <div class="card">${ms.map(([id, m]) => `<div class="row miembro">${carita(m)}<span>${esc((m && m.nombre) || '…')}${id === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span></div>`).join('')}</div>
     ${typeof pasaporteHTML === 'function' ? pasaporteHTML() : ''}
+    <div class="card"><div class="muted">Código para invitar</div><div class="codigo">${esc(codigoBonito(g.id))}</div>
+      <button class="sec" data-nube="compartir">📤 Pasar el código</button></div>
     ${resumenGrupoHTML()}
     ${otros}
     <div class="row"><button class="sec" data-nube="salirgrupo">Salir de «${esc(g.nombre)}»</button><button class="sec" data-nube="salir">Cerrar sesión</button></div>`;

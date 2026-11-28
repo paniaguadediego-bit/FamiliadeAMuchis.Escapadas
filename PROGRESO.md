@@ -1,5 +1,8 @@
 # PROGRESO
 
+## v61 · Código del grupo bajo el pasaporte (2026-11-28)
+- En la pestaña Grupo, la tarjeta «Código para invitar» (con «📤 Pasar el código») va justo debajo del pasaporte.
+
 ## v60 · Fotos de la isla en la portada de Planes (2026-11-28)
 - La tarjeta «Buenos días/tardes…» ya no lleva siempre el Teide: pase de 10 vistas de la isla (Roques de García, Los Gigantes,
   Masca, Benijo, El Caletón, Las Teresitas, Taganana, Punta de Teno, El Médano, Teide) en fundido lento cada 7 s, algo
