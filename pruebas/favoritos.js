@@ -19,6 +19,15 @@ const P = require('./comun');
   await P.tab(p, 'finde'); await p.waitForTimeout(300);
   const orden = await p.evaluate(() => [...document.querySelector('.planes').children].map(x => x.className || x.tagName).join(' > '));
   console.log('Botones al final de Planes:', /rapidos/.test(orden.split(' > ').slice(-3).join(' ')));
+  // Área Santa Cruz – La Laguna: sus eventos llevan 💛 en Eventos y Cultura
+  await P.tab(p, 'mas'); await p.click('[data-fav="esc.favareas"][data-v="metro"]'); await p.waitForTimeout(150);
+  console.log('Área metro: La Laguna y Santa Cruz favoritos:', await p.evaluate(() => favMuni('San Cristóbal de La Laguna') && favMuni('Santa Cruz de Tenerife')), '| Arafo no:', await p.evaluate(() => !favMuni('Arafo')));
+  await P.tab(p, 'eventos'); await p.waitForTimeout(300);
+  const ev = await p.evaluate(() => [...document.querySelectorAll('details.ficha')].map(d => [!!d.querySelector('.fav-ic'), (SITIOS.find(s => s.id === d.dataset.ficha) || {}).municipio]));
+  console.log('Eventos con 💛:', ev.filter(x => x[0]).length, '| todos de Santa Cruz o La Laguna (o Adeje/Garachico):', ev.filter(x => x[0]).every(x => /Santa Cruz|Laguna|Adeje|Garachico/.test(x[1])), '| sin 💛 fuera:', ev.filter(x => !x[0]).every(x => !/Santa Cruz|Laguna/.test(x[1] || '')));
+  await p.$eval('.fav-ic', x => x.closest('details').scrollIntoView({ block: 'center' })); console.log('Captura:', await P.captura(p, 'fav-eventos'));
+  await P.tab(p, 'cultura'); await p.evaluate(() => { culSec = 'musica'; render(); }); await p.waitForTimeout(300);
+  console.log('Cultura (música) con 💛:', await p.locator('details.ficha .fav-ic').count());
   console.log('Errores de página:', errores.length ? errores.join(' | ') : 'ninguno');
   await cerrar(); process.exit(errores.length ? 1 : 0);
 })();

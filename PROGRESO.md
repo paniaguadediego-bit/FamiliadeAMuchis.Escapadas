@@ -1,5 +1,11 @@
 # PROGRESO
 
+## v51 · 💛 Áreas favoritas y eventos marcados (2026-11-28)
+- En ☰ Más → «💛 Mis lugares y cines» se pueden marcar áreas: 🏙️ Santa Cruz – La Laguna (las dos juntas) y las 6 zonas,
+  además de municipios sueltos y cines.
+- Los eventos que caen en tus 💛 llevan un 💛 delante del nombre en Eventos y Cultura, en la rueda de Planes («· 💛») y en
+  «📰 Por revisar» (donde además salen primero).
+
 ## v50 · Carteles y sinopsis de las películas (2026-11-28)
 - Faltaban 70 de 75 carteles: SensaCine añadió otra clase a la imagen y el lector no la reconocía. Arreglado: 74 de 74.
 - Cada película es un botón: al tocarla se despliega la sinopsis (pista «Sinopsis ▾»). Debajo, siempre a la vista,

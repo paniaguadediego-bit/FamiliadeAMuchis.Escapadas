@@ -482,3 +482,6 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - Efectos: Explorar por municipio/zona, `ordenarEventos` (Eventos, Cultura, chips), rueda (a igual día), Tiempo (filas por
   zona), Sorpréndeme (+2/+1 papeletas) y cartelera (cines y selección inicial).
 - Planes: `rapidosHTML()` (➕ Plan, 🎲, 🎭) al final de la página, bajo «¿Algo más?».
+- (v51) Áreas favoritas `esc.favareas`: claves de `ZONAS` y `AREAS_EXTRA` (metro = Santa Cruz + La Laguna). `favMuni(m)` = municipio
+  marcado o dentro de un área marcada (`favs().enArea`). `favIc(s)`: 💛 delante del nombre de los eventos (fichaHTML), en la rueda y
+  en Por revisar.

@@ -284,13 +284,14 @@ function seguirRevision(gid) {
 }
 function revisionHTML() {
   if (!REVISION) return '';
-  const pend = (REVISION.avisos || []).filter(a => !revEstado(a.id));
+  const fm = m => typeof favMuni === 'function' && favMuni(m);
+  const pend = (REVISION.avisos || []).filter(a => !revEstado(a.id)).sort((a, b) => fm(b.municipio) - fm(a.municipio)); // 💛 primero
   if (!pend.length) return '';
   const MAX = 8, ver = revVerTodo ? pend : pend.slice(0, MAX);
   return `<details class="card rev" ${load('esc.revabierta', true) ? 'open' : ''} data-revcaja><summary>📰 Por revisar <b>${pend.length}</b> <small class="muted">· de las webs de los ayuntamientos</small></summary>
     <p class="muted rev-ayuda">Lo que anuncian los ayuntamientos (agendas y noticias). «➕ Añadir» lo lleva a Eventos${typeof enGrupo === 'function' && enGrupo() ? ' para todo el grupo' : ''}; si no trae fecha, va a «Anunciados sin fecha».</p>
     ${ver.map(a => `<div class="rev-item"><div class="rev-tx"><small>${esc(a.municipio.replace('San Cristóbal de ', ''))} · ${a.clase === 'agenda' ? 'Agenda' : 'Noticia'} · <b class="${a.desde ? '' : 'rev-sinf'}">${esc(revFechaTxt(a))}</b></small>
-        <a href="${esc(a.url)}" target="_blank" rel="noopener">${catIc(a)} ${esc(a.titulo)}</a>${a.lugar ? `<small class="muted">📍 ${esc(a.lugar)}</small>` : ''}${a.extracto ? `<p class="muted">${esc(a.extracto)}</p>` : ''}</div>
+        <a href="${esc(a.url)}" target="_blank" rel="noopener">${fm(a.municipio) ? '💛 ' : ''}${catIc(a)} ${esc(a.titulo)}</a>${a.lugar ? `<small class="muted">📍 ${esc(a.lugar)}</small>` : ''}${a.extracto ? `<p class="muted">${esc(a.extracto)}</p>` : ''}</div>
       <div class="rev-acc"><button class="mini" data-rev="si" data-id="${esc(a.id)}">➕ Añadir</button><button class="sec mini" data-rev="no" data-id="${esc(a.id)}">🗑️ Descartar</button></div></div>`).join('')}
     ${pend.length > MAX ? `<button class="enlace" data-revtodo>${revVerTodo ? '▴ Ver menos' : `▾ Ver los ${pend.length}`}</button>` : ''}
     ${(REVISION.notas || []).length ? `<p class="muted rev-ayuda">⚠️ ${REVISION.notas.map(esc).join(' · ')}</p>` : ''}</details>`;
