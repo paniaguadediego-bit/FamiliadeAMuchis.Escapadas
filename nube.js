@@ -297,16 +297,10 @@ function caritasMini(id) {
   return `<span class="cmini" title="Visitado por: ${esc(f.map(([u]) => perfilDe(u).nombre).join(', '))}">${f.slice(0, 3).map(([u]) => esc(perfilDe(u).emoji)).join('')}${f.length > 3 ? `<small>+${f.length - 3}</small>` : ''}</span>`;
 }
 // Pestaña Grupo: quién lleva más, últimas marcas y lo que nadie ha hecho.
+// (v54) Sin «Quién lleva más» ni «Últimas marcas» (pedido del usuario): queda el aviso de planes y «Nadie ha ido todavía».
 function resumenGrupoHTML() {
-  const g = NUBE.grupo, cuenta = {};
-  (g.miembros || []).forEach(u => { cuenta[u] = { fuimos: 0, quiero: 0 }; });
-  for (const ms of Object.values(NUBE.marcasGrupo)) for (const [u, m] of Object.entries(ms)) if (cuenta[u] && cuenta[u][m.estado] != null) cuenta[u][m.estado]++;
-  const rank = Object.entries(cuenta).sort((a, b) => b[1].fuimos - a[1].fuimos || b[1].quiero - a[1].quiero);
   const total = typeof SITIOS !== 'undefined' ? SITIOS.length : 0, nadie = total ? SITIOS.filter(x => nadieFue(x.id)).length : 0;
-  const fechaCorta = t => t ? new Date(t).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : '';
   return `${avisoPlanesHTML()}
-    <h2>🏆 Quién lleva más</h2><div class="card">${rank.map(([u, c], i) => `<div class="row miembro">${carita(perfilDe(u))}<span style="flex:1">${esc(perfilDe(u).nombre)}${u === NUBE.user.uid ? ' <span class="muted">(tú)</span>' : ''}</span><span class="cifra">✅ ${c.fuimos}</span><span class="cifra muted">🔖 ${c.quiero}</span>${i === 0 && c.fuimos ? '<span>🥇</span>' : ''}</div>`).join('')}</div>
-    <h2>🕒 Últimas marcas</h2>${NUBE.recientes.length ? `<div class="card">${NUBE.recientes.map(m => { const s = typeof sitio === 'function' && sitio(m.sitioId); return s ? `<button class="reciente" data-irficha="${esc(s.id)}">${carita(perfilDe(m.uid))}<span><b>${esc(perfilDe(m.uid).nombre)}</b> ${m.estado ? ESTADOS[m.estado][0] : '⭐'} ${esc(s.nombre)}<small class="muted"> · ${fechaCorta(m.actualizado)}</small></span></button>` : ''; }).join('')}</div>` : '<div class="card muted">Todavía nadie ha marcado nada.</div>'}
     <h2>🌱 Nadie ha ido todavía</h2><div class="card"><p><b>${nadie}</b> de ${total} sitios sin estrenar por nadie del grupo.</p><button class="sec" data-nadie>Ver cuáles</button></div>`;
 }
 document.addEventListener('click', e => { if (e.target.closest('[data-nadie]')) { fTipo = fEst = fZona = ''; q = ''; fGrupo = 'nadie'; ir('sitios'); } });
