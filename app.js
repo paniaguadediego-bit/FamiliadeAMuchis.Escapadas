@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v57';
+const VERSION = 'v58';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -355,14 +355,14 @@ function filtrosHTML(lista) {
   ].filter(Boolean);
   const isla = ISLAS[islaSel];
   // Siempre a la vista y en pequeño: una fila de botoncitos por grupo (tocar otra vez quita el filtro).
-  const pills = (clave, actual, ops) => `<div class="fm-ops">${ops.map(([k, ic, n]) => `<button class="fm ${actual === k ? 'on' : ''}" data-filtro="${clave}" data-v="${esc(k)}" aria-pressed="${actual === k}">${ic} ${esc(n)}</button>`).join('')}</div>`;
+  // (v58) Cada fila con su título y botones más grandes; sin la fila de zonas (ya se filtra por municipios).
+  const pills = (clave, actual, ops, tit) => `<div class="fm-ops">${tit ? `<span class="fm-tit">${tit}</span>` : ''}${ops.map(([k, ic, n]) => `<button class="fm ${actual === k ? 'on' : ''}" data-filtro="${clave}" data-v="${esc(k)}" aria-pressed="${actual === k}">${ic} ${esc(n)}</button>`).join('')}</div>`;
   return `<div class="buscador"><input id="q" type="search" placeholder="🔍 Buscar sitio, pueblo o tipo" value="${esc(q)}" autocomplete="off"></div>
     <div class="filtros-mini">
-      ${pills('fTipo', fTipo, tiposHay.map(t => [t, tipoIc(t), tipoNom(t).split(' ')[0]]))}
-      <div class="fm-ops">${[['fNinos', 'si', '🧸', 'Con niños', fNinos], ...Object.entries(COLECCIONES).map(([k, [ic, n]]) => ['fCol', k, ic, n, fCol])].map(([c, k, ic, n, act]) => `<button class="fm ${act === k ? 'on' : ''}" data-filtro="${c}" data-v="${k}" aria-pressed="${act === k}">${ic} ${esc(n)}</button>`).join('')}</div>
-      ${pills('fEst', fEst, ESTADOS_F.slice(1))}
-      ${enGrupo() ? pills('fGrupo', fGrupo, GRUPO_F.slice(1)) : ''}
-      ${pills('fZona', fZona, Object.entries(ZONAS).map(([k, z]) => [k, z.ic, z.nom]))}
+      ${pills('fTipo', fTipo, tiposHay.map(t => [t, tipoIc(t), tipoNom(t).split(' ')[0]]), 'Qué es')}
+      <div class="fm-ops"><span class="fm-tit">Especial</span>${[['fNinos', 'si', '🧸', 'Con niños', fNinos], ...Object.entries(COLECCIONES).map(([k, [ic, n]]) => ['fCol', k, ic, n, fCol])].map(([c, k, ic, n, act]) => `<button class="fm ${act === k ? 'on' : ''}" data-filtro="${c}" data-v="${k}" aria-pressed="${act === k}">${ic} ${esc(n)}</button>`).join('')}</div>
+      ${pills('fEst', fEst, ESTADOS_F.slice(1), 'Tus marcas')}
+      ${enGrupo() ? pills('fGrupo', fGrupo, GRUPO_F.slice(1), 'El grupo') : ''}
       ${Object.values(ISLAS).filter(i => i.activa).length > 1 ? pills('isla', islaSel, Object.entries(ISLAS).filter(([, i]) => i.activa).map(([k, i]) => [k, i.ic, i.nombre])) : ''}
       <div class="fm-pie"><label class="orden-sel"><span class="vh">Ordenar</span><select id="orden">${Object.entries(ORDENES).map(([k, n]) => `<option value="${k}" ${orden === k ? 'selected' : ''}>↕️ ${n.slice(n.indexOf(' ') + 1)}</option>`).join('')}</select></label>
         ${activos.length ? '<button class="fm quitar" data-filtro="limpiar">✕ Quitar filtros</button>' : ''}</div>

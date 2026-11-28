@@ -899,4 +899,11 @@ details[open] .peli-pista i { transform: rotate(180deg); }
 .mapa-t { width: 100%; height: auto; display: block; margin: 4px 0; }
 .mt-isla { fill: color-mix(in srgb, var(--pri) 12%, var(--card, #fff)); stroke: color-mix(in srgb, var(--pri) 40%, transparent); stroke-width: 1.2; }
 .mt-ic { font-size: 22px; } .mt-t { font-size: 11px; font-weight: 700; fill: var(--fg); } .mt-n { font-size: 8.5px; fill: var(--muted, #777); }
-:root { --css-ver: "v57"; }
+/* v58: filtros de Explorar más claros: título por fila y botones más grandes */
+.filtros-mini { padding: 8px 8px 6px; }
+.filtros-mini .fm-ops { gap: 6px; margin-bottom: 6px; justify-content: flex-start; }
+.filtros-mini .fm-ops + .fm-ops { padding-top: 6px; }
+.fm-tit { flex: 0 0 100%; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted, #777); margin: 0 2px; }
+.filtros-mini button.fm { font-size: .84rem; padding: 6px 11px; border-width: 1.5px; }
+.filtros-mini button.fm.on { box-shadow: 0 1px 4px color-mix(in srgb, var(--pri) 45%, transparent); }
+:root { --css-ver: "v58"; }

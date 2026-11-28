@@ -507,3 +507,4 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   `esc.tiempoabierto` y baja a `.tiempo-caja`. `conmutador` ya no se usa.
 - `tiempoPlegadoHTML()` (finde.js, al final de Planes): solo pinta el contenido si está abierto. `mapaTiempoHTML()`: SVG con `ISLA`
   (app.js) y `POS_MAPA_T` (La Laguna y Santa Cruz separadas), `mapaTDia` (chips `data-mtdia`).
+- (v58) Filtros de Explorar: `pills(clave, actual, ops, titulo)` con `.fm-tit`; sin fila de zonas (`fZona` queda solo para enlaces internos).

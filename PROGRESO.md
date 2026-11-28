@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v58 · Filtros de Explorar más claros (2026-11-28)
+- Cada fila de filtros con su título («Qué es», «Especial», «Tus marcas», «El grupo») y botones más grandes y marcados.
+- Fuera la fila de zonas (Oeste, Sur…): ya se filtra por municipios (y el orden «por zona» sigue en ↕️).
+
 ## v57 · Tiempo dentro de Planes y Mapa propio (2026-11-28)
 - Pestañas: 🏠 Planes · 🧭 Explorar (lista) · 🗺️ Mapa · 🎟️ Eventos · 🎨 Cultura · 👥 Grupo · ☰ Más. El Tiempo ya no es
   pestaña y el Mapa sale de Explorar (sin «Lista ⇄ Mapa»).
