@@ -158,8 +158,8 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
   momento) y la persistencia offline de Firestore (lo marcado sin red se
   envía solo al volver).
 - En cada ficha: caritas de quién fue (✅), quién quiere ir (🔖) y sus ⭐.
-  Pestaña 👥 Grupo: quién lleva más sitios, últimas marcas y «nadie ha ido
-  todavía».
+  Pestaña 👥 Grupo: miembros, pasaporte y «nadie ha ido todavía» (v54: sin «quién lleva
+  más» ni «últimas marcas», pedido del usuario).
 
 ## Hoja de ruta (una por sesión, en orden)
 - **S1** Esqueleto desde viaje-corea, limpio de Corea. Pestañas: 🏠 Este

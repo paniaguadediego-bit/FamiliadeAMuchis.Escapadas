@@ -1,5 +1,9 @@
 # PROGRESO
 
+## v54 · Grupo más limpio (2026-11-28)
+- Pestaña Grupo sin «🏆 Quién lleva más» ni «🕒 Últimas marcas» (pedido del usuario). Quedan los miembros, el pasaporte,
+  el aviso de planes y «🌱 Nadie ha ido todavía».
+
 ## v53 · Varios grupos y Más ordenado (2026-11-28)
 - Puedes estar en varios grupos (p. ej. la familia y los hermanos) y cambiar cuando quieras: chips con tus grupos arriba de
   Planes y en la pestaña Grupo. Cada grupo guarda sus planes, disponibilidad, comentarios, sitios y avisos revisados; al
