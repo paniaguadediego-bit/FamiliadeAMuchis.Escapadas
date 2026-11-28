@@ -347,8 +347,7 @@ function carruselFindeHTML(i) {
   const form = g && planForm && planForm.carrusel === String(i) ? formPlanHTML(planForm) : '';
   return `<div class="car-cab"><h2>${i === 0 ? '🎠 Este finde' : '🎠 El que viene'} <small class="muted">${esc(rango)}${fests.length ? ' · 🎉 puente' : ''}</small></h2>${i === 0 ? '<button class="enlace" data-tab="eventos">Todos los eventos ›</button>' : ''}</div>
     <div class="ev-pista">${ps.length ? `🙋 ${ps.length} plan${ps.length > 1 ? 'es' : ''} · ` : ''}${evs.length ? `🎟️ ${evs.length} evento${evs.length > 1 ? 's' : ''} · ` : ''}💡 ${ideas.length} ideas</div>
-    <div class="ev-lista">${(abierto ? tarjetas : tarjetas.slice(0, MAX)).join('')}</div>
-    ${tarjetas.length > MAX ? `<button class="enlace ver-mas" data-vermas="${i}">${abierto ? '▴ Ver menos' : `▾ Ver ${tarjetas.length - MAX} más`}</button>` : ''}${form}`;
+    ${tarjetas.length > 1 ? `<div class="rueda" data-rueda="${i}" aria-label="Desliza para girar">${tarjetas.join('')}</div>` : `<div class="ev-lista">${tarjetas.join('')}</div>`}${form}`;
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-cal-ir]'); if (b) { calSel = b.dataset.calIr; calMes = calSel.slice(0, 7); render(); const x = document.querySelector('.cal'); if (x) x.scrollIntoView({ block: 'start', behavior: 'smooth' }); } });
 
@@ -423,3 +422,30 @@ document.addEventListener('click', e => {
   else if (a === 'b-quitar') guardarB(id, null);
   else if (a === 'b-usar') guardarB(id, { sitioId: b.dataset.sitio, destino: '' });
 });
+
+// ---------- 🎡 Rueda de Planes (v46): la tarjeta del centro, grande; las de arriba y abajo giran y se desvanecen ----------
+// Como el selector de hora del móvil: cada tarjeta se inclina, se encoge y se apaga según lo lejos que está del centro.
+const posRueda = {}; // dónde se quedó cada rueda (para que no salte al volver a pintar)
+function girarRuedas() {
+  document.querySelectorAll('[data-rueda]').forEach(r => {
+    if (!r._rueda) {
+      r._rueda = 1; let pend = 0;
+      r.addEventListener('scroll', () => { posRueda[r.dataset.rueda] = r.scrollTop; if (!pend) pend = requestAnimationFrame(() => { pend = 0; pintarRueda(r); }); }, { passive: true });
+      // Tocar una tarjeta que no está en el centro la trae al centro (sin abrirla).
+      r.addEventListener('click', e => { const t = e.target.closest('.ev-tarjeta'); if (t && !t.classList.contains('en-centro')) { e.preventDefault(); e.stopPropagation(); r.scrollTo({ top: t.offsetTop - (r.clientHeight - t.offsetHeight) / 2, behavior: 'smooth' }); } }, true);
+      if (posRueda[r.dataset.rueda] != null) r.scrollTop = posRueda[r.dataset.rueda];
+      else if (r.children.length > 2 && !r.querySelector('.t-plan')) { const t = r.children[1]; r.scrollTop = t.offsetTop - (r.clientHeight - t.offsetHeight) / 2; } // sin planes: empieza en la 2.ª para que se vea la rueda por los dos lados
+    }
+    pintarRueda(r);
+  });
+}
+function pintarRueda(r) {
+  const centro = r.scrollTop + r.clientHeight / 2;
+  [...r.children].forEach(t => {
+    const d = (t.offsetTop + t.offsetHeight / 2 - centro) / t.offsetHeight, a = Math.min(Math.abs(d), 3);
+    t.style.transform = `perspective(900px) rotateX(${(-d * 32).toFixed(1)}deg) scale(${(1 - a * 0.14).toFixed(3)})`;
+    t.style.opacity = Math.max(0, 1 - a * 0.42).toFixed(2);
+    t.classList.toggle('en-centro', a < 0.5);
+  });
+}
+addEventListener('resize', () => girarRuedas());

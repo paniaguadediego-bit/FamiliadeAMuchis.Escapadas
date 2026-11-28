@@ -1,5 +1,10 @@
 # PROGRESO
 
+## v46 · Rueda de eventos en Planes (2026-11-28)
+- «Este finde» y «El que viene» son una rueda: la tarjeta del centro grande y nítida; la de arriba y la de abajo, más
+  pequeñas, inclinadas y desvanecidas; la siguiente apenas asoma. Al deslizar dentro gira y encaja; tocar una de los
+  lados la trae al centro. Sin planes, empieza en la 2.ª tarjeta. Prueba: `node pruebas/rueda.js`.
+
 ## v45 · Bandera de Canarias (2026-11-22)
 - Cabecera: banderita de Canarias ondeando junto al título y franja nueva con las tres bandas oficiales (blanco, azul
   #0768A9, amarillo #FFCC00) onduladas y en movimiento lento (quieta si el móvil pide «reducir movimiento»).

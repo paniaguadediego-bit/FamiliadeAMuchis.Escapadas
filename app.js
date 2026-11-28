@@ -1,7 +1,7 @@
 'use strict';
 
 // Versión visible arriba. Súbela a la vez que CACHE en sw.js y --css-ver al final de styles.css.
-const VERSION = 'v45';
+const VERSION = 'v46';
 // Si el móvil mezcla el app.js nuevo con la hoja de estilos vieja, se vuelve a pedir la hoja.
 addEventListener('load', () => { try {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--css-ver').replace(/["'\s]/g, '');
@@ -139,6 +139,7 @@ function render() {
   v.innerHTML = tab === 'finde' ? viewFinde() : tab === 'tiempo' ? viewTiempo() : tab === 'eventos' ? viewEventos() : tab === 'cultura' ? viewCultura() : tab === 'sitios' ? conmutador() + viewSitios() : tab === 'mapa' ? conmutador() + viewMapa()
     : tab === 'grupo' ? viewGrupo() : viewMas();
   if (tab === 'mapa') pintarMapa();
+  if (tab === 'finde' && typeof girarRuedas === 'function') girarRuedas();
   if ((tab === 'eventos' || tab === 'cultura') && typeof novMarcarVisto === 'function' && AGENDA_SITIOS.length) novMarcarVisto(tab);
   if ((tab === 'sitios' || tab === 'eventos' || tab === 'cultura') && irFicha) {
     // Directo a la ficha (también si las fotos de encima tardan en cargar y la empujan).

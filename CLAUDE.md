@@ -450,3 +450,7 @@ Santiago del Teide, Tacoronte, Tegueste, Vilaflor de Chasna.
 - `herramientas/agenda_auditorio.py`: sitemap `evento-sitemap*.xml` (páginas /es/evento/ modificadas en el último año); del texto:
   «N Función/es | fechas | Tipo/Ciclo | Sala | Entradas». Año deducido (futuro o < 1 mes). ids `au-…`, mismo formato que agenda.json.
 - App: `cargarAgenda(doc, 'tenerife'|'auditorio')` junta y quita repetidos (nombre normalizado + día de inicio). Crédito de foto según fuente.
+
+## Rueda de Planes (v46)
+- `girarRuedas()`/`pintarRueda()` (planes.js): contenedor `[data-rueda]` con scroll-snap vertical; cada tarjeta, según su
+  distancia al centro, `rotateX`, `scale` y opacidad (≈ 1 · 0,58 · 0,15). Tocar una no centrada la centra. Se llama al pintar Planes.
